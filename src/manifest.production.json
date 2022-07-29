@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "web_collect",
+    "description": "chrome extension",
+    "version": "0.0.1",
+    "background": {
+        "service_worker": "/background.js"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "/content.js"
+            ]
+        }
+    ]
+}
