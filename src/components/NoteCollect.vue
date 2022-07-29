@@ -1,5 +1,5 @@
 <template>
-    <div class="pop-content" @contextmenu="openContextMenu">
+    <div class="pop-content" @contextmenu="openContextMenu" @click="closeContextMenu">
         <div class="header">
             <div class="title">笔记收藏夹</div>
             <div class="more">···</div>
@@ -12,38 +12,57 @@
             />
         </div>
     </div>
+    <div class="collect-manager" v-show="collectManagerShow" ref="collectManagerDiv">
+        <CollectManager></CollectManager>
+    </div>
 </template>
 
 <script>
 import { computed, onMounted, reactive, ref } from '@vue/runtime-core'
 import FolderSection from '@/components/FolderSection'
+import CollectManager from '@/components/CollectManager'
 export default {
     name: 'NoteCollect',
     components: {
         FolderSection,
+        CollectManager
     },
     setup() {
-        const collectList = ref(null);
+        // 初始化数据
+        const collectList = ref({});
         onMounted(()=>{
             chrome.runtime.sendMessage({func: 'getCollect'}, (response)=>{
                 collectList.value = response;
             });
         })
+
+        // 右键管理
+        const collectManagerShow = ref(false);
+        const collectManagerDiv = ref(null);
         function openContextMenu(event) {
             const path = event.path;
             path.forEach((item)=>{
                 try {
                     let noteId = item.getAttribute('data-noteId');
                     if (noteId) {
-                        
+                        event.preventDefault();
+                        collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
+                        collectManagerShow.value = true;
                     }
                 } catch (error) {
                 }
             })
         }
+        function closeContextMenu() {
+            collectManagerShow.value = false;
+        }
         return {
             collectList,
-            openContextMenu
+
+            collectManagerShow,
+            collectManagerDiv,
+            openContextMenu,
+            closeContextMenu,
         }
     }
 }
@@ -98,5 +117,8 @@ export default {
 
         width: 100%;
     }
+}
+.collect-manager {
+    position: absolute;
 }
 </style>

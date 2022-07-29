@@ -18,10 +18,11 @@
                 <span class="option-name">复制链接</span>
             </li>
         </ul>
+        <div class="dividing-line"></div>
         <ul class="option-list">
             <li class="option-item">
                 <i class="iconfont"></i>
-                <span class="option-name">分享</span></span>
+                <span class="option-name">分享</span>
             </li>
         </ul>
     </div>
@@ -63,11 +64,17 @@ export default {
                 width: 100%;
                 height: 28px;
 
+                cursor: pointer;
+
                 .option-name {
                     font-size: 13px;
                     line-height: 20px;
                 }
             }
+        }
+        .dividing-line {
+            width: 100%;
+            border-top: 1px solid #5f5f5f;
         }
     }
 </style>
