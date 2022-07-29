@@ -1,6 +1,17 @@
 <template>
     <div class="note-wrapper">
-
+        <div class="note-header">
+            <div class="title">本页笔记</div>
+            <div class="more">
+                <div>···</div>
+                <div>X</div>
+            </div>
+        </div>
+        <div class="cell-area">
+            <CellCard></CellCard>
+            <CellCard></CellCard>
+            <CellCard></CellCard>
+        </div>
     </div>
 </template>
 
@@ -9,8 +20,12 @@ import { reactive, ref } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core';
 import { removeUrlQuery } from '@/utils/utils'
 import NoteManager from '@/utils/NoteManager'
+import CellCard from '@/components/CellCard'
 export default {
     name: 'Note',
+    components: {
+        CellCard
+    }
     // setup() {
     //     const noteManger = NoteManager.getNoteManager();
 
@@ -62,17 +77,49 @@ export default {
     top: 0;
     z-index: 9999;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    color: var(--note-ext-font);
 
-    width: 300px;
+    width: 400px;
     height: 100%;
-    background-color: var(--note-ext-theme);
+    background-color: var(--note-ext-theme2);
 
-    padding: 20px 0;
+    border: 1px solid var(--note-ext-border);
 
     box-sizing: border-box;
+
+    .note-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        width: 100%;
+        height: 56px;
+
+        padding: 14px 16px;
+
+        border-bottom: 1px solid var(--note-ext-line);
+
+        box-sizing: border-box;
+
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .more {
+            display: flex;
+            align-items: center;
+
+            font-size: 20px;
+        }
+    }
+    .cell-area {
+        display: grid;
+        grid-gap: 10px;
+
+        padding: 10px 20px;
+
+        overflow-y: scroll;
+        scroll-behavior: auto;
+    }
 }
 </style>

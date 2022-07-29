@@ -9,11 +9,19 @@
     :root {
         --note-ext-theme: #4A4A4A;
         --note-ext-theme2: #3B3B3B;
+        --note-ext-card: #424242;
         --note-ext-line: #5F5F5F;
         --note-ext-icon: #fff;
+        --note-ext-font: #fff;
+        --note-ext-border: #4B4B4B;
         --note-ext-card-border: #2C2625;
     }
 }
 
-
-
+:root {
+    --note-ext-blue: #0078D7;
+    --note-ext-yellow: #FFB900;
+    --note-ext-red: #E74856;
+    --note-ext-green: #00CC6A;
+    --note-ext-purple: #B146C2;
+}
