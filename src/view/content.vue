@@ -1,5 +1,5 @@
 <template>
-    <!-- <Note></Note> -->
+    <Note></Note>
 </template>
 
 <script>

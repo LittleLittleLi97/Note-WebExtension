@@ -1,0 +1,19 @@
+@media (prefers-color-scheme: light) {
+    :root {
+        background: white;
+        color: black;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --note-ext-theme: #4A4A4A;
+        --note-ext-theme2: #3B3B3B;
+        --note-ext-line: #5F5F5F;
+        --note-ext-icon: #fff;
+        --note-ext-card-border: #2C2625;
+    }
+}
+
+
+
