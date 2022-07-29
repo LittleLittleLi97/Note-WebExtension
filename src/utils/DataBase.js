@@ -33,6 +33,12 @@ export default class DataBase {
                 noteStore.createIndex("title", "title", { unique: false });
                 noteStore.createIndex("collect", "collect", { unique: false });
                 noteStore.createIndex("url", "url", { unique: false });
+
+                let cellStore = db.createObjectStore("cell", {keyPath: "id"});
+                cellStore.createIndex("id", "id", { unique: true });
+                cellStore.createIndex("note_id", "note_id", { unique: false });
+                cellStore.createIndex("collect_id", "collect_id", { unique: false });
+                cellStore.createIndex("url", "url", { unique: false });
             };
         });
     }
@@ -91,7 +97,7 @@ export default class DataBase {
         })
 	}
 
-    getDataByIndex(storeName, indexName, indexValue) {
+    getDataByIndex(storeName, indexName, indexValue, successCallback) {
         // 索引查询。如果用get，只查一条数据；如果用getAll，查所有数据
         this.dbState.then((db)=>{
             let store = db.transaction(storeName, "readwrite").objectStore(storeName);
@@ -99,7 +105,7 @@ export default class DataBase {
                 request.onerror = function () {
                 console.log("事务失败");
             };
-            request.onsuccess = function (e) {
+            request.onsuccess = successCallback || function (e) {
                 let result = e.target.result;
                 console.log("索引查询结果：", result);
             };     

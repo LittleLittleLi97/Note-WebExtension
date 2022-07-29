@@ -1,17 +1,37 @@
 <template>
     <div class="cell-card">
-        <div class="label" style="background-color: var(--note-ext-blue);"></div>
+        <div class="label" :style="`background-color: var(--note-ext-${cellInfo.label});`"></div>
         <div class="cell-right">
             <div class="content">
-                文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容
+                {{ cellInfo.content }}
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { computed, createHydrationRenderer, onMounted, reactive, resolveComponent } from '@vue/runtime-core'
+import { copyObjToReactive } from '@/utils/utils';
 export default {
     name: 'CellCard',
+    props: {
+        cellId: {
+            type: String,
+            default: null
+        }
+    },
+    setup(props) {
+        const cellId = computed(()=>props.cellId);
+        const cellInfo = reactive({});
+        onMounted(()=>{
+            chrome.runtime.sendMessage({func: 'getCellById', id: cellId.value}, (response)=>{
+                copyObjToReactive(cellInfo, response);
+            });
+        })
+        return {
+            cellInfo
+        }
+    }
 }
 </script>
 

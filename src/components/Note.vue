@@ -8,9 +8,12 @@
             </div>
         </div>
         <div class="cell-area">
-            <CellCard></CellCard>
-            <CellCard></CellCard>
-            <CellCard></CellCard>
+            <CellCard 
+                v-for="(item, index) in noteInfo.children" 
+                :key="item"
+                :cellId="item"
+                class="cell-card"
+            />
         </div>
     </div>
 </template>
@@ -19,54 +22,38 @@
 import { reactive, ref } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core';
 import { removeUrlQuery } from '@/utils/utils'
-import NoteManager from '@/utils/NoteManager'
 import CellCard from '@/components/CellCard'
 export default {
     name: 'Note',
     components: {
         CellCard
+    },
+    setup() {
+        const noteInfo = reactive({
+            id: null,
+            url: '',
+            url_icon: '',
+            title: '',
+            content: '',
+            collect: '',
+            children: [],
+        });
+        onMounted(()=>{
+            noteInfo.url_icon = document.querySelector("link[rel='shortcut icon']").href;
+            noteInfo.url = removeUrlQuery(window.location.href);
+
+            chrome.runtime.sendMessage({func: 'getNoteByUrl', url: noteInfo.url}, (response)=>{
+                noteInfo.children = response.children;
+                noteInfo.collect = response.collect
+                noteInfo.id = response.id;
+                noteInfo.content = response.content;
+                noteInfo.title = response.title;
+            });
+        })
+        return {
+            noteInfo
+        }
     }
-    // setup() {
-    //     const noteManger = NoteManager.getNoteManager();
-
-    //     const noteState = ref(false);
-    //     const newNoteState = ref(true);
-    //     const noteInfo = reactive({
-    //         id: null,
-    //         url: '',
-    //         icon_url: '',
-    //         content: '',
-    //         collect: '',
-    //     });
-    //     function changeState(state) {
-    //         noteState.value = state;
-    //     }
-    //     function writeNote() {
-    //         changeState(true);
-    //         if (!noteInfo.collect) {
-
-    //         }
-    //     }
-    //     const collectInfo = computed(()=>noteManger.info);
-    //     // const temp = computed(()=>1)
-    //     onMounted(()=>{
-    //         noteInfo.icon_url = document.querySelector("link[rel='shortcut icon']").href;
-    //         noteInfo.url = removeUrlQuery(window.location.href);
-    //         let storageInfo = localStorage.getItem(noteInfo.url);
-    //         if (storageInfo) {
-    //             let storageInfo = JSON.parse(storageInfo);
-    //             noteInfo.content = storageInfo.content;
-    //             noteInfo.collect = storageInfo.collect;
-    //         }
-    //     })
-    //     return {
-    //         noteState,
-    //         changeState,
-    //         noteInfo,
-    //         collectInfo,
-    //         newNoteState,
-    //     }
-    // }
 }
 </script>
 
@@ -76,6 +63,9 @@ export default {
     right: 0;
     top: 0;
     z-index: 9999;
+
+    display: flex;
+    flex-direction: column;
 
     color: var(--note-ext-font);
 
@@ -113,13 +103,16 @@ export default {
         }
     }
     .cell-area {
-        display: grid;
-        grid-gap: 10px;
+        flex: 1;
 
         padding: 10px 20px;
 
         overflow-y: scroll;
-        scroll-behavior: auto;
+        scroll-behavior: contain;
+
+        .cell-card {
+            margin-top: 10px;
+        }
     }
 }
 </style>
