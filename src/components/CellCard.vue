@@ -2,9 +2,14 @@
     <div class="cell-card">
         <div class="label" :style="`background-color: var(--note-ext-${cellInfo.label});`"></div>
         <div class="cell-right">
-            <div class="content" contenteditable="true" @input="inputEvent">
-                {{ cellInfo.content }}
-            </div>
+            <el-input
+                v-model="cellInfo.content"
+                autosize
+                type="textarea"
+                placeholder="Please input"
+                :input-style="textareaStyle"
+                resize="none"
+            />
         </div>
     </div>
 </template>
@@ -12,6 +17,7 @@
 <script>
 import { computed, createHydrationRenderer, onMounted, reactive, ref, resolveComponent, watch } from '@vue/runtime-core'
 import { copyObjToReactive, parseReactiveToObj } from '@/utils/utils';
+import { ElInput } from 'element-plus'
 export default {
     name: 'CellCard',
     props: {
@@ -21,19 +27,28 @@ export default {
         }
     },
     emits: ['saveNote'],
+    components: {
+        ElInput
+    },
     setup(props, context) {
+        // 初始化信息
         const cellId = computed(()=>props.cellId);
         const cellInfo = reactive({
             id: cellId.value,
             content: '',
             label: 'blue',
         });
-        const isNewCell = ref(false);
+        onMounted(()=>{
+            chrome.runtime.sendMessage({func: 'getCellById', id: cellId.value}, (response)=>{
+                if (response) {
+                    copyObjToReactive(cellInfo, response);
+                }
+            });
+        })
+
+        // 保存信息
+        watch(()=>cellInfo.content, saveCellInfo);
         let timer = null;
-        function inputEvent(event) {
-            cellInfo.content = event.target.innerHTML;
-            saveCellInfo();
-        }
         function saveCellInfo() {
             clearTimeout(timer);
             timer = setTimeout(() => {
@@ -42,32 +57,48 @@ export default {
                     type: 'cell',
                     data: parseReactiveToObj(cellInfo)
                 });
-                if (isNewCell.value) { // 新的Cell，或许Note也是新的，目前此条语句无用
-                    isNewCell.value = false;
-                }
-                context.emit('saveNote', {
+                context.emit('saveNote', { // 更新Note信息
                     newContent: cellInfo.content.slice(0, 30)
                 });
+                console.log('保存成功')
             }, 1000);
         }
-        onMounted(()=>{
-            chrome.runtime.sendMessage({func: 'getCellById', id: cellId.value}, (response)=>{
-                if (response) {
-                    copyObjToReactive(cellInfo, response);
-                } else {
-                    isNewCell.value = true;
-                }
-            });
-        })
+
+        // 文本框样式
+        const textareaStyle = ref(`color: #FFFFFF;
+                                    font-family: Segoe UI;
+                                    font-weight: Semilight;
+                                    font-size: 16px;
+                                    line-height: normal;
+                                    letter-spacing: 0px;
+                                    text-align: left;
+
+                                    width: 100%;
+
+                                    background-color: transparent;
+
+                                    border: none;
+                                    border-radius: 5px;
+
+                                    box-sizing: border-box;
+
+                                    outline: none;
+                                    `);
         return {
             cellInfo,
-            inputEvent
+            textareaStyle
         }
     }
 }
 </script>
 
 <style scoped lang="less">
+.clearfix::before,
+.clearfix::after {
+		content: '';
+		display: table;
+		clear: both;
+}
 .cell-card {
     display: flex;
 
