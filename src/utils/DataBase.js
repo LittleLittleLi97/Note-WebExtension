@@ -36,9 +36,9 @@ export default class DataBase {
 
                 let cellStore = db.createObjectStore("cell", {keyPath: "id"});
                 cellStore.createIndex("id", "id", { unique: true });
-                cellStore.createIndex("note_id", "note_id", { unique: false });
-                cellStore.createIndex("collect_id", "collect_id", { unique: false });
-                cellStore.createIndex("url", "url", { unique: false });
+                // cellStore.createIndex("note_id", "note_id", { unique: false });
+                // cellStore.createIndex("collect_id", "collect_id", { unique: false });
+                // cellStore.createIndex("url", "url", { unique: false });
             };
         });
     }
@@ -46,36 +46,24 @@ export default class DataBase {
 		this.dbState.then((db)=>{
 			let request = db.transaction([storeName], "readwrite").objectStore(storeName).add(data);
 			
-			request.onsuccess = successCallback || function (event) {
-				console.log("数据写入成功");
-			};
-			
-			request.onerror = errorCallback || function (event) {
-				console.log("数据写入失败");
-			};
+			request.onsuccess = successCallback;
+			request.onerror = errorCallback;
 		})
 	}
 	getAllData(storeName, successCallback) {
 		this.dbState.then((db)=>{
 			let store = db.transaction([storeName]).objectStore(storeName);
 			let request = store.getAll();
-			request.onsuccess = successCallback || function (event) {
-				console.log(request.result);
-			}
+
+			request.onsuccess = successCallback;
 		})
 	}
 	getDataByKey(storeName, key, successCallback, errorCallback) {
 		this.dbState.then((db)=>{
 			let request = db.transaction([storeName]).objectStore(storeName).get(key);
 			
-			request.onsuccess = successCallback || function (event) {
-				console.log("主键查询结果: ", request.result);
-				resolve(request.result);
-			};
-			
-			request.onerror = errorCallback || function (event) {
-				console.log("事务失败");    
-			};
+			request.onsuccess = successCallback;
+			request.onerror = errorCallback;
 		})
     }
 	getDataByCursor(storeName) {
@@ -97,7 +85,7 @@ export default class DataBase {
         })
 	}
 
-    getDataByIndex(storeName, indexName, indexValue, successCallback) {
+    getDataByIndex(storeName, indexName, indexValue, successCallback, errorCallback) {
         // 索引查询。如果用get，只查一条数据；如果用getAll，查所有数据
         this.dbState.then((db)=>{
             let store = db.transaction(storeName, "readwrite").objectStore(storeName);
@@ -105,10 +93,8 @@ export default class DataBase {
                 request.onerror = function () {
                 console.log("事务失败");
             };
-            request.onsuccess = successCallback || function (e) {
-                let result = e.target.result;
-                console.log("索引查询结果：", result);
-            };     
+            request.onsuccess = successCallback;
+            request.onerror = errorCallback;
         })
     }
     updateDB(storeName, data, successCallback, errorCallback) {
@@ -116,26 +102,16 @@ export default class DataBase {
         this.dbState.then((db)=>{
             let request = db.transaction([storeName], "readwrite").objectStore(storeName).put(data);
           
-            request.onsuccess = successCallback || function () {
-              console.log("数据更新成功");
-            };
-          
-            request.onerror = errorCallback || function () {
-              console.log("数据更新失败");
-            };
+            request.onsuccess = successCallback;
+            request.onerror = errorCallback;
         })
     }
     deleteDB(storeName, id, successCallback, errorCallback) {
         this.dbState.then((db)=>{
             var request = db.transaction([storeName], "readwrite").objectStore(storeName).delete(id);
             
-            request.onsuccess = successCallback || function () {
-                console.log("数据删除成功");
-            };
-            
-            request.onerror = errorCallback || function () {
-                console.log("数据删除失败");
-            };
+            request.onsuccess = successCallback;
+            request.onerror = errorCallback;
         })
     }
 }

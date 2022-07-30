@@ -69,7 +69,9 @@ export default {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            // justify-content: space-between;
+
+            width: 187px;
 
             margin-left: 15px;
 
@@ -77,6 +79,8 @@ export default {
                 font-size: 20px;
                 font-weight: bold;
                 line-height: 25px;
+
+                // width: 100%;
 
                 display: block;
                 white-space: nowrap;

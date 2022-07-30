@@ -13,6 +13,7 @@
                 :key="item"
                 :cellId="item"
                 class="cell-card"
+                @saveNote="saveNote"
             />
         </div>
     </div>
@@ -21,7 +22,8 @@
 <script>
 import { reactive, ref } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core';
-import { removeUrlQuery } from '@/utils/utils'
+import { nanoid } from 'nanoid'
+import { copyObjToReactive, removeUrlQuery, parseReactiveToObj } from '@/utils/utils'
 import CellCard from '@/components/CellCard'
 export default {
     name: 'Note',
@@ -38,20 +40,44 @@ export default {
             collect: '',
             children: [],
         });
+        const isNewNote = ref(false);
+        function saveNote({ newContent }) {
+            noteInfo.content = newContent;
+            chrome.runtime.sendMessage({
+                func: 'save',
+                type: 'note',
+                data: parseReactiveToObj(noteInfo)
+            });
+            if (isNewNote.value) {
+                isNewNote.value = false;
+                chrome.runtime.sendMessage({
+                    func: 'addCollectChildren',
+                    data: {
+                        collect: noteInfo.collect,
+                        id: noteInfo.id
+                    }
+                });
+            }
+        }
         onMounted(()=>{
             noteInfo.url_icon = document.querySelector("link[rel='shortcut icon']").href;
             noteInfo.url = removeUrlQuery(window.location.href);
 
             chrome.runtime.sendMessage({func: 'getNoteByUrl', url: noteInfo.url}, (response)=>{
-                noteInfo.children = response.children;
-                noteInfo.collect = response.collect
-                noteInfo.id = response.id;
-                noteInfo.content = response.content;
-                noteInfo.title = response.title;
+                if (response) {
+                    copyObjToReactive(noteInfo, response);
+                } else {
+                    isNewNote.value = true;
+                    noteInfo.id = nanoid();
+                    noteInfo.children.push(nanoid());
+                    noteInfo.title = document.getElementsByTagName('title')[0].innerText;
+                    noteInfo.collect = '默认收藏夹';
+                }
             });
         })
         return {
-            noteInfo
+            noteInfo,
+            saveNote,
         }
     }
 }

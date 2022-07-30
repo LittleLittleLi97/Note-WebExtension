@@ -1,6 +1,17 @@
+import { nanoid } from 'nanoid';
 import DataBase from "@/utils/DataBase.js";
 
 const db = new DataBase();
+db.getDataByIndex('collect', 'name', '默认收藏夹', (event)=>{
+	let result = event.target.result;
+	if (result.length <= 0) {
+		db.updateDB('collect', {
+			id: nanoid(),
+			name: '默认收藏夹',
+			children: []
+		});
+	}
+});
 db.getAllData('collect');
 db.getAllData('note');
 db.getAllData('cell');
@@ -23,11 +34,25 @@ chrome.runtime.onMessage.addListener(
 				db.getDataByIndex('note', 'url', request.url, (event)=>{
 					let result = event.target.result;
 					if (result.length > 0) sendResponse(result[0]);
+					else sendResponse(null);
 				});
 				break;
 			case 'getCellById':
 				db.getDataByKey('cell', request.id, (event)=>{
 					sendResponse(event.target.result);
+				});
+				break;
+			case 'save':
+				db.updateDB(request.type, request.data);
+				break;
+			case 'addCollectChildren':
+				db.getDataByIndex('collect', 'name', request.data.collect, (event)=>{
+					let result = event.target.result;
+					if (result.length > 0) {
+						result = result[0];
+						result.children.push(request.data.id);
+					}
+					db.updateDB('collect', result);
 				});
 				break;
 			default:

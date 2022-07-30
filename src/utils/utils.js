@@ -8,3 +8,11 @@ export function copyObjToReactive(reactive, obj) {
         reactive[key] = obj[key];
     }
 }
+
+export function parseReactiveToObj(reactive) {
+    const obj = {};
+    for (let key in reactive) {
+        obj[key] = reactive[key];
+    }
+    return obj;
+}
