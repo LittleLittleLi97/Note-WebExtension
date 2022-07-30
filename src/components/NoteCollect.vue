@@ -41,17 +41,20 @@ export default {
         const collectManagerDiv = ref(null);
         function openContextMenu(event) {
             const path = event.path;
+            let flag = false;
             path.forEach((item)=>{
                 try {
                     let noteId = item.getAttribute('data-noteId');
                     if (noteId) {
+                        flag = true;
                         event.preventDefault();
                         collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
                         collectManagerShow.value = true;
                     }
                 } catch (error) {
                 }
-            })
+            });
+            if (!flag) closeContextMenu(); // 右键了别的地方
         }
         function closeContextMenu() {
             collectManagerShow.value = false;

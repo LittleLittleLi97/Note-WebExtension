@@ -43,7 +43,7 @@ chrome.runtime.onMessage.addListener(
 				});
 				break;
 			case 'save':
-				db.updateDB(request.type, request.data);
+				db.updateDB(request.type, request.data, ()=>sendResponse('OK'));
 				break;
 			case 'addCollectChildren':
 				db.getDataByIndex('collect', 'name', request.data.collect, (event)=>{
@@ -52,7 +52,7 @@ chrome.runtime.onMessage.addListener(
 						result = result[0];
 						result.children.push(request.data.id);
 					}
-					db.updateDB('collect', result);
+					db.updateDB('collect', result, ()=>sendResponse('OK'));
 				});
 				break;
 			default:
