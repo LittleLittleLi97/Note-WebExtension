@@ -2,7 +2,7 @@
     <div class="pop-content" @contextmenu="openContextMenu" @click="closeContextMenu">
         <div class="header">
             <div class="title">笔记收藏夹</div>
-            <div class="more">···</div>
+            <i class="more iconfont icon-gengduo"></i>
         </div>
         <div class="body">
             <FolderSection 
@@ -77,14 +77,12 @@ export default {
     flex-direction: column;
     align-items: center;
 
-    color: #fff;
+    color: var(--note-ext-font);
 
     width: 330px;
     height: 520px;
 
-    background-color: #4A4A4A;
-
-    border: 1px solid black;
+    background-color: var(--note-ext-theme);
 
     box-sizing: border-box;
     box-shadow: 0px 16px 30px 0px #0000003F;
@@ -100,7 +98,7 @@ export default {
         
         padding: 16px 16px;
 
-        border-bottom: 1px solid #5F5F5F;
+        border-bottom: 1px solid var(--note-ext-line);
 
         box-sizing: border-box;
         

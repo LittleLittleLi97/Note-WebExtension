@@ -1,7 +1,16 @@
 @media (prefers-color-scheme: light) {
     :root {
-        background: white;
-        color: black;
+        --note-ext-theme: #FFFFFF;
+        --note-ext-theme2: #3B3B3B;
+        
+        --note-ext-line: #EAEAEA;
+        --note-ext-icon: #2B2B2B;
+
+        --note-ext-font: #2B2B2B;
+        /* --note-ext-border: #4B4B4B; */
+
+        --note-ext-card: #FFFFFF;
+        --note-ext-card-border: #EEEEEE;
     }
 }
 
@@ -9,12 +18,19 @@
     :root {
         --note-ext-theme: #4A4A4A;
         --note-ext-theme2: #3B3B3B;
-        --note-ext-card: #424242;
         --note-ext-line: #5F5F5F;
+        
         --note-ext-icon: #fff;
         --note-ext-font: #fff;
+        
         --note-ext-border: #4B4B4B;
+
+        --note-ext-card: #424242;
         --note-ext-card-border: #2C2625;
+
+        --note-ext-cell-bg: #8A8A8A;
+        --note-ext-cell-hover: rgba(255, 255, 255, 0.4);
+        --note-ext-cell-focus: rgba(255, 255, 255, 0.4);
     }
 }
 

@@ -40,17 +40,17 @@ export default {
     .collect-card {
         display: flex;
 
-        color: #fff;
+        color: var(--note-ext-font);
 
         width: 298px;
         height: 96px;
 
         padding: 10px;
 
-        background-color: #424242;
+        background-color: var(--note-ext-card);
 
         border-radius: 5px;
-        // border: 1px solid #2C2625;
+        border: 1px solid var(--note-ext-card-border);
 
         box-sizing: border-box;
 

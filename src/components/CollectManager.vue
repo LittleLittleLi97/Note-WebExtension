@@ -2,26 +2,26 @@
     <div class="collect-manager">
         <ul class="option-list">
             <li class="option-item">
-                <i class="iconfont"></i>
+                <i class="iconfont icon-bianji"></i>
                 <span class="option-name">编辑</span>
             </li>
             <li class="option-item">
-                <i class="iconfont"></i>
+                <i class="iconfont icon-shanchu"></i>
                 <span class="option-name">删除</span>
             </li>
             <li class="option-item">
-                <i class="iconfont"></i>
+                <i class="iconfont icon-zhongmingming1"></i>
                 <span class="option-name">重命名</span>
             </li>
             <li class="option-item">
-                <i class="iconfont"></i>
+                <i class="iconfont icon-link"></i>
                 <span class="option-name">复制链接</span>
             </li>
         </ul>
         <div class="dividing-line"></div>
         <ul class="option-list">
             <li class="option-item">
-                <i class="iconfont"></i>
+                <i class="iconfont icon-share"></i>
                 <span class="option-name">分享</span>
             </li>
         </ul>
@@ -38,14 +38,14 @@ export default {
 
 <style scoped lang="less">
     .collect-manager {
-        color: #fff;
+        color: var(--note-ext-font);
 
         width: 216px;
         height: 168px;
 
         padding: 4px;
 
-        background-color: #4A4A4A;
+        background-color: var(--note-ext-theme);
 
         border: 1px solid #3A3A3A;
         border-radius: 4px;
@@ -66,15 +66,23 @@ export default {
 
                 cursor: pointer;
 
+                .iconfont {
+                    font-size: 18px;
+
+                    width: 18px;
+                }
+
                 .option-name {
                     font-size: 13px;
                     line-height: 20px;
+
+                    margin-left: 10px;
                 }
             }
         }
         .dividing-line {
             width: 100%;
-            border-top: 1px solid #5f5f5f;
+            border-top: 1px solid var(--note-ext-line);
         }
     }
 </style>

@@ -3,8 +3,8 @@
         <div class="note-header">
             <div class="title">本页笔记</div>
             <div class="more">
-                <div>···</div>
-                <div>X</div>
+                <i class="iconfont icon-gengduo"></i>
+                <i class="iconfont icon-shanchu2"></i>
             </div>
         </div>
         <div class="cell-area">
@@ -126,6 +126,10 @@ export default {
             align-items: center;
 
             font-size: 20px;
+
+            .iconfont {
+                margin-left: 10px;
+            }
         }
     }
     .cell-area {
