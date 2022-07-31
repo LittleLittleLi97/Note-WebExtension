@@ -114,7 +114,7 @@ export default {
         width: 16px;
         height: 16px;
         
-        margin: auto 10px;
+        margin: 3.5px 10px 0 10px;
 
         border-radius: 50%;
 

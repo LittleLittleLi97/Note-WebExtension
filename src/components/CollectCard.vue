@@ -77,8 +77,10 @@ export default {
 
             .title {
                 font-size: 20px;
-                font-weight: bold;
-                line-height: 25px;
+                font-family: Segoe UI;
+                font-weight: semibold;
+                line-height: normal;
+
 
                 // width: 100%;
 
@@ -89,7 +91,13 @@ export default {
             }
             .description {
                 font-size: 14px;
-                line-height: 22px;
+                color: var(--note-ext-font2);
+                font-family: Microsoft YaHei;
+                font-weight: regular;
+                line-height: normal;
+
+                margin-top: 5px;
+
 
                 display: -webkit-box;
                 -webkit-line-clamp: 2;

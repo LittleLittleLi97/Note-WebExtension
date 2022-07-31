@@ -6,9 +6,11 @@
         
         --note-ext-icon: #2B2B2B;
         --note-ext-font: #2B2B2B;
-
+        --note-ext-font2: #767676;
+        --note-ext-icon-hover: #E4E4E4;
+        
         --note-ext-border: #D2D2D2;
-
+        
         --note-ext-card: #FFFFFF;
         --note-ext-card-border: #EEEEEE;
 
@@ -29,6 +31,8 @@
         
         --note-ext-icon: #fff;
         --note-ext-font: #fff;
+        --note-ext-font2: #AFAFAF;
+        --note-ext-icon-hover: #575757;
         
         --note-ext-border: #4B4B4B;
 

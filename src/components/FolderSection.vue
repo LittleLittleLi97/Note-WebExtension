@@ -67,7 +67,7 @@ export default {
 
             cursor: pointer;
 
-            transition: background-color 0.3s;
+            transition: background-color 0.2s;
 
             &:hover {
                 background-color: var(--note-ext-popup-title-hover);
