@@ -112,9 +112,10 @@ export default {
     .body {
         display: grid;
         grid-gap: 10px;
+        
+        padding: 5px;
 
-        margin-top: 10px;
-        margin-left: 25px;
+        box-sizing: border-box;
 
         width: 100%;
     }

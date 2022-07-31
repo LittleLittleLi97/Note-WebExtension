@@ -4,8 +4,7 @@
     "description": "chrome extension",
     "version": "0.0.1",
     "permissions": [
-        "contextMenus",
-        "storage"
+        
     ],
     "background": {
         "service_worker": "/background.js"

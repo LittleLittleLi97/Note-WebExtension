@@ -12,6 +12,10 @@
         --note-ext-card: #FFFFFF;
         --note-ext-card-border: #EEEEEE;
 
+        --note-ext-context-hover: #EEEEEE;
+        --note-ext-popup-title-hover: #F2F2F2;
+        --note-ext-popup-title-focus: #888888;
+
         --note-ext-cell-bg: #BEBEBE;
         --note-ext-cell-hover: rgba(255, 255, 255, 0.4);
     }
@@ -30,6 +34,10 @@
 
         --note-ext-card: #424242;
         --note-ext-card-border: #2C2625;
+
+        --note-ext-context-hover: #616161;
+        --note-ext-popup-title-hover: #575757;
+        --note-ext-popup-title-focus: #888888;
 
         --note-ext-cell-bg: #8A8A8A;
         --note-ext-cell-hover: rgba(255, 255, 255, 0.4);

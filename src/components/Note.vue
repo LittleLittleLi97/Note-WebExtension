@@ -1,10 +1,16 @@
 <template>
     <div class="note-wrapper">
         <div class="note-header">
-            <div class="title">本页笔记</div>
-            <div class="more">
-                <i class="iconfont icon-gengduo"></i>
-                <i class="iconfont icon-shanchu2"></i>
+            <div class="header-top">
+                <div class="title">本页笔记</div>
+                <div class="more">
+                    <i class="iconfont icon-gengduo"></i>
+                    <i class="iconfont icon-shanchu2"></i>
+                </div>
+            </div>
+            <div class="classification-area">
+                <i class="iconfont icon-shoucang"></i>
+                <div class="classification">{{ noteInfo.collect }}</div>
             </div>
         </div>
         <div class="cell-area">
@@ -104,30 +110,51 @@ export default {
     box-sizing: border-box;
 
     .note-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        width: 100%;
-        height: 56px;
-
         padding: 14px 16px;
 
         border-bottom: 1px solid var(--note-ext-line);
 
         box-sizing: border-box;
 
-        .title {
-            font-size: 22px;
-            font-weight: bold;
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            width: 100%;
+            height: 56px;
+
+            .title {
+                font-size: 22px;
+                font-weight: bold;
+            }
+            .more {
+                display: flex;
+                align-items: center;
+    
+                .iconfont {
+                    font-size: 22px;
+    
+                    margin-left: 12px;
+                }
+            }
         }
-        .more {
+        .classification-area {
             display: flex;
             align-items: center;
 
-            font-size: 20px;
-
             .iconfont {
+                font-size: 20px;
+            }
+            .classification {
+                font-size: 16px;
+                color: var(--note-ext-font);
+                font-family: Segoe UI;
+                font-weight: Semilight;
+                line-height: normal;
+                letter-spacing: 0px;
+                text-align: left;
+
                 margin-left: 10px;
             }
         }

@@ -75,6 +75,8 @@ export default {
 
                                     width: 100%;
 
+                                    padding: 0px;
+
                                     background-color: transparent;
 
                                     border: none;
@@ -112,14 +114,16 @@ export default {
         width: 16px;
         height: 16px;
         
-        margin-top: 2px;
+        margin: auto 10px;
 
         border-radius: 50%;
+
+        box-sizing: border-box;
     }
     .cell-right {
         flex: 1;
         
-        width: 312px;
+        // width: 100%;
 
         font-size: 16px;
         line-height: normal;
