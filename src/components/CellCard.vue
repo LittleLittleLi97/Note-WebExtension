@@ -65,7 +65,7 @@ export default {
         }
 
         // 文本框样式
-        const textareaStyle = ref(`color: #FFFFFF;
+        const textareaStyle = ref(`color: var(--note-ext-font);
                                     font-family: Segoe UI;
                                     font-weight: Semilight;
                                     font-size: 16px;
@@ -93,12 +93,6 @@ export default {
 </script>
 
 <style scoped lang="less">
-.clearfix::before,
-.clearfix::after {
-		content: '';
-		display: table;
-		clear: both;
-}
 .cell-card {
     display: flex;
 
@@ -109,6 +103,8 @@ export default {
     padding: 10px;
 
     background-color: var(--note-ext-card);
+
+    box-shadow: 0px 0px 2px 0px #0000003F;
 
     box-sizing: border-box;
 

@@ -47,8 +47,9 @@ export default {
 
         background-color: var(--note-ext-theme);
 
-        border: 1px solid #3A3A3A;
         border-radius: 4px;
+        
+        box-shadow: 0px 4px 12px 0px #00000066,0px 0px 2px 0px #0000003F;
 
         box-sizing: border-box;
 

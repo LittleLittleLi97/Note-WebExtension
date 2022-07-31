@@ -1,16 +1,19 @@
 @media (prefers-color-scheme: light) {
     :root {
         --note-ext-theme: #FFFFFF;
-        --note-ext-theme2: #3B3B3B;
-        
+        --note-ext-theme2: #F7F7F7;
         --note-ext-line: #EAEAEA;
+        
         --note-ext-icon: #2B2B2B;
-
         --note-ext-font: #2B2B2B;
-        /* --note-ext-border: #4B4B4B; */
+
+        --note-ext-border: #D2D2D2;
 
         --note-ext-card: #FFFFFF;
         --note-ext-card-border: #EEEEEE;
+
+        --note-ext-cell-bg: #BEBEBE;
+        --note-ext-cell-hover: rgba(255, 255, 255, 0.4);
     }
 }
 
