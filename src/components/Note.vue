@@ -58,7 +58,7 @@ export default {
                 type: 'note',
                 data: parseReactiveToObj(noteInfo)
             });
-            if (isNewNote.value) {
+            if (isNewNote.value) { // 如果是新的笔记，需要加入收藏夹
                 isNewNote.value = false;
                 chrome.runtime.sendMessage({
                     func: 'addCollectChildren',
@@ -210,6 +210,9 @@ export default {
         overflow-y: scroll;
         scroll-behavior: contain;
 
+        &::-webkit-scrollbar {
+            display: none;
+        }
         .cell-card {
             margin-top: 10px;
         }

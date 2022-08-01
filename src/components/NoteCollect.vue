@@ -90,6 +90,10 @@ export default {
     overflow-y: scroll;
     scroll-behavior: contain;
 
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
     .header {
         display: flex;
         justify-content: space-between;
