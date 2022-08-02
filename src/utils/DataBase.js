@@ -55,7 +55,9 @@ export default class DataBase {
 			let store = db.transaction([storeName]).objectStore(storeName);
 			let request = store.getAll();
 
-			request.onsuccess = successCallback;
+			request.onsuccess = successCallback || function(event) {
+                console.log(event.target.result);
+            };
 		})
 	}
 	getDataByKey(storeName, key, successCallback, errorCallback) {

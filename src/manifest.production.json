@@ -3,6 +3,9 @@
     "name": "web_collect",
     "description": "chrome extension",
     "version": "0.0.1",
+    "permissions": [
+        
+    ],
     "background": {
         "service_worker": "/background.js"
     },
@@ -18,5 +21,8 @@
                 "/content.js"
             ]
         }
-    ]
+    ],
+    "icons": {
+        "128": "/img/Icon-128.png"
+    }
 }

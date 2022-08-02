@@ -1,7 +1,7 @@
 <template>
     <div class="pop-content" @contextmenu="openContextMenu" @click="closeContextMenu">
         <div class="header">
-            <div class="title">笔记收藏夹</div>
+            <div class="title">MyNote</div>
             <i class="iconfont icon-gengduo"></i>
         </div>
         <div class="body">

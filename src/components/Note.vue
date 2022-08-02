@@ -71,12 +71,14 @@ export default {
         }
         // 初始化信息
         onMounted(()=>{
-            noteInfo.url_icon = document.querySelector("link[rel='shortcut icon']").href;
+            let icon1 = document.querySelector("link[rel='apple-touch-icon']");
+            noteInfo.url_icon = icon1 ? icon1.href : document.querySelector("link[rel='shortcut icon']").href;
             noteInfo.url = removeUrlQuery(window.location.href);
 
             chrome.runtime.sendMessage({func: 'getNoteByUrl', url: noteInfo.url}, (response)=>{
                 if (response) {
                     copyObjToReactive(noteInfo, response);
+                    console.log('response', response)
                 } else {
                     isNewNote.value = true;
                     noteInfo.id = nanoid();

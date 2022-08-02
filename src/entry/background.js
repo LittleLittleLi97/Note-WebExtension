@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import DataBase from "@/utils/DataBase.js";
 
 const db = new DataBase();
+// 初始化默认收藏夹
 db.getDataByIndex('collect', 'name', '默认收藏夹', (event)=>{
 	let result = event.target.result;
 	if (result.length <= 0) {
@@ -15,6 +16,82 @@ db.getDataByIndex('collect', 'name', '默认收藏夹', (event)=>{
 db.getAllData('collect');
 db.getAllData('note');
 db.getAllData('cell');
+
+db.updateDB('collect', {
+	id: 'collect001',
+	name: '前端',
+	children: ['note001', 'note002', 'note003'],
+});
+
+db.updateDB('note', {
+	id: 'note001',
+	collect: '前端',
+	content: 'flex可以使元素具有弹性，让元素可以跟随页面大小的改变而改变',
+	title: 'CSS',
+	url: 'https://www.bilibili.com/video/BV1xq4y1q7jZ',
+	url_icon: 'https://static.hdslb.com/mobile/img/512.png',
+	children: ['cell001', 'cell002', 'cell003'],
+})
+db.updateDB('note', {
+	id: 'note002',
+	collect: '前端',
+	content: 'debounce的特点是当事件快速连续不断触发时，动作只会执行一次',
+	title: '防抖与节流',
+	url: 'https://blog.csdn.net/hupian1989/article/details/80920324',
+	url_icon: 'https://g.csdnimg.cn/static/logo/favicon32.ico',
+	children: [],
+})
+db.updateDB('note', {
+	id: 'note003',
+	collect: '前端',
+	content: '柯里化（Currying）是把接受多个参数的函数变换成接受一个单一参数(最初函数的第一个参数)的函数，并且返回接受余下的参数且返回结果的新函数的技术。',
+	title: '函数柯里化',
+	url: 'https://www.cnblogs.com/bidong/p/15498133.html',
+	url_icon: 'https://common.cnblogs.com/favicon.svg',
+	children: [],
+})
+
+db.updateDB('cell', {
+	id: 'cell001',
+	label: 'blue',
+	content: '块元素：\n在页面中独占一行\n默认宽度是父元素的全部（会把父元素撑满）\n默认高度是被内容撑开（子元素）'
+})
+
+db.updateDB('cell', {
+	id: 'cell002',
+	label: 'yellow',
+	content: '盒子模型：\n包括content、border、padding、margin\n标准盒模型：\nW3C标准盒模型，width 等于 content 的宽度\n怪异盒模型：\nIE盒子模型，width 等于 content + padding + border 的宽度'
+})
+
+db.updateDB('cell', {
+	id: 'cell003',
+	label: 'red',
+	content: 'flex可以使元素具有弹性，让元素可以跟随页面大小的改变而改变'
+})
+
+db.updateDB('collect', {
+	id: 'collect002',
+	name: '随笔',
+	children: ['note005', 'note006'],
+});
+db.updateDB('note', {
+	id: 'note005',
+	collect: '随笔',
+	content: '任凭敌军团团围困，我军依然毫不畏惧，岿然不可撼动。',
+	title: '敌军围困万千重，我自岿然不动',
+	url: 'https://www.bilibili.com/video/BV1xq4y1q7jZ',
+	url_icon: 'https://statics.itc.cn/web/static/images/pic/sohu-logo/logo-144.png',
+})
+db.updateDB('note', {
+	id: 'note006',
+	collect: '随笔',
+	content: '世上奇妙雄伟、珍异奇特、非同寻常的景观，常常在那险阻、僻远少有人至的地方，所以，不是有意志的人是不能到达的。',
+	title: '世之奇伟、瑰怪，非常之观，常在于险远，而人之所罕至焉，故非有志者不能至也。',
+	url: 'https://www.bilibili.com/video/BV1xq4y1q7jZ',
+	url_icon: 'https://baikebcs.bdimg.com/cms/static/baike-icon.svg',
+})
+
+
 
 chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse)=>{
@@ -61,58 +138,3 @@ chrome.runtime.onMessage.addListener(
 		return true;
     }
 );
-
-// db.updateDB('collect', {
-// 	id: 'uuid125',
-// 	name: '新闻',
-// 	children: ['noteid001', 'noteid002']
-// })
-
-// db.updateDB('note', {
-// 	id: 'noteid001',
-// 	title: '你在搞啥子哟？',
-// 	collect: '新闻',
-// 	url: 'https://ask.csdn.net/questions/7762387',
-// 	url_icon: 'https://g.csdnimg.cn/static/logo/favicon32.ico',
-// 	content: '豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。物华天宝，龙光射牛斗之墟；人杰地灵，徐孺下陈蕃之榻。雄州雾列，俊采星驰。台隍枕夷夏之交，宾主尽东南之美。都督阎公之雅望，棨戟遥临；宇文新州之懿范，襜帷暂驻。十旬休假，胜友如云；千里逢迎，高朋满座。腾蛟起凤，孟学士之词宗；紫电青霜，王将军之武库。家君作宰，路出名区；童子何知，躬逢胜饯。 ',
-// 	children: ['cellid001', 'cellid002']
-// })
-
-// db.updateDB('note', {
-// 	id: 'noteid002',
-// 	title: '毕哩毕哩',
-// 	collect: '新闻',
-// 	url: 'https://www.bilibili.com/',
-// 	url_icon: 'https://static.hdslb.com/mobile/img/512.png',
-// 	content: 'Bilibili,哔哩哔哩,哔哩哔哩动画,哔哩哔哩弹幕网,弹幕视频,B站,弹幕,字幕,AMV,MAD,MTV,ANIME,动漫,动漫音乐,游戏,游戏解说,二次元,游戏视频,ACG,galgame,动画,番组,新番,初音,洛天依,vocaloid,日本动漫,国产动漫,手机游戏,网络游戏,电子竞技,ACG燃曲,ACG神曲,追新番,新番动漫,新番吐槽,巡音,镜音双子,千本樱,初音MIKU,舞蹈MMD,MIKUMIKUDANCE,洛天依原创曲,洛天依翻唱曲,洛天依投食歌,洛天依MMD,vocaloid家族,OST,BGM,动漫歌曲,日本动漫音乐,宫崎骏动漫音乐,动漫音乐推荐,燃系mad,治愈系mad,MAD MOVIE,MAD高燃',
-// })
-
-// db.updateDB('cell', {
-// 	id: "cellid001",
-// 	note_id: 'noteid001',
-// 	collect_id: 'uuid125',
-// 	url: 'https://ask.csdn.net/questions/7762387',
-// 	label: 'blue',
-// 	content: '豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。物华天宝，龙光射牛斗之墟；人杰地灵，徐孺下陈蕃之榻。雄州雾列，俊采星驰。台隍枕夷夏之交，宾主尽东南之美。都督阎公之雅望，棨戟遥临；宇文新州之懿范，襜帷暂驻。十旬休假，胜友如云；千里逢迎，高朋满座。腾蛟起凤，孟学士之词宗；紫电青霜，王将军之武库。家君作宰，路出名区；童子何知，躬逢胜饯。 ',
-// })
-
-// db.updateDB('cell', {
-// 	id: "cellid002",
-// 	note_id: 'noteid001',
-// 	collect_id: 'uuid125',
-// 	url: 'https://ask.csdn.net/questions/7762387',
-// 	label: 'yellow',
-// 	content: '可爱不过老子',
-// })
-
-// chrome.contextMenus.create({
-//     id: "some-command",
-//     title: "some title",
-//     contexts: ["link"]
-// });
-
-// chrome.contextMenus.onClicked.addListener(function(info, tab) {
-//     if (info.menuItemId == "some-command") {
-//         console.log("yay!");
-//     }
-// });

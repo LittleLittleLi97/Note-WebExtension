@@ -1,24 +1,67 @@
-# note_extension
+# <center> MyNote
 
-## Project setup
+<div align=center>
+<img src="./src/entry/Icon-128.png" alt="logo" style="zoom: 30%" />
+</div>
+
+## 介绍
+
+Microsoft Edge 浏览器开拓者大赛参赛项目。
+
+团队名：请为您的队伍去个名字吧
+
+还在为记笔记发愁吗？还在为网页与笔记软件的频繁切换而烦恼吗？还在为笔记太多又疏于整理而糟心吗？
+
+现在，来试试这款浏览器扩展吧！
+
+## 已完成部分
+
+- [x] Popup页面
+- [x] Content页面
+- [x] Light / Dark模式
+- [x] 封装IndexedDB接口
+- [x] 笔记自动保存
+
+## 下一步计划
+
+- [ ] 添加笔记功能
+- [ ] 页面标注
+- [ ] markdown解析
+- [ ] 笔记导出 / 分享
+
+## 使用方法
+
+终端运行
 ```
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
 npm run build
 ```
+然后将生成的dist目录添加到浏览器扩展中
 
-### Lints and fixes files
-```
-npm run lint
-```
+> 当前运行后自动添加数据，以供展示
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 预览图
+
+### light模式
+
+收藏夹
+<img src="./forshow/light%20popup.png" alt="light收藏夹" style="zoom:50%;" />
+
+写笔记
+![light写笔记](./forshow/light%20content.png)
+
+### dark模式
+
+收藏夹
+<img src="./forshow/dark%20popup.png" alt="dark收藏夹" style="zoom:50%;" />
+
+写笔记
+![dark收藏夹](./forshow/dark%20content.png)
+
+### 页面标注
+
+![页面标注](./forshow/focus.png)
+
+## 代码结构
+
+![代码结构](./forshow/code%20structure.png)
