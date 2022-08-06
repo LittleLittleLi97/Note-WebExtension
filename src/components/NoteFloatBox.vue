@@ -23,14 +23,16 @@ export default {
     justify-content: center;
     align-items: center;
 
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
 
     padding: 10px;
 
     background-color: var(--note-ext-theme);
 
     border-radius: 50%;
+
+    box-sizing: border-box;
 
     cursor: pointer;
 

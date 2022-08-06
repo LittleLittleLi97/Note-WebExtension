@@ -3,17 +3,20 @@
     <div class="note-area" ref="noteDiv" style="visibility: hidden;">
         <Note v-show="noteState" @closeNote="closeNote"></Note>
     </div>
+    <ContextFloatBox @showNote="showNote"></ContextFloatBox>
 </template>
 
 <script>
 import { onMounted, ref } from 'vue'
 import Note from '@/components/Note'
 import NoteFloatBox from '@/components/NoteFloatBox'
+import ContextFloatBox from '@/components/ContextFloatBox'
 export default {
     name: 'contentView',
     components: {
         Note,
-        NoteFloatBox
+        NoteFloatBox,
+        ContextFloatBox
     },
     setup() {
         const noteState = ref(true); // false → NoteFloatBox, true → Note

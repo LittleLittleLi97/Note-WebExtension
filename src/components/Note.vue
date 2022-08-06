@@ -33,6 +33,8 @@ import { computed, onMounted } from '@vue/runtime-core';
 import { nanoid } from 'nanoid'
 import { copyObjToReactive, removeUrlQuery, parseReactiveToObj } from '@/utils/utils'
 import CellCard from '@/components/CellCard'
+import PubSub from '_pubsub-js@1.9.4@pubsub-js';
+import { notificationTypes } from '_element-plus@2.2.11@element-plus';
 export default {
     name: 'Note',
     emits: ['closeNote'],
@@ -52,6 +54,7 @@ export default {
         const isNewNote = ref(false);
         // 存储
         function saveNote({ newContent }) {
+            console.log('保存笔记')
             noteInfo.content = newContent;
             chrome.runtime.sendMessage({
                 func: 'save',
@@ -79,13 +82,34 @@ export default {
                 if (response) {
                     copyObjToReactive(noteInfo, response);
                     console.log('response', response)
-                } else {
+                } else { // 默认创建的cell，在写入内容后保存
                     isNewNote.value = true;
                     noteInfo.id = nanoid();
                     noteInfo.children.push(nanoid());
                     noteInfo.title = document.getElementsByTagName('title')[0].innerText;
                     noteInfo.collect = '默认收藏夹';
                 }
+            });
+
+            PubSub.subscribe('addHighlightCell', (msg, {id, highlightInfo})=>{
+                console.log('id', id);
+                if (isNewNote.value) { // 如果有默认创建的cell，则替换此cell
+                    noteInfo.children[0] = id;
+                } else {
+                    noteInfo.children.push(id);
+                }
+                saveNote({newContent:'加入了新的注释...'});
+                chrome.runtime.sendMessage({
+                    func: 'save',
+                    type: 'cell',
+                    data: {
+                        id,
+                        content: '',
+                        label: 'blue',
+                        highlightInfo,
+                    }
+                });
+                console.log(highlightInfo)
             });
         })
 
