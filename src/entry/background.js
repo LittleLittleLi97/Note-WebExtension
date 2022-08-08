@@ -96,7 +96,7 @@ db.updateDB('note', {
 chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse)=>{
 
-		switch (request.func) {
+		switch (request.func) { // 需要重构
 			case 'getCollect':
 				db.getAllData('collect', (event)=>{
 					sendResponse(event.target.result);
@@ -116,6 +116,11 @@ chrome.runtime.onMessage.addListener(
 				break;
 			case 'getCellById':
 				db.getDataByKey('cell', request.id, (event)=>{
+					sendResponse(event.target.result);
+				});
+				break;
+			case 'getHighlightByUrl':
+				db.getDataByKey('highlight', request.url, (event)=>{
 					sendResponse(event.target.result);
 				});
 				break;

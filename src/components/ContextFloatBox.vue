@@ -10,18 +10,33 @@
 import { onMounted, reactive, ref } from '@vue/runtime-core'
 import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
-import { addCellDataIdForElement, getHighlightInfo, highlightText, selection } from '@/utils/dom.js';
+import { addCellDataIdForElement, getHighlightInfo, highlightByInfo, highlightText, selection } from '@/utils/dom.js';
+import { parseReactiveToObj, copyObjToReactive, removeUrlQuery } from '@/utils/utils';
 export default {
     name: 'ContextFloatBox',
     emits: ['showNote'],
     setup(props, context) {
         const boxState = ref(false);
         const floatBoxDiv = ref(null);
-        // let selection = null;
+        const info = reactive({
+            url: '',
+            area: {},
+        })
         let range = null;
         onMounted(()=>{
+            // 初始化信息
+            info.url = removeUrlQuery(window.location.href);
+            chrome.runtime.sendMessage({func: 'getHighlightByUrl', url: info.url}, (response)=>{
+                if (response) {
+                    copyObjToReactive(info, response);
+                    for (let key in info.area) {
+                        highlightByInfo(info.area[key]);
+                    }
+                }
+            });
+
+            // 选中文字事件
             document.addEventListener('mouseup', (event)=>{
-                // selection = window.getSelection();
                 let text = selection.toString();
                 if (text) {
                     // 坐标有问题
@@ -30,22 +45,26 @@ export default {
 
                     // 存储range
                     range = selection.getRangeAt(0);
-
                 } else {
                     boxState.value = false;
                 }
             })
         });
+        // 写笔记事件
         function addCell() {
             let highlightInfo = getHighlightInfo(range); // 高光操作之前
-            // highlightText(range);
+            highlightText(range);
 
             const newCellId = nanoid();
             addCellDataIdForElement(range, newCellId);
-            PubSub.publish('addHighlightCell', {
-                id: newCellId,
-                highlightInfo,
+            info.area[newCellId] = highlightInfo;
+            console.log('save', info.area)
+            chrome.runtime.sendMessage({
+                func: 'save',
+                type: 'highlight',
+                data: parseReactiveToObj(info)
             });
+            PubSub.publish('addHighlightCell', newCellId);
             context.emit('showNote');
         }
         return {

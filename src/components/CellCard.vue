@@ -15,10 +15,9 @@
 </template>
 
 <script>
-import { computed, createHydrationRenderer, onMounted, reactive, ref, resolveComponent, watch } from '@vue/runtime-core'
+import { computed, onMounted, reactive, ref, watch } from '@vue/runtime-core'
 import { copyObjToReactive, parseReactiveToObj } from '@/utils/utils';
 import { ElInput } from 'element-plus'
-import { highlightByInfo } from '@/utils/dom';
 export default {
     name: 'CellCard',
     props: {
@@ -38,13 +37,11 @@ export default {
             id: cellId.value,
             content: '',
             label: 'blue',
-            highlightInfo: null,
         });
         onMounted(()=>{
             chrome.runtime.sendMessage({func: 'getCellById', id: cellId.value}, (response)=>{
                 if (response) {
                     copyObjToReactive(cellInfo, response);
-                    cellInfo.highlightInfo && highlightByInfo(cellInfo.highlightInfo);
                 }
             });
         })

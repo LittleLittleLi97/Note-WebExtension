@@ -33,8 +33,7 @@ import { computed, onMounted } from '@vue/runtime-core';
 import { nanoid } from 'nanoid'
 import { copyObjToReactive, removeUrlQuery, parseReactiveToObj } from '@/utils/utils'
 import CellCard from '@/components/CellCard'
-import PubSub from '_pubsub-js@1.9.4@pubsub-js';
-import { notificationTypes } from '_element-plus@2.2.11@element-plus';
+import PubSub from 'pubsub-js'
 export default {
     name: 'Note',
     emits: ['closeNote'],
@@ -91,8 +90,7 @@ export default {
                 }
             });
 
-            PubSub.subscribe('addHighlightCell', (msg, {id, highlightInfo})=>{
-                console.log('id', id);
+            PubSub.subscribe('addHighlightCell', (msg, id)=>{
                 if (isNewNote.value) { // 如果有默认创建的cell，则替换此cell
                     noteInfo.children[0] = id;
                 } else {
@@ -105,11 +103,9 @@ export default {
                     data: {
                         id,
                         content: '',
-                        label: 'blue',
-                        highlightInfo,
+                        label: 'blue'
                     }
                 });
-                console.log(highlightInfo)
             });
         })
 
