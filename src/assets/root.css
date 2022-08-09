@@ -57,3 +57,10 @@
     --note-ext-green: #00CC6A;
     --note-ext-purple: #B146C2;
 }
+
+.note-ext-md-box ul {
+    margin-left: 15px;
+}
+.note-ext-md-box li {
+    list-style: disc;
+}

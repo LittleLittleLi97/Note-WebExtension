@@ -9,15 +9,21 @@
                 placeholder="Please input"
                 :input-style="textareaStyle"
                 resize="none"
+                ref="textareaDiv"
+                v-show="!mdShow"
+                @blur="compileToMd"
             />
+            <!-- markdown的样式被reset设置，在root.css中将其覆盖 -->
+            <div class="note-ext-md-box" ref="mdDiv" v-show="mdShow" @click="focusTextarea"></div>
         </div>
     </div>
 </template>
 
 <script>
-import { computed, onMounted, reactive, ref, watch } from '@vue/runtime-core'
+import { computed, nextTick, onMounted, reactive, ref, watch } from '@vue/runtime-core'
 import { copyObjToReactive, parseReactiveToObj } from '@/utils/utils';
 import { ElInput } from 'element-plus'
+import { marked } from 'marked'
 export default {
     name: 'CellCard',
     props: {
@@ -42,6 +48,7 @@ export default {
             chrome.runtime.sendMessage({func: 'getCellById', id: cellId.value}, (response)=>{
                 if (response) {
                     copyObjToReactive(cellInfo, response);
+                    compileToMd(); // 初始化markdown
                 }
             });
         })
@@ -86,9 +93,28 @@ export default {
 
                                     outline: none;
                                     `);
+
+        // markdown
+        const textareaDiv = ref(null);
+        const mdDiv = ref(null);
+        const mdShow = ref(true);
+        function focusTextarea() {
+            mdShow.value = false;
+            textareaDiv.value.focus();
+        }
+        function compileToMd() {
+            mdShow.value = true;
+            mdDiv.value.innerHTML = marked.parse(cellInfo.content);
+        }
         return {
             cellInfo,
-            textareaStyle
+            textareaStyle,
+            mdDiv,
+            textareaDiv,
+            focusTextarea,
+            textareaDiv,
+            mdShow,
+            compileToMd,
         }
     }
 }
@@ -129,6 +155,10 @@ export default {
         line-height: normal;
 
         margin-left: 10px;
+
+        .note-ext-md-box {
+            min-height: 22px;
+        }
     }
 }
 </style>

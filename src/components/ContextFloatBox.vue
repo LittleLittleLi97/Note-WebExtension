@@ -10,7 +10,7 @@
 import { onMounted, reactive, ref } from '@vue/runtime-core'
 import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
-import { addCellDataIdForElement, getHighlightInfo, highlightByInfo, highlightText, selection } from '@/utils/dom.js';
+import { addCellDataIdForElement, getHighlightInfo, highlightByInfo, highlightText, selection, updateSelection } from '@/utils/dom.js';
 import { parseReactiveToObj, copyObjToReactive, removeUrlQuery } from '@/utils/utils';
 export default {
     name: 'ContextFloatBox',
@@ -52,7 +52,9 @@ export default {
         });
         // 写笔记事件
         function addCell() {
+            updateSelection(range);
             let highlightInfo = getHighlightInfo(range); // 高光操作之前
+            console.log('write info', highlightInfo);
             highlightText(range);
 
             const newCellId = nanoid();

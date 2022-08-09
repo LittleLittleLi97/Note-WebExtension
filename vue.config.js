@@ -26,9 +26,13 @@ chromeName.forEach((name) => {
 
 const isDevMode = process.env.NODE_ENV === 'development'
 
+// element-plus
 const AutoImport = require('unplugin-auto-import/webpack')
 const Components = require('unplugin-vue-components/webpack')
 const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+
+// 用于解决markdown问题
+// const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 module.exports = {
   lintOnSave:false,
@@ -39,7 +43,8 @@ module.exports = {
       }),
       Components({
           resolvers: [ElementPlusResolver()],
-      }),
+      })
+      // new NodePolyfillPlugin(),
     ],
   },
   pages,

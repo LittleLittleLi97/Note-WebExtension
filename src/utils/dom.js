@@ -1,22 +1,29 @@
 export const selection = window.getSelection();
 
-export function highlightText(range) {
+export function updateSelection(range) {
     selection.removeAllRanges();
     selection.addRange(range);
+}
+
+export function highlightText(range) {
 
     document.designMode = 'on';
     document.execCommand('BackColor', false, 'yellow');
     document.designMode = 'off';
 
-    selection.empty()
 }
 
 export function highlightByInfo(info) {
     const startEl = getElementByPath(info.startPath);
     const endEl = getElementByPath(info.endPath);
     const range = new Range();
+    // console.log('on start el', startEl.childNodes[0])
+    // console.log('on end el', endEl.childNodes[0])
     range.setStart(startEl.childNodes[0], info.startOffset);
     range.setEnd(endEl.childNodes[0], info.endOffset);
+
+    updateSelection(range);
+
     highlightText(range);
 }
 
@@ -40,16 +47,20 @@ export function getSelectorPath(el) { // 需要改进！！！！！
 
 export function getHighlightInfo(range) {
     return {
-        startPath: getSelectorPath(range.startContainer.parentElement),
-        startOffset: range.startOffset,
-        endPath: getSelectorPath(range.endContainer.parentElement),
-        endOffset: range.endOffset
+        // startPath: getSelectorPath(range.startContainer.parentElement),
+        // startOffset: range.startOffset,
+        // endPath: getSelectorPath(range.endContainer.parentElement),
+        // endOffset: range.endOffset
+        startPath: getSelectorPath(selection.anchorNode.parentElement),
+        startOffset: selection.anchorOffset,
+        endPath: getSelectorPath(selection.focusNode.parentElement),
+        endOffset: selection.focusOffset
     }
 }
 
 export function addCellDataIdForElement(range, id) {
-    let st = range.startContainer.parentElement;
-    let ed = range.endContainer.parentElement;
+    let st = selection.anchorNode.parentElement;
+    let ed = selection.focusNode.parentElement;
     st.setAttribute('data-note-ext-cell-id', id);
     while (st != ed) {
         while (st!= ed && st.children.length) st = st.children[0];
@@ -57,6 +68,7 @@ export function addCellDataIdForElement(range, id) {
         while (st != ed && !st.nextElementSibling) st = st.parentNode;
         if (st != ed) st = st.nextElementSibling;
     }
+    selection.empty();
 }
 
 export function getElementByPath(path) {
