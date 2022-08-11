@@ -3,7 +3,20 @@
         <div class="note-wrapper">
             <div class="note-header">
                 <div class="header-top">
-                    <div class="title">本页笔记</div>
+                    <div class="title">
+                        <span 
+                            class="title-show" 
+                            v-show="titleState"
+                            @click="changeTitleStart"
+                        >{{noteInfo.title}}</span>
+                        <input type="text" 
+                            class="title-input"
+                            ref="titleInputBox"
+                            v-model="noteInfo.title" 
+                            v-show="!titleState"
+                            @keypress.enter="changeTitleEnd"
+                        >
+                    </div>
                     <div class="more">
                         <i class="iconfont icon-gengduo"></i>
                         <i class="iconfont icon-shanchu2" @click="closeNoteEvent"></i>
@@ -35,7 +48,7 @@
 
 <script>
 import { reactive, ref } from '@vue/reactivity'
-import { computed, onMounted, watch } from '@vue/runtime-core';
+import { computed, nextTick, onMounted, watch } from '@vue/runtime-core';
 import { nanoid } from 'nanoid'
 import { copyObjToReactive, removeUrlQuery, parseReactiveToObj } from '@/utils/utils'
 import CellCard from '@/components/CellCard'
@@ -124,6 +137,30 @@ export default {
             });
         })
 
+        // 更改题目
+        function titleChangeFunction() {
+
+            const titleState = ref(true); // true常态 false修改
+            const titleInputBox = ref(null);
+
+            function changeTitleStart() {
+                titleState.value = false;
+                nextTick(()=>titleInputBox.value.focus()); // 出来后才能focus
+            }
+            function changeTitleEnd() {
+                titleState.value = true;
+                saveNote({});
+            }
+
+            return {
+                titleState,
+                titleInputBox,
+                changeTitleStart,
+                changeTitleEnd,
+            }
+        }
+        
+        // 更改收藏夹
         watch(()=>noteInfo.collect, (newValue, oldValue)=>{
             saveNote({});
             for (let key in collectList) {
@@ -146,6 +183,7 @@ export default {
         return {
             collectList,
             noteInfo,
+            ...titleChangeFunction(),
             saveNote,
             closeNoteEvent,
         }
@@ -193,6 +231,43 @@ export default {
             .title {
                 font-size: 22px;
                 font-weight: bold;
+
+                width: 256px;
+
+                border-radius: 5px;
+
+                overflow: hidden;
+
+                .title-show {
+                    display: block;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+
+                    transition: background-color 0.2s;
+
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: var(--note-ext-icon-hover);
+                    }
+                }
+
+                .title-input {
+                    font-size: inherit;
+                    color: inherit;
+                    font-weight: inherit;
+
+                    background-color: transparent;
+
+                    border: none;
+                    
+                    outline: none;
+
+                    &:focus {
+                        background-color: var(--note-ext-icon-hover);
+                    }
+                }
             }
             .more {
                 display: flex;
