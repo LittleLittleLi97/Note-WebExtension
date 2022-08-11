@@ -11,7 +11,13 @@
                 </div>
                 <div class="classification-area">
                     <i class="iconfont icon-shoucang"></i>
-                    <div class="classification">{{ noteInfo.collect }}</div>
+                    <!-- <div class="classification">{{ noteInfo.collect }}</div> -->
+                    <select class="classification" v-model="noteInfo.collect">
+                        <option 
+                            v-for="(item, index) in collectList"
+                            :selected="noteInfo.collect==item.name"
+                        >{{ item.name }}</option>
+                    </select>
                 </div>
             </div>
             <div class="cell-area">
@@ -29,7 +35,7 @@
 
 <script>
 import { reactive, ref } from '@vue/reactivity'
-import { computed, onMounted } from '@vue/runtime-core';
+import { computed, onMounted, watch } from '@vue/runtime-core';
 import { nanoid } from 'nanoid'
 import { copyObjToReactive, removeUrlQuery, parseReactiveToObj } from '@/utils/utils'
 import CellCard from '@/components/CellCard'
@@ -41,6 +47,7 @@ export default {
         CellCard
     },
     setup(props, context) {
+        const collectList = reactive({});
         const noteInfo = reactive({
             id: null,
             url: '',
@@ -54,7 +61,7 @@ export default {
         // 存储
         function saveNote({ newContent }) {
             console.log('保存笔记')
-            noteInfo.content = newContent;
+            if (newContent) noteInfo.content = newContent;
             chrome.runtime.sendMessage({
                 func: 'save',
                 type: 'note',
@@ -73,6 +80,7 @@ export default {
         }
         // 初始化信息
         onMounted(()=>{
+            // note信息
             let icon1 = document.querySelector("link[rel='apple-touch-icon']");
             noteInfo.url_icon = icon1 ? icon1.href : document.querySelector("link[rel='shortcut icon']").href;
             noteInfo.url = removeUrlQuery(window.location.href);
@@ -90,6 +98,13 @@ export default {
                 }
             });
 
+            // collect列表
+            chrome.runtime.sendMessage({func: 'getCollect'}, (response)=>{
+                copyObjToReactive(collectList, response)
+                console.log(collectList)
+            })
+
+            // 响应文字高亮
             PubSub.subscribe('addHighlightCell', (msg, id)=>{
                 if (isNewNote.value) { // 如果有默认创建的cell，则替换此cell
                     noteInfo.children[0] = id;
@@ -109,11 +124,27 @@ export default {
             });
         })
 
+        watch(()=>noteInfo.collect, (newValue, oldValue)=>{
+            saveNote({});
+            for (let key in collectList) {
+                let item = collectList[key];
+                if (item.name == newValue) {
+                    item.children.push(noteInfo.id);
+                    chrome.runtime.sendMessage({func: 'save', type: 'collect', data: parseReactiveToObj(item)});
+                } else if (item.name == oldValue) {
+                    let index = item.children.indexOf(noteInfo.id);
+                    if (index !== -1) item.children.splice(index, 1);
+                    chrome.runtime.sendMessage({func: 'save', type: 'collect', data: parseReactiveToObj(item)});
+                }
+            }
+        })
+
         // 关闭Note
         function closeNoteEvent() {
             context.emit('closeNote');
         }
         return {
+            collectList,
             noteInfo,
             saveNote,
             closeNoteEvent,
@@ -221,6 +252,14 @@ export default {
                 text-align: left;
 
                 margin-left: 10px;
+
+                background-color: transparent;
+
+                border: none;
+
+                outline: none;
+
+                cursor: pointer;
             }
         }
     }
