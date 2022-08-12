@@ -9,10 +9,12 @@ export function copyObjToReactive(reactive, obj) {
     }
 }
 
+// ! 按理来讲，这个函数貌似不需要用，就算有用，深层的对象也没脱离proxy
 export function parseReactiveToObj(reactive) {
     const obj = {};
     for (let key in reactive) {
         obj[key] = reactive[key];
     }
+    console.log(obj);
     return obj;
 }
