@@ -32,10 +32,13 @@ export default class DataBase {
                 noteStore.createIndex("id", "id", { unique: true });
                 noteStore.createIndex("title", "title", { unique: false });
                 noteStore.createIndex("collect", "collect", { unique: false });
+                noteStore.createIndex("collect_id", "collect_id", { unique: false });
                 noteStore.createIndex("url", "url", { unique: false });
 
                 let cellStore = db.createObjectStore("cell", {keyPath: "id"});
                 cellStore.createIndex("id", "id", { unique: true });
+                cellStore.createIndex("collect_id", "collect_id", { unique: false });
+                cellStore.createIndex("note_id", "note_id", { unique: false });
 
                 let highlightStore = db.createObjectStore("highlight", {keyPath: "url"});
                 highlightStore.createIndex("url", "url", { unique: true });

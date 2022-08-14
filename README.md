@@ -19,14 +19,13 @@ Microsoft Edge 浏览器开拓者大赛参赛项目。
 - [x] Popup页面
 - [x] Content页面
 - [x] Light / Dark模式
-- [x] 封装IndexedDB接口
 - [x] 笔记自动保存
+- [x] markdown解析
 
 ## 下一步计划
 
 - [ ] 添加笔记功能
 - [ ] 页面标注
-- [ ] markdown解析
 - [ ] 笔记导出 / 分享
 
 ## 使用方法

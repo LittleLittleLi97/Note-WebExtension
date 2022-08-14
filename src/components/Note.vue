@@ -26,12 +26,13 @@
                     <i class="iconfont icon-shoucang"></i>
                     <!-- <div class="classification">{{ noteInfo.collect }}</div> -->
                     <select class="classification"
-                        v-model="noteInfo.collect"
+                        v-model="noteInfo.collect_id"
                         v-show="collectState"
                     >
                         <option 
                             v-for="(item, index) in collectList"
-                            :selected="noteInfo.collect==item.name"
+                            :selected="noteInfo.collect_id==item.id"
+                            :value="item.id"
                         >{{ item.name }}</option>
                         <option>{{ createCollectButton }}</option>
                     </select>
@@ -78,6 +79,7 @@ export default {
             title: '',
             content: '',
             collect: '',
+            collect_id: '',
             children: [],
         });
         const isNewNote = ref(false);
@@ -117,12 +119,13 @@ export default {
                     noteInfo.children.push(nanoid());
                     noteInfo.title = document.getElementsByTagName('title')[0].innerText;
                     noteInfo.collect = '默认收藏夹';
+                    noteInfo.collect_id = 'defaultcollect';
                 }
             });
 
             // collect列表
             chrome.runtime.sendMessage({func: 'getCollect'}, (response)=>{
-                copyObjToReactive(collectList, response)
+                for (let key in response) collectList[response[key].id] = response[key];
             })
 
             // 响应文字高亮
@@ -173,7 +176,7 @@ export default {
             const createCollectButton = ref('新建...');
             const collectState = ref(true); // true常态 false修改
             const collectInputBox = ref(null);
-            let lastCollect = noteInfo.collect; // 新建文件夹前，点击新建。。。，导致下一次watch中oldValue值不对
+            let lastCollectId = noteInfo.collect_id; // 新建文件夹前，点击新建。。。，导致下一次watch中oldValue值不对
 
             function createCollectEnd() {
                 const id = nanoid();
@@ -185,28 +188,30 @@ export default {
                 };
                 chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]}, ()=>{
                     noteInfo.collect = name;
+                    noteInfo.collect_id = id;
                     collectState.value = true;
                 });
             }
-            watch(()=>noteInfo.collect, (newValue, oldValue)=>{
-                if (newValue == createCollectButton.value) {
+            watch(()=>noteInfo.collect_id, (newValue, oldValue)=>{
+                if (!newValue || !oldValue) return;
+                if (newValue == createCollectButton.value) { // 新建收藏夹
                     collectState.value = false;
-                    lastCollect = oldValue;
+                    lastCollectId = oldValue;
                     nextTick(()=>collectInputBox.value.focus());
                     return;
                 }
                 saveNote({});
-                for (let key in collectList) {
-                    let item = collectList[key];
-                    if (item.name == newValue) {
-                        item.children.push(noteInfo.id);
-                        chrome.runtime.sendMessage({func: 'save', type: 'collect', data: item});
-                    } else if (item.name == oldValue || item.name == lastCollect) {
-                        let index = item.children.indexOf(noteInfo.id);
-                        if (index !== -1) item.children.splice(index, 1);
-                        chrome.runtime.sendMessage({func: 'save', type: 'collect', data: item});
-                    }
-                }
+                // 新的收藏夹中添加note
+                let newCollect = collectList[newValue];
+                newCollect.children.push(noteInfo.id);
+                chrome.runtime.sendMessage({func: 'save', type: 'collect', data: newCollect});
+
+                // 旧的收藏夹中删除note
+                let oldId = oldValue === createCollectButton.value ? lastCollectId : oldValue;
+                let oldCollect = collectList[oldId];
+                let index = oldCollect.children.indexOf(noteInfo.id);
+                if (index !== -1) oldCollect.children.splice(index, 1);
+                chrome.runtime.sendMessage({func: 'save', type: 'collect', data: oldCollect});
             })
             return {
                 createCollectButton,
@@ -376,6 +381,8 @@ export default {
                 outline: none;
 
                 cursor: pointer;
+
+                -webkit-appearance: none;
             }
         }
     }

@@ -42,14 +42,18 @@ export default {
         function openContextMenu(event) {
             const path = event.path;
             let flag = false;
+            let noteId = null;
+            let collectId = null;
             path.forEach((item)=>{
                 try {
-                    let noteId = item.getAttribute('data-noteId');
-                    if (noteId) {
+                    noteId = item.getAttribute('data-noteId');
+                    collectId = item.getAttribute('data-collectId');
+                    if (noteId || collectId) {
                         flag = true;
                         event.preventDefault();
                         collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
                         collectManagerShow.value = true;
+                        throw Error('跳出循环');
                     }
                 } catch (error) {
                 }

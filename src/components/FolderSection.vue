@@ -1,6 +1,11 @@
 <template>
     <div class="folder-section">
-        <div class="title" @click="changeFolderState" :class="{'title-focus': folderState.collectCardShow}">
+        <div 
+            class="title" 
+            @click="changeFolderState" 
+            :class="{'title-focus': folderState.collectCardShow}" 
+            :data-collectId="collectInfo.id"
+        >
             <i class="iconfont" :class="folderState.iconfontClass"></i>{{ collectInfo.name }}
         </div>
         <div class="card-area" v-show="folderState.collectCardShow">
