@@ -5,7 +5,7 @@
                 <i class="iconfont icon-bianji"></i>
                 <span class="option-name">编辑</span>
             </li>
-            <li class="option-item">
+            <li class="option-item" @click="deleteItemEvent">
                 <i class="iconfont icon-shanchu"></i>
                 <span class="option-name">删除</span>
             </li>
@@ -32,7 +32,16 @@
 export default {
     // popup收藏夹右键管理
     name: 'CollectManager',
-
+    emits: ["closeContextMenu", "deleteItem"],
+    setup(props, context) {
+        function deleteItemEvent() {
+            context.emit('closeContextMenu');
+            context.emit('deleteItem');
+        }
+        return {
+            deleteItemEvent
+        }
+    }
 }
 </script>
 

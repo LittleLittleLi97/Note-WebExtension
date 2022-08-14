@@ -138,6 +138,9 @@ chrome.runtime.onMessage.addListener(
 			case 'save':
 				db.updateDB(request.type, request.data, ()=>sendResponse('OK'));
 				break;
+			case 'delete':
+				db.deleteDB(request.type, request.id, ()=>sendResponse('OK'));
+				break;
 			case 'addCollectChildren':
 				db.getDataByIndex('collect', 'name', request.data.collect, (event)=>{
 					let result = event.target.result;

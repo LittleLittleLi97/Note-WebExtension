@@ -13,7 +13,10 @@
         </div>
     </div>
     <div class="collect-manager" v-show="collectManagerShow" ref="collectManagerDiv">
-        <CollectManager></CollectManager>
+        <CollectManager 
+            @closeContextMenu="closeContextMenu"
+            @deleteItem="deleteItem"
+        ></CollectManager>
     </div>
 </template>
 
@@ -29,47 +32,86 @@ export default {
     },
     setup() {
         // 初始化数据
-        const collectList = ref({});
+        const collectList = reactive({});
         onMounted(()=>{
             chrome.runtime.sendMessage({func: 'getCollect'}, (response)=>{
-                collectList.value = response;
+                for (let key in response) collectList[response[key].id] = response[key];
             });
         })
 
         // 右键管理
-        const collectManagerShow = ref(false);
-        const collectManagerDiv = ref(null);
-        function openContextMenu(event) {
-            const path = event.path;
-            let flag = false;
-            let noteId = null;
+        function collectManagerFunction() {
+            const collectManagerShow = ref(false);
+            const collectManagerDiv = ref(null);
+            let noteId = null; // 用于记录这是对note的操作还是collect的操作，应该保持只有一个不为null
             let collectId = null;
-            path.forEach((item)=>{
-                try {
-                    noteId = item.getAttribute('data-noteId');
-                    collectId = item.getAttribute('data-collectId');
-                    if (noteId || collectId) {
-                        flag = true;
-                        event.preventDefault();
-                        collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
-                        collectManagerShow.value = true;
-                        throw Error('跳出循环');
+            function openContextMenu(event) {
+                const path = event.path;
+                let flag = false;
+                path.forEach((item)=>{
+                    try {
+                        let tempNoteId = item.getAttribute('data-noteId');
+                        let tempCollectId = item.getAttribute('data-collectId');
+                        if (tempNoteId || tempCollectId) {
+                            if (tempNoteId) noteId = tempNoteId;
+                            if (tempCollectId) collectId = tempCollectId;
+                            flag = true;
+                            event.preventDefault();
+                            collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
+                            collectManagerShow.value = true;
+                            throw new Error('跳出循环');
+                        }
+                    } catch (error) {
                     }
-                } catch (error) {
+                });
+                if (!flag) { // 右键了别的地方
+                    closeContextMenu();
+                    noteId = null;
+                    collectId = null;
                 }
-            });
-            if (!flag) closeContextMenu(); // 右键了别的地方
-        }
-        function closeContextMenu() {
-            collectManagerShow.value = false;
+                console.log('open', collectId, noteId)
+            }
+            function closeContextMenu() {
+                collectManagerShow.value = false;
+            }
+            function deleteItem() { // 没有删除cell
+                console.log('delete', collectId, noteId)
+                if (collectId) {
+                    console.log('delete collect')
+                    chrome.runtime.sendMessage({func: 'delete', type: 'collect', id: collectId});
+                    let children = collectList[collectId].children;
+                    children.forEach((item)=>{
+                        chrome.runtime.sendMessage({func: 'delete', type: 'note', id: item});
+                    });
+                    delete collectList[collectId];
+                }
+                if (noteId) {
+                    console.log('delete note id: ', noteId);
+                    let id = noteId; // 异步的原因，response的回调中noteId已被改为null, 需要保存下来
+                    chrome.runtime.sendMessage({func: 'getNoteById', id}, (response)=>{
+                        // 找到collect的id
+                        let collect = collectList[response.collect_id]
+                        let children = collect.children;
+                        let index = children.indexOf(id);
+                        if (index !== -1) children.splice(index, 1);
+                        chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collect});
+                        chrome.runtime.sendMessage({func: 'delete', type: 'note', id});
+                    })
+                }
+                collectId = null;
+                noteId = null;
+            }
+            return {
+                collectManagerShow,
+                collectManagerDiv,
+                openContextMenu,
+                closeContextMenu,
+                deleteItem,
+            }
         }
         return {
             collectList,
-
-            collectManagerShow,
-            collectManagerDiv,
-            openContextMenu,
-            closeContextMenu,
+            ...collectManagerFunction(),
         }
     }
 }
