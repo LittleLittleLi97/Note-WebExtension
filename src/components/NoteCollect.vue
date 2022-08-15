@@ -16,6 +16,7 @@
         <CollectManager 
             @closeContextMenu="closeContextMenu"
             @deleteItem="deleteItem"
+            @renameItem="renameItem"
         ></CollectManager>
     </div>
 </template>
@@ -24,6 +25,7 @@
 import { computed, onMounted, reactive, ref } from '@vue/runtime-core'
 import FolderSection from '@/components/FolderSection'
 import CollectManager from '@/components/CollectManager'
+import PubSub from 'pubsub-js'
 export default {
     name: 'NoteCollect',
     components: {
@@ -59,7 +61,6 @@ export default {
                             event.preventDefault();
                             collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
                             collectManagerShow.value = true;
-                            throw new Error('跳出循环');
                         }
                     } catch (error) {
                     }
@@ -101,12 +102,36 @@ export default {
                 collectId = null;
                 noteId = null;
             }
+            function renameItem() {
+                if (collectId) {
+                    let id = collectId;
+                    PubSub.publish('renameCollect', id);
+                    PubSub.subscribe('renameCollectFinish', (msg, newName)=>{
+                        console.log('renameCollectFinish', newName)
+                        collectList[id].name = newName;
+                        chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
+                        let children = collectList[id].children;
+                        children.forEach((item)=>{
+                            chrome.runtime.sendMessage({func: 'getNoteById', id: item}, (response)=>{
+                                response.collect = newName;
+                                chrome.runtime.sendMessage({func: 'save', type: 'note', data: response});
+                            });
+                        });
+                        PubSub.unsubscribe('renameCollectFinish');
+                    });
+                }
+                if (noteId) {
+                    let id = noteId;
+                    PubSub.publish('renameNote', id);
+                }
+            }
             return {
                 collectManagerShow,
                 collectManagerDiv,
                 openContextMenu,
                 closeContextMenu,
                 deleteItem,
+                renameItem,
             }
         }
         return {

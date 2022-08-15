@@ -4,7 +4,10 @@
             <!-- <div class="web-icon"><img :src="noteInfo.url_icon" alt=""></div> -->
             <div class="web-icon"><img src="./images/edge_logo.jpg" alt=""></div>
             <div class="right-info">
-                <div class="title">{{ noteInfo.title }}</div>
+                <div class="title">
+                    <span class="show-title" v-show="showTitleState">{{ noteInfo.title }}</span>
+                    <input type="text" ref="renameInputBox" v-show="!showTitleState" v-model="newName" @keypress.enter="renameEnd">
+                </div>
                 <div class="description">{{ noteInfo.content }}</div>
             </div>
         </div>
@@ -12,7 +15,8 @@
 </template>
 
 <script>
-import { computed, onMounted, reactive, ref, watch } from '@vue/runtime-core'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from '@vue/runtime-core'
+import { copyObjToReactive } from '@/utils/utils';
 export default {
     // popup收藏卡片
     name: 'CollectCard',
@@ -24,14 +28,44 @@ export default {
     },
     setup(props) {
         const noteId = computed(()=>props.noteId);
-        const noteInfo = ref({});
+        const noteInfo = reactive({});
         onMounted(()=>{
             chrome.runtime.sendMessage({func: 'getNoteById', id: noteId.value}, (response)=>{
-                noteInfo.value = response;
+                copyObjToReactive(noteInfo, response);
             });
         })
+        function renameFunction() {
+            const showTitleState = ref(true);
+            const renameInputBox = ref(null);
+            const newName = ref('');
+            function renameEnd() {
+                noteInfo.title = newName.value;
+                showTitleState.value = true;
+                chrome.runtime.sendMessage({func: 'save', type: 'note', data: noteInfo});
+            }
+            onMounted(()=>{
+                PubSub.subscribe('renameNote', (msg, noteId)=>{
+                    if (noteInfo.id === noteId) {
+                        showTitleState.value = false;
+                        nextTick(()=>{
+                            renameInputBox.value.focus();
+                        });
+                    }
+                })
+            })
+            onBeforeUnmount(()=>{
+                PubSub.unsubscribe('renameNote');
+            })
+            return {
+                showTitleState,
+                renameInputBox,
+                newName,
+                renameEnd,
+            }
+        }
         return {
-            noteInfo
+            noteInfo,
+            ...renameFunction(),
         }
     }
 }

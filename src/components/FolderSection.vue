@@ -6,7 +6,9 @@
             :class="{'title-focus': folderState.collectCardShow}" 
             :data-collectId="collectInfo.id"
         >
-            <i class="iconfont" :class="folderState.iconfontClass"></i>{{ collectInfo.name }}
+            <i class="iconfont" :class="folderState.iconfontClass"></i>
+            <span class="show-title" v-show="showTitleState">{{ collectInfo.name }}</span>
+            <input type="text" ref="renameInputBox" v-show="!showTitleState" v-model="newName" @keypress.enter="renameEnd">
         </div>
         <div class="card-area" v-show="folderState.collectCardShow">
             <CollectCard 
@@ -20,7 +22,8 @@
 
 <script>
 import CollectCard from '@/components/CollectCard'
-import { computed, reactive } from '@vue/runtime-core'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from '@vue/runtime-core'
+import PubSub from 'pubsub-js';
 export default {
     // popup折叠收藏夹
     name: 'FolderSection',
@@ -39,14 +42,44 @@ export default {
             collectCardShow: false,
             iconfontClass: 'icon-tri-right'
         });
-        function changeFolderState() {
+        function changeFolderState() { // 收藏夹更改折叠状态
             folderState.iconfontClass = folderState.collectCardShow ? 'icon-tri-right' : 'icon-tri-right-bottom-copy';
             folderState.collectCardShow = !folderState.collectCardShow;
+        }
+        function renameFunction() {
+            const showTitleState = ref(true);
+            const renameInputBox = ref(null);
+            const newName = ref('');
+            function renameEnd() {
+                showTitleState.value = true;
+                console.log('renameEnd', newName.value)
+                PubSub.publish('renameCollectFinish', newName.value);
+            }
+            onMounted(()=>{
+                PubSub.subscribe('renameCollect', (msg, collectId)=>{
+                    if (collectInfo.value.id === collectId) {
+                        showTitleState.value = false;
+                        nextTick(()=>{
+                            renameInputBox.value.focus();
+                        });
+                    }
+                })
+            })
+            onBeforeUnmount(()=>{
+                PubSub.unsubscribe('renameCollect');
+            })
+            return {
+                showTitleState,
+                renameInputBox,
+                newName,
+                renameEnd
+            }
         }
         return {
             collectInfo,
             folderState,
-            changeFolderState
+            changeFolderState,
+            ...renameFunction(),
         }
     }
 }

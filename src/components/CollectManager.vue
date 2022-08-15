@@ -9,7 +9,7 @@
                 <i class="iconfont icon-shanchu"></i>
                 <span class="option-name">删除</span>
             </li>
-            <li class="option-item">
+            <li class="option-item" @click="renameItemEvent">
                 <i class="iconfont icon-zhongmingming1"></i>
                 <span class="option-name">重命名</span>
             </li>
@@ -32,14 +32,19 @@
 export default {
     // popup收藏夹右键管理
     name: 'CollectManager',
-    emits: ["closeContextMenu", "deleteItem"],
+    emits: ["closeContextMenu", "deleteItem", "renameItem"],
     setup(props, context) {
         function deleteItemEvent() {
             context.emit('closeContextMenu');
             context.emit('deleteItem');
         }
+        function renameItemEvent() {
+            context.emit('closeContextMenu');
+            context.emit('renameItem');
+        }
         return {
-            deleteItemEvent
+            deleteItemEvent,
+            renameItemEvent,
         }
     }
 }
