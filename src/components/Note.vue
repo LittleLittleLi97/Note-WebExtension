@@ -16,6 +16,7 @@
                                 v-model="noteInfo.title" 
                                 v-show="!titleState"
                                 @keypress.enter="changeTitleEnd"
+                                @blur="changeTitleEnd"
                             >
                         </div>
                         <div class="more">
@@ -42,10 +43,11 @@
                             ref="collectInputBox"
                             v-show="!collectState"
                             @keypress.enter="createCollectEnd"
+                            @blur="cancelCreateCollect"
                         >
                     </div>
                 </div>
-                <div class="cell-area">
+                <div class="cell-area" ref="cellAreaDiv">
                     <CellCard 
                         v-for="(item, index) in noteInfo.children" 
                         :key="item"
@@ -153,6 +155,17 @@ export default {
             });
         })
 
+        // 初始化样式
+        function initStyle() {
+            const cellAreaDiv = ref(null);
+            onMounted(()=>{
+                cellAreaDiv.value.style.cssText = `height: ${window.innerHeight - 112}px`;
+            })
+            return {
+                cellAreaDiv,
+            }
+        }
+
         // 更改题目
         function titleChangeFunction() {
 
@@ -197,6 +210,11 @@ export default {
                     collectState.value = true;
                 });
             }
+            function cancelCreateCollect() {
+                noteInfo.collect_id = lastCollectId;
+                collectState.value = true;
+                collectInputBox.value.value = '';
+            }
             watch(()=>noteInfo.collect_id, (newValue, oldValue)=>{
                 if (!newValue || !oldValue) return;
                 if (newValue == createCollectButton.value) { // 新建收藏夹
@@ -223,6 +241,7 @@ export default {
                 collectState,
                 collectInputBox,
                 createCollectEnd,
+                cancelCreateCollect,
             }
         }
 
@@ -290,6 +309,7 @@ export default {
         return {
             collectList,
             noteInfo,
+            ...initStyle(),
             ...titleChangeFunction(),
             ...changeCollect(),
             saveNote,

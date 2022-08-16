@@ -6,7 +6,14 @@
             <div class="right-info">
                 <div class="title">
                     <span class="show-title" v-show="showTitleState">{{ noteInfo.title }}</span>
-                    <input type="text" ref="renameInputBox" v-show="!showTitleState" v-model="newName" @keypress.enter="renameEnd">
+                    <input 
+                        type="text" 
+                        ref="renameInputBox" 
+                        v-show="!showTitleState" 
+                        v-model="newName" 
+                        @keypress.enter="renameEnd"
+                        @blur="cancelRename"
+                    >
                 </div>
                 <div class="description">{{ noteInfo.content }}</div>
             </div>
@@ -43,6 +50,10 @@ export default {
                 showTitleState.value = true;
                 chrome.runtime.sendMessage({func: 'save', type: 'note', data: noteInfo});
             }
+            function cancelRename() {
+                showTitleState.value = true;
+                newName.value = '';
+            }
             onMounted(()=>{
                 PubSub.subscribe('renameNote', (msg, noteId)=>{
                     if (noteInfo.id === noteId) {
@@ -61,6 +72,7 @@ export default {
                 renameInputBox,
                 newName,
                 renameEnd,
+                cancelRename,
             }
         }
         return {

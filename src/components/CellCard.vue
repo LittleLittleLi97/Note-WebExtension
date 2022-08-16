@@ -10,11 +10,11 @@
                 :input-style="textareaStyle"
                 resize="none"
                 ref="textareaDiv"
-                v-show="!mdShow"
-                @blur="compileToMd"
             />
+                <!-- v-show="!mdShow"
+                @blur="compileToMd" -->
             <!-- markdown的样式被reset设置，在root.css中将其覆盖 -->
-            <div class="note-ext-md-box" ref="mdDiv" v-show="mdShow" @click="focusTextarea"></div>
+            <!-- <div class="note-ext-md-box" ref="mdDiv" v-show="mdShow" @click="focusTextarea"></div> -->
         </div>
     </div>
 </template>
@@ -48,7 +48,7 @@ export default {
             chrome.runtime.sendMessage({func: 'getCellById', id: cellId.value}, (response)=>{
                 if (response) {
                     copyObjToReactive(cellInfo, response);
-                    compileToMd(); // 初始化markdown
+                    // compileToMd(); // 初始化markdown
                 }
             });
         })
@@ -159,6 +159,12 @@ export default {
         .note-ext-md-box {
             min-height: 22px;
         }
+    }
+}
+
+textarea {
+    &::-webkit-scrollbar {
+        display: none;
     }
 }
 </style>

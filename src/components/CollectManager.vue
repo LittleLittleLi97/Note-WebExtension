@@ -1,10 +1,10 @@
 <template>
     <div class="collect-manager">
         <ul class="option-list">
-            <li class="option-item">
+            <!-- <li class="option-item">
                 <i class="iconfont icon-bianji"></i>
                 <span class="option-name">编辑</span>
-            </li>
+            </li> -->
             <li class="option-item" @click="deleteItemEvent">
                 <i class="iconfont icon-shanchu"></i>
                 <span class="option-name">删除</span>
@@ -13,18 +13,18 @@
                 <i class="iconfont icon-zhongmingming1"></i>
                 <span class="option-name">重命名</span>
             </li>
-            <li class="option-item">
+            <!-- <li class="option-item">
                 <i class="iconfont icon-link"></i>
                 <span class="option-name">复制链接</span>
-            </li>
+            </li> -->
         </ul>
-        <div class="dividing-line"></div>
+        <!-- <div class="dividing-line"></div>
         <ul class="option-list">
             <li class="option-item">
                 <i class="iconfont icon-share"></i>
                 <span class="option-name">分享</span>
             </li>
-        </ul>
+        </ul> -->
     </div>
 </template>
 
@@ -54,7 +54,8 @@ export default {
     .collect-manager {
         color: var(--note-ext-font);
 
-        width: 216px;
+        // width: 216px;
+        width: 120px;
         // height: 168px;
 
         background-color: var(--note-ext-theme);

@@ -8,7 +8,14 @@
         >
             <i class="iconfont" :class="folderState.iconfontClass"></i>
             <span class="show-title" v-show="showTitleState">{{ collectInfo.name }}</span>
-            <input type="text" ref="renameInputBox" v-show="!showTitleState" v-model="newName" @keypress.enter="renameEnd">
+            <input 
+                type="text" 
+                ref="renameInputBox" 
+                v-show="!showTitleState" 
+                v-model="newName" 
+                @keypress.enter="renameEnd"
+                @blur="cancelRename"
+            >
         </div>
         <div class="card-area" v-show="folderState.collectCardShow">
             <CollectCard 
@@ -55,6 +62,10 @@ export default {
                 console.log('renameEnd', newName.value)
                 PubSub.publish('renameCollectFinish', newName.value);
             }
+            function cancelRename() {
+                showTitleState.value = true;
+                newName.value = '';
+            }
             onMounted(()=>{
                 PubSub.subscribe('renameCollect', (msg, collectId)=>{
                     if (collectInfo.value.id === collectId) {
@@ -72,7 +83,8 @@ export default {
                 showTitleState,
                 renameInputBox,
                 newName,
-                renameEnd
+                renameEnd,
+                cancelRename,
             }
         }
         return {
