@@ -1,60 +1,65 @@
 <template>
     <transition>
-        <div class="note-wrapper">
-            <div class="note-header">
-                <div class="header-top">
-                    <div class="title">
-                        <span 
-                            class="title-show" 
-                            v-show="titleState"
-                            @click="changeTitleStart"
-                        >{{noteInfo.title}}</span>
-                        <input type="text" 
-                            class="title-input"
-                            ref="titleInputBox"
-                            v-model="noteInfo.title" 
-                            v-show="!titleState"
-                            @keypress.enter="changeTitleEnd"
+        <div class="note-wrapper" @click="closeContextMenu">
+            <div class="note-main-area" @contextmenu="openContextMenu">
+                <div class="note-header">
+                    <div class="header-top">
+                        <div class="title">
+                            <span 
+                                class="title-show" 
+                                v-show="titleState"
+                                @click="changeTitleStart"
+                            >{{noteInfo.title}}</span>
+                            <input type="text" 
+                                class="title-input"
+                                ref="titleInputBox"
+                                v-model="noteInfo.title" 
+                                v-show="!titleState"
+                                @keypress.enter="changeTitleEnd"
+                            >
+                        </div>
+                        <div class="more">
+                            <i class="iconfont icon-gengduo"></i>
+                            <i class="iconfont icon-shanchu2" @click="closeNoteEvent"></i>
+                        </div>
+                    </div>
+                    <div class="classification-area">
+                        <i class="iconfont icon-shoucang"></i>
+                        <!-- <div class="classification">{{ noteInfo.collect }}</div> -->
+                        <select class="classification"
+                            v-model="noteInfo.collect_id"
+                            v-show="collectState"
+                        >
+                            <option 
+                                v-for="(item, index) in collectList"
+                                :selected="noteInfo.collect_id==item.id"
+                                :value="item.id"
+                            >{{ item.name }}</option>
+                            <option>{{ createCollectButton }}</option>
+                        </select>
+                        <input type="text"
+                            class="collect-input"
+                            ref="collectInputBox"
+                            v-show="!collectState"
+                            @keypress.enter="createCollectEnd"
                         >
                     </div>
-                    <div class="more">
-                        <i class="iconfont icon-gengduo"></i>
-                        <i class="iconfont icon-shanchu2" @click="closeNoteEvent"></i>
+                </div>
+                <div class="cell-area">
+                    <CellCard 
+                        v-for="(item, index) in noteInfo.children" 
+                        :key="item"
+                        :cellId="item"
+                        class="cell-card"
+                        @saveNote="saveNote"
+                    />
+                    <div class="add-cell-button" @click="addCell">
+                        <i class="iconfont icon-add"></i>
                     </div>
                 </div>
-                <div class="classification-area">
-                    <i class="iconfont icon-shoucang"></i>
-                    <!-- <div class="classification">{{ noteInfo.collect }}</div> -->
-                    <select class="classification"
-                        v-model="noteInfo.collect_id"
-                        v-show="collectState"
-                    >
-                        <option 
-                            v-for="(item, index) in collectList"
-                            :selected="noteInfo.collect_id==item.id"
-                            :value="item.id"
-                        >{{ item.name }}</option>
-                        <option>{{ createCollectButton }}</option>
-                    </select>
-                    <input type="text"
-                        class="collect-input"
-                        ref="collectInputBox"
-                        v-show="!collectState"
-                        @keypress.enter="createCollectEnd"
-                    >
-                </div>
             </div>
-            <div class="cell-area">
-                <CellCard 
-                    v-for="(item, index) in noteInfo.children" 
-                    :key="item"
-                    :cellId="item"
-                    class="cell-card"
-                    @saveNote="saveNote"
-                />
-                <div class="add-cell-button" @click="addCell">
-                    <i class="iconfont icon-add"></i>
-                </div>
+            <div class="note-manager" v-show="noteManagerShow" ref="noteManagerDiv">
+                <NoteManager @deleteCell="deleteCell"></NoteManager>
             </div>
         </div>
     </transition>
@@ -66,12 +71,14 @@ import { computed, nextTick, onMounted, watch } from '@vue/runtime-core';
 import { nanoid } from 'nanoid'
 import { copyObjToReactive, removeUrlQuery, parseReactiveToObj } from '@/utils/utils'
 import CellCard from '@/components/CellCard'
+import NoteManager from '@/components/NoteManager'
 import PubSub from 'pubsub-js'
 export default {
     name: 'Note',
     emits: ['closeNote'],
     components: {
-        CellCard
+        CellCard,
+        NoteManager
     },
     setup(props, context) {
         const collectList = reactive({});
@@ -228,6 +235,58 @@ export default {
         function closeNoteEvent() {
             context.emit('closeNote');
         }
+
+        // NoteManger
+        function noteManagerFunction() {
+            const noteManagerShow = ref(false);
+            const noteManagerDiv = ref(null);
+            let cellId = null;
+            function openContextMenu(event) {
+                const path = event.path;
+                let flag = false;
+                path.forEach((item)=>{
+                    try {
+                        let tempCellId = item.getAttribute('data-cellId');
+                        if (tempCellId) {
+                            cellId = tempCellId;
+                            flag = true;
+                            event.preventDefault();
+                            // 定位依据.note-wrapper fixed
+                            noteManagerDiv.value.style.cssText = `top: ${event.clientY}px; left: ${event.pageX - (document.body.clientWidth - 400)}px;`;
+                            noteManagerShow.value = true;
+                            document.addEventListener('mousewheel', stopWheel, {passive: false});
+                        }
+                    } catch (error) {
+                    }
+                });
+                if (!flag) { // 右键了别的地方
+                    closeContextMenu();
+                    cellId = null;
+                }
+            }
+            function closeContextMenu() {
+                noteManagerShow.value = false;
+                document.removeEventListener('mousewheel', stopWheel);
+            }
+            function stopWheel(event) { // 关闭鼠标滚轮滑动事件，页面滚动会导致定位错误
+                event.preventDefault();
+            }
+            function deleteCell() {
+                let id = cellId;
+                let children = noteInfo.children;
+                let index = children.indexOf(id);
+                if (index !== -1) children.splice(index, 1);
+                chrome.runtime.sendMessage({func: 'save', type: 'note', data: noteInfo});
+                chrome.runtime.sendMessage({func: 'delete', type: 'cell', id});
+            }
+            return {
+                noteManagerShow,
+                noteManagerDiv,
+                openContextMenu,
+                closeContextMenu,
+                deleteCell,
+            }
+        }
         return {
             collectList,
             noteInfo,
@@ -236,6 +295,7 @@ export default {
             saveNote,
             addCell,
             closeNoteEvent,
+            ...noteManagerFunction(),
         }
     }
 }
@@ -261,178 +321,186 @@ export default {
 
     box-sizing: border-box;
 
-    .note-header {
-        padding: 14px 16px;
-
-        border-bottom: 1px solid var(--note-ext-line);
-
-        box-sizing: border-box;
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            width: 100%;
-            height: 56px;
-
-            margin-left: 5px; // 下面收藏夹hover动画的padding的5px，这里设置让文字对齐。
-
-            .title {
-                font-size: 22px;
-                font-weight: bold;
-
-                width: 256px;
-
-                border-radius: 5px;
-
-                overflow: hidden;
-
-                .title-show {
-                    display: block;
-                    white-space: nowrap;
+    .note-main-area {
+        .note-header {
+            padding: 14px 16px;
+    
+            border-bottom: 1px solid var(--note-ext-line);
+    
+            box-sizing: border-box;
+    
+            .header-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+    
+                width: 100%;
+                height: 56px;
+    
+                margin-left: 5px; // 下面收藏夹hover动画的padding的5px，这里设置让文字对齐。
+    
+                .title {
+                    font-size: 22px;
+                    font-weight: bold;
+    
+                    width: 256px;
+    
+                    border-radius: 5px;
+    
                     overflow: hidden;
-                    text-overflow: ellipsis;
-
-                    transition: background-color 0.2s;
-
-                    cursor: pointer;
-
-                    &:hover {
-                        background-color: var(--note-ext-icon-hover);
+    
+                    .title-show {
+                        display: block;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+    
+                        transition: background-color 0.2s;
+    
+                        cursor: pointer;
+    
+                        &:hover {
+                            background-color: var(--note-ext-icon-hover);
+                        }
+                    }
+    
+                    .title-input {
+                        font-size: inherit;
+                        color: inherit;
+                        font-weight: inherit;
+    
+                        background-color: transparent;
+    
+                        border: none;
+                        
+                        outline: none;
+    
+                        &:focus {
+                            background-color: var(--note-ext-icon-hover);
+                        }
                     }
                 }
-
-                .title-input {
-                    font-size: inherit;
-                    color: inherit;
-                    font-weight: inherit;
-
-                    background-color: transparent;
-
-                    border: none;
-                    
-                    outline: none;
-
-                    &:focus {
-                        background-color: var(--note-ext-icon-hover);
+                .more {
+                    display: flex;
+                    align-items: center;
+        
+                    .iconfont {
+                        font-size: 22px;
+                        text-align: center;
+                        line-height: 30px;
+    
+                        width: 30px;
+                        height: 30px;
+        
+                        margin-left: 12px;
+    
+                        border-radius: 5px;
+    
+                        transition: background-color 0.2s;
+    
+                        cursor: pointer;
+    
+                        &:hover {
+                            background-color: var(--note-ext-icon-hover);
+                        }
                     }
                 }
             }
-            .more {
-                display: flex;
+            .classification-area {
+                display: inline-flex; // 宽度自适应，不占整行
+                justify-content: center;
                 align-items: center;
     
-                .iconfont {
-                    font-size: 22px;
-                    text-align: center;
-                    line-height: 30px;
-
-                    width: 30px;
-                    height: 30px;
+                padding: 2px 5px;
     
-                    margin-left: 12px;
-
-                    border-radius: 5px;
-
-                    transition: background-color 0.2s;
-
+                border-radius: 5px;
+    
+                box-sizing: border-box;
+    
+                transition: background-color 0.2s;
+    
+                cursor: pointer;
+    
+                &:hover {
+                    background-color: var(--note-ext-icon-hover);
+                }
+    
+                .iconfont {
+                    font-size: 20px;
+                }
+                .classification {
+                    font-size: 16px;
+                    color: var(--note-ext-font);
+                    font-family: Segoe UI;
+                    font-weight: Semilight;
+                    line-height: normal;
+                    letter-spacing: 0px;
+                    text-align: left;
+    
+                    margin-left: 10px;
+    
+                    background-color: transparent;
+    
+                    border: none;
+    
+                    outline: none;
+    
                     cursor: pointer;
-
-                    &:hover {
-                        background-color: var(--note-ext-icon-hover);
-                    }
+    
+                    -webkit-appearance: none;
                 }
             }
         }
-        .classification-area {
-            display: inline-flex; // 宽度自适应，不占整行
-            justify-content: center;
+        .cell-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-
-            padding: 2px 5px;
-
-            border-radius: 5px;
-
-            box-sizing: border-box;
-
-            transition: background-color 0.2s;
-
-            cursor: pointer;
-
-            &:hover {
-                background-color: var(--note-ext-icon-hover);
+    
+            padding: 10px 20px;
+    
+            overflow-y: scroll;
+            scroll-behavior: contain;
+    
+            &::-webkit-scrollbar {
+                display: none;
             }
-
-            .iconfont {
-                font-size: 20px;
+            .cell-card {
+                margin-top: 10px;
             }
-            .classification {
-                font-size: 16px;
-                color: var(--note-ext-font);
-                font-family: Segoe UI;
-                font-weight: Semilight;
-                line-height: normal;
-                letter-spacing: 0px;
-                text-align: left;
-
-                margin-left: 10px;
-
+            .add-cell-button {
+                text-align: center;
+    
+                width: 50%;
+    
+                margin-top: 10px;
+    
                 background-color: transparent;
-
-                border: none;
-
-                outline: none;
-
+    
+                border: 2px solid var(--note-ext-font);
+                border-radius: 5px;
+    
+                box-sizing: border-box;
+    
                 cursor: pointer;
-
-                -webkit-appearance: none;
+    
+                transition: background-color 0.2s;
+    
+                &:hover {
+                    background-color: var(--note-ext-context-hover);
+                }
+                .iconfont {
+                    font-size: 20px;
+                    color: var(--note-ext-font);
+                }
             }
         }
     }
-    .cell-area {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        padding: 10px 20px;
-
-        overflow-y: scroll;
-        scroll-behavior: contain;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
-        .cell-card {
-            margin-top: 10px;
-        }
-        .add-cell-button {
-            text-align: center;
-
-            width: 50%;
-
-            margin-top: 10px;
-
-            background-color: transparent;
-
-            border: 2px solid var(--note-ext-font);
-            border-radius: 5px;
-
-            box-sizing: border-box;
-
-            cursor: pointer;
-
-            transition: background-color 0.2s;
-
-            &:hover {
-                background-color: var(--note-ext-context-hover);
-            }
-            .iconfont {
-                font-size: 20px;
-                color: var(--note-ext-font);
-            }
-        }
+    .note-manager {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10000;
     }
 }
 

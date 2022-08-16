@@ -1,5 +1,5 @@
 <template>
-    <div class="cell-card">
+    <div class="cell-card" :data-cellId="cellInfo.id">
         <div class="label" :style="`background-color: var(--note-ext-${cellInfo.label});`"></div>
         <div class="cell-right">
             <el-input
