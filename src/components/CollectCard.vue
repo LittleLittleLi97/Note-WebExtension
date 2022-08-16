@@ -1,8 +1,8 @@
 <template>
     <a :href="noteInfo.url" target="_blank" :data-noteId="noteInfo.id">
         <div class="collect-card">
-            <!-- <div class="web-icon"><img :src="noteInfo.url_icon" alt=""></div> -->
-            <div class="web-icon"><img src="./images/edge_logo.jpg" alt=""></div>
+            <div class="web-icon"><img :src="noteInfo.url_icon" alt=""></div>
+            <!-- <div class="web-icon"><img src="./images/edge_logo.jpg" alt=""></div> -->
             <div class="right-info">
                 <div class="title">
                     <span class="show-title" v-show="showTitleState">{{ noteInfo.title }}</span>

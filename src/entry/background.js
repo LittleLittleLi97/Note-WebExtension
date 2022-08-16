@@ -2,17 +2,8 @@ import { nanoid } from 'nanoid';
 import DataBase from "@/utils/DataBase.js";
 
 const db = new DataBase();
-// 初始化默认收藏夹
-// db.getDataByIndex('collect', 'name', '默认收藏夹', (event)=>{
-// 	let result = event.target.result;
-// 	if (result.length <= 0) {
-// 		db.updateDB('collect', {
-// 			id: 'defaultcollect',
-// 			name: '默认收藏夹',
-// 			children: []
-// 		});
-// 	}
-// });
+
+// 展示样例
 // db.getAllData('collect');
 // db.getAllData('note');
 // db.getAllData('cell');
@@ -140,16 +131,6 @@ chrome.runtime.onMessage.addListener(
 				break;
 			case 'delete':
 				db.deleteDB(request.type, request.id, ()=>sendResponse('OK'));
-				break;
-			case 'addCollectChildren':
-				db.getDataByIndex('collect', 'name', request.data.collect, (event)=>{
-					let result = event.target.result;
-					if (result.length > 0) {
-						result = result[0];
-						result.children.push(request.data.id);
-					}
-					db.updateDB('collect', result, ()=>sendResponse('OK'));
-				});
 				break;
 			default:
 				break;

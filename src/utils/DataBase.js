@@ -44,6 +44,18 @@ export default class DataBase {
                 highlightStore.createIndex("url", "url", { unique: true });
             };
         });
+        this.dbState.then((db)=>{
+            // 创建默认收藏夹，此收藏夹不可被删除（Note页面创建笔记自动加入此收藏夹），但可以更改name
+            this.getDataByKey('collect', 'defaultcollect', (event)=>{
+                if (!event.target.result) {
+                    this.updateDB('collect', {
+                        id: 'defaultcollect',
+                        name: '默认收藏夹',
+                        children: []
+                    })
+                }
+            })
+        })
     }
 	addData(storeName, data, successCallback, errorCallback) {
 		this.dbState.then((db)=>{

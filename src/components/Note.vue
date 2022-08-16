@@ -52,6 +52,9 @@
                     class="cell-card"
                     @saveNote="saveNote"
                 />
+                <div class="add-cell-button" @click="addCell">
+                    <i class="iconfont icon-add"></i>
+                </div>
             </div>
         </div>
     </transition>
@@ -94,13 +97,9 @@ export default {
             });
             if (isNewNote.value) { // 如果是新的笔记，需要加入收藏夹
                 isNewNote.value = false;
-                chrome.runtime.sendMessage({
-                    func: 'addCollectChildren',
-                    data: {
-                        collect: noteInfo.collect,
-                        id: noteInfo.id
-                    }
-                });
+                noteInfo.collect = collectList[noteInfo.collect_id].name;
+                collectList[noteInfo.collect_id].children.push(noteInfo.id);
+                chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[noteInfo.collect_id]});
             }
         }
         // 初始化信息
@@ -118,7 +117,6 @@ export default {
                     noteInfo.id = nanoid();
                     noteInfo.children.push(nanoid());
                     noteInfo.title = document.getElementsByTagName('title')[0].innerText;
-                    noteInfo.collect = '默认收藏夹';
                     noteInfo.collect_id = 'defaultcollect';
                 }
             });
@@ -221,6 +219,11 @@ export default {
             }
         }
 
+        function addCell() {
+            noteInfo.children.push(nanoid());
+            saveNote({});
+        }
+
         // 关闭Note
         function closeNoteEvent() {
             context.emit('closeNote');
@@ -231,6 +234,7 @@ export default {
             ...titleChangeFunction(),
             ...changeCollect(),
             saveNote,
+            addCell,
             closeNoteEvent,
         }
     }
@@ -388,6 +392,9 @@ export default {
     }
     .cell-area {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
         padding: 10px 20px;
 
@@ -399,6 +406,32 @@ export default {
         }
         .cell-card {
             margin-top: 10px;
+        }
+        .add-cell-button {
+            text-align: center;
+
+            width: 50%;
+
+            margin-top: 10px;
+
+            background-color: transparent;
+
+            border: 2px solid var(--note-ext-font);
+            border-radius: 5px;
+
+            box-sizing: border-box;
+
+            cursor: pointer;
+
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: var(--note-ext-context-hover);
+            }
+            .iconfont {
+                font-size: 20px;
+                color: var(--note-ext-font);
+            }
         }
     }
 }
