@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "web_collect",
-    "description": "chrome extension",
-    "version": "0.0.1",
+    "name": "MyNote",
+    "description": "还在为记笔记发愁吗？还在为网页与笔记软件的频繁切换而烦恼吗？还在为笔记太多又疏于整理而糟心吗？现在，来试试这款浏览器扩展吧！不仅可以随时在网页中记笔记，还能通过扩展提供的收藏夹对笔记进行分类。Edge风格，支持Light / Dark模式，贴近你的习惯。",
+    "version": "0.1.0",
     "permissions": [
         
     ],

@@ -31,7 +31,7 @@ const AutoImport = require('unplugin-auto-import/webpack')
 const Components = require('unplugin-vue-components/webpack')
 const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 
-// 用于解决markdown问题
+// 用于解决markdown.js问题，现在改用marked.js
 // const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 module.exports = {

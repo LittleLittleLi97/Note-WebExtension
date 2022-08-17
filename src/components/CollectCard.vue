@@ -113,12 +113,10 @@ export default {
             }
         }
         .right-info {
-            flex: 1;
             display: flex;
             flex-direction: column;
-            // justify-content: space-between;
 
-            width: 187px;
+            width: 185px;
 
             margin-left: 15px;
 
@@ -128,13 +126,16 @@ export default {
                 font-weight: semibold;
                 line-height: normal;
 
-
-                // width: 100%;
+                height: 28px;
 
                 display: block;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+
+                input {
+                    box-sizing: border-box;
+                }
             }
             .description {
                 font-size: 14px;

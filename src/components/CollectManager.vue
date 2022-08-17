@@ -32,15 +32,15 @@
 export default {
     // popup收藏夹右键管理
     name: 'CollectManager',
-    emits: ["closeContextMenu", "deleteItem", "renameItem"],
+    emits: ["closeContextMenu", "deleteItem", "renameItem"], // 先执行事件任务，再关闭contextMenu
     setup(props, context) {
         function deleteItemEvent() {
-            context.emit('closeContextMenu');
             context.emit('deleteItem');
+            context.emit('closeContextMenu');
         }
         function renameItemEvent() {
-            context.emit('closeContextMenu');
             context.emit('renameItem');
+            context.emit('closeContextMenu');
         }
         return {
             deleteItemEvent,

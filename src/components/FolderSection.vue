@@ -110,6 +110,8 @@ export default {
             text-align: left;
 
             padding: 5px 12px;
+
+            height: 32px;
             
             border-radius: 1px;
 
@@ -125,6 +127,10 @@ export default {
 
             .iconfont {
                 margin-right: 5px;
+            }
+
+            input {
+                box-sizing: border-box;
             }
         }
         .title-focus {

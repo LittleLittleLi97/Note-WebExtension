@@ -115,7 +115,11 @@ export default {
         onMounted(()=>{
             // note信息
             let icon1 = document.querySelector("link[rel='apple-touch-icon']");
-            noteInfo.url_icon = icon1 ? icon1.href : document.querySelector("link[rel='shortcut icon']").href;
+            let icon2 = document.querySelector("link[rel='shortcut icon']");
+            let icon3 = document.querySelector("link[rel='icon']");
+            let iconValid = icon1 || icon2 || icon3;
+            console.log(iconValid.href);
+            noteInfo.url_icon = iconValid ? iconValid.href : '/img/Icon-128.png';
             noteInfo.url = removeUrlQuery(window.location.href);
 
             chrome.runtime.sendMessage({func: 'getNoteByUrl', url: noteInfo.url}, (response)=>{
@@ -362,6 +366,7 @@ export default {
                 .title {
                     font-size: 22px;
                     font-weight: bold;
+                    text-align: left;
     
                     width: 256px;
     
@@ -468,6 +473,11 @@ export default {
                     cursor: pointer;
     
                     -webkit-appearance: none;
+
+                    option {
+                        color: var(--note-ext-font);
+                        background-color: var(--note-ext-theme2);
+                    }
                 }
             }
         }

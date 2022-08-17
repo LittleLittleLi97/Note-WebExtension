@@ -67,13 +67,15 @@ export default {
                 });
                 if (!flag) { // 右键了别的地方
                     closeContextMenu();
-                    noteId = null;
-                    collectId = null;
+                    // noteId = null;
+                    // collectId = null;
                 }
                 console.log('open', collectId, noteId)
             }
             function closeContextMenu() {
                 collectManagerShow.value = false;
+                noteId = null;
+                collectId = null;
             }
             function deleteItem() { // 没有删除cell
                 console.log('delete', collectId, noteId)
