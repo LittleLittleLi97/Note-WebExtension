@@ -19,18 +19,21 @@
             @renameItem="renameItem"
         ></CollectManager>
     </div>
+    <CreateCollectPopover v-show="false"></CreateCollectPopover>
 </template>
 
 <script>
 import { computed, onMounted, reactive, ref } from '@vue/runtime-core'
 import FolderSection from '@/components/FolderSection'
 import CollectManager from '@/components/CollectManager'
+import CreateCollectPopover from '@/components/CreateCollectPopover'
 import PubSub from 'pubsub-js'
 export default {
     name: 'NoteCollect',
     components: {
         FolderSection,
-        CollectManager
+        CollectManager,
+        CreateCollectPopover,
     },
     setup() {
         // 初始化数据
