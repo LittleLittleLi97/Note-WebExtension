@@ -1,6 +1,20 @@
 <template>
     <div class="cell-card" :data-cellId="cellInfo.id">
-        <div class="label" :style="`background-color: var(--note-ext-${cellInfo.label});`"></div>
+        <div class="label-area" ref="labelListBox">
+            <div 
+                class="label" 
+                :style="`background-color: var(--note-ext-${cellInfo.label});`"
+                @click="changeLabelStart"
+            ></div>
+            <ul class="label-list" v-show="labelListShow">
+                <li 
+                    class="label label-item" 
+                    v-for="(color, index) in labelList" 
+                    :style="`background-color: var(--note-ext-${color});`"
+                    @click="changeLabelEnd(color)"
+                ></li>
+            </ul>
+        </div>
         <div class="cell-right">
             <el-input
                 v-model="cellInfo.content"
@@ -59,11 +73,7 @@ export default {
         function saveCellInfo() {
             clearTimeout(timer);
             timer = setTimeout(() => {
-                chrome.runtime.sendMessage({
-                    func: 'save',
-                    type: 'cell',
-                    data: parseReactiveToObj(cellInfo)
-                });
+                chrome.runtime.sendMessage({func: 'save', type: 'cell', data: cellInfo});
                 context.emit('saveNote', { // 更新Note信息
                     newContent: cellInfo.content.slice(0, 30)
                 });
@@ -94,6 +104,36 @@ export default {
                                     outline: none;
                                     `);
 
+        // label列表
+        function labelFunction() {
+            const labelList = reactive(['blue', 'yellow', 'red', 'green', 'purple']);
+            const labelListShow = ref(false);
+            const labelListBox = ref(null);
+            function changeLabelStart() {
+                labelListShow.value = true;
+                document.addEventListener('click', cancelChangeLabel);
+            }
+            function changeLabelEnd(color) {
+                cellInfo.label = color;
+                labelListShow.value = false;
+                document.removeEventListener('click', cancelChangeLabel);
+                chrome.runtime.sendMessage({func: 'save', type: 'cell', data: cellInfo});
+            }
+            function cancelChangeLabel(event) {
+                if (!labelListBox.value.contains(event.target)) {
+                    labelListShow.value = false;
+                    document.removeEventListener('click', cancelChangeLabel);
+                }
+            }
+            return {
+                labelList,
+                labelListShow,
+                labelListBox,
+                changeLabelStart,
+                changeLabelEnd,
+            }
+        }
+
         // markdown
         const textareaDiv = ref(null);
         const mdDiv = ref(null);
@@ -109,6 +149,7 @@ export default {
         return {
             cellInfo,
             textareaStyle,
+            ...labelFunction(),
             mdDiv,
             textareaDiv,
             focusTextarea,
@@ -136,15 +177,37 @@ export default {
 
     box-sizing: border-box;
 
-    .label {
-        width: 16px;
-        height: 16px;
-        
+    .label-area {
+        position: relative;
+
         margin: 3.5px 10px 0 10px;
 
-        border-radius: 50%;
-
         box-sizing: border-box;
+
+        .label {
+            width: 16px;
+            height: 16px;
+
+            border-radius: 50%;
+
+            cursor: pointer;
+        }
+        .label-list {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            z-index: 10001;
+
+            display: flex;
+
+            transform: translateX(-50%);
+
+            .label-item {
+                margin: 1px;
+
+                box-sizing: border-box;
+            }
+        }
     }
     .cell-right {
         flex: 1;
