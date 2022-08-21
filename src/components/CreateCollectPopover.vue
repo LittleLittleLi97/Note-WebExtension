@@ -1,11 +1,11 @@
 <template>
-    <div class="popover-wrapper">
+    <div class="popover-wrapper" v-show="isShow">
         <div class="popover-inner">
             <div class="content-wrapper">
-                <input type="text" placeholder="请输入收藏夹名称..." class="input-box">
+                <input type="text" placeholder="请输入收藏夹名称..." class="input-box" v-model="collectName">
                 <div class="button-area">
-                    <div class="cancel">取消</div>
-                    <div class="confirm">确认</div>
+                    <div class="cancel" @click="cancelCreate">取消</div>
+                    <div class="confirm" @click="createCollectEnd">确认</div>
                 </div>
             </div>
         </div>
@@ -13,8 +13,34 @@
 </template>
 
 <script>
+import { ref } from '@vue/reactivity';
+import { onMounted } from '@vue/runtime-core';
+import PubSub from 'pubsub-js'
 export default {
     name: 'CreateCollectPopover',
+    setup() {
+        const isShow = ref(false);
+        const collectName = ref('');
+        function cancelCreate() {
+            isShow.value = false;
+            collectName.value = '';
+        }
+        function createCollectEnd() {
+            if (collectName.value.trim() !== '') PubSub.publish('createCollectEnd', collectName.value);
+            cancelCreate();
+        }
+        onMounted(()=>{
+            PubSub.subscribe('createCollectStart', ()=>{
+                isShow.value = true;
+            })
+        })
+        return {
+            isShow,
+            collectName,
+            cancelCreate,
+            createCollectEnd,
+        }
+    }
 }
 </script>
 

@@ -5,11 +5,15 @@
                 <i class="iconfont icon-bianji"></i>
                 <span class="option-name">编辑</span>
             </li> -->
-            <li class="option-item" @click="deleteItemEvent">
+            <li class="option-item" v-show="type==='global'" @click="createCollectEvent">
+                <i class="iconfont icon-add"></i>
+                <span class="option-name">新建...</span>
+            </li>
+            <li class="option-item" v-show="type==='local'" @click="deleteItemEvent">
                 <i class="iconfont icon-shanchu"></i>
                 <span class="option-name">删除</span>
             </li>
-            <li class="option-item" @click="renameItemEvent">
+            <li class="option-item" v-show="type==='local'" @click="renameItemEvent">
                 <i class="iconfont icon-zhongmingming1"></i>
                 <span class="option-name">重命名</span>
             </li>
@@ -29,11 +33,19 @@
 </template>
 
 <script>
+import { computed } from '@vue/runtime-core';
+import PubSub from 'pubsub-js'
 export default {
     // popup收藏夹右键管理
     name: 'CollectManager',
+    props: ["type"],
     emits: ["closeContextMenu", "deleteItem", "renameItem"], // 先执行事件任务，再关闭contextMenu
     setup(props, context) {
+        const type =  computed(()=>props.type);
+        function createCollectEvent() {
+            PubSub.publish('createCollectStart');
+            context.emit('closeContextMenu');
+        }
         function deleteItemEvent() {
             context.emit('deleteItem');
             context.emit('closeContextMenu');
@@ -43,6 +55,8 @@ export default {
             context.emit('closeContextMenu');
         }
         return {
+            type,
+            createCollectEvent,
             deleteItemEvent,
             renameItemEvent,
         }

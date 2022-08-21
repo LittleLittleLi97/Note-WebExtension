@@ -14,12 +14,13 @@
     </div>
     <div class="collect-manager" v-show="collectManagerShow" ref="collectManagerDiv">
         <CollectManager 
+            :type="collectManagerType"
             @closeContextMenu="closeContextMenu"
             @deleteItem="deleteItem"
             @renameItem="renameItem"
         ></CollectManager>
     </div>
-    <CreateCollectPopover v-show="false"></CreateCollectPopover>
+    <CreateCollectPopover></CreateCollectPopover>
 </template>
 
 <script>
@@ -28,6 +29,7 @@ import FolderSection from '@/components/FolderSection'
 import CollectManager from '@/components/CollectManager'
 import CreateCollectPopover from '@/components/CreateCollectPopover'
 import PubSub from 'pubsub-js'
+import { nanoid } from 'nanoid'
 export default {
     name: 'NoteCollect',
     components: {
@@ -48,11 +50,17 @@ export default {
         function collectManagerFunction() {
             const collectManagerShow = ref(false);
             const collectManagerDiv = ref(null);
+            const collectManagerType = ref('local');
             let noteId = null; // 用于记录这是对note的操作还是collect的操作，应该保持只有一个不为null
             let collectId = null;
             function openContextMenu(event) {
                 const path = event.path;
                 let flag = false;
+
+                event.preventDefault();
+                collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
+                collectManagerShow.value = true;
+
                 path.forEach((item)=>{
                     try {
                         let tempNoteId = item.getAttribute('data-noteId');
@@ -61,19 +69,12 @@ export default {
                             if (tempNoteId) noteId = tempNoteId;
                             if (tempCollectId) collectId = tempCollectId;
                             flag = true;
-                            event.preventDefault();
-                            collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
-                            collectManagerShow.value = true;
                         }
                     } catch (error) {
                     }
                 });
-                if (!flag) { // 右键了别的地方
-                    closeContextMenu();
-                    // noteId = null;
-                    // collectId = null;
-                }
-                console.log('open', collectId, noteId)
+                if (flag) collectManagerType.value = 'local';
+                else collectManagerType.value = 'global';
             }
             function closeContextMenu() {
                 collectManagerShow.value = false;
@@ -130,9 +131,18 @@ export default {
                     PubSub.publish('renameNote', id);
                 }
             }
+            onMounted(()=>{
+                // 创建新的收藏夹
+                PubSub.subscribe('createCollectEnd', (msg, name)=>{
+                    let id = nanoid();
+                    collectList[id] = {id, name, children: []};
+                    chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
+                })
+            })
             return {
                 collectManagerShow,
                 collectManagerDiv,
+                collectManagerType,
                 openContextMenu,
                 closeContextMenu,
                 deleteItem,
