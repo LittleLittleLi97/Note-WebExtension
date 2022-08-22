@@ -141,7 +141,7 @@ export default {
             display: grid;
             grid-gap: 10px;
 
-            margin-top: 10px;
+            // margin-top: 10px;
             padding: 0 11px;
 
             box-sizing: border-box;

@@ -24,11 +24,11 @@
                 :input-style="textareaStyle"
                 resize="none"
                 ref="textareaDiv"
+                v-show="!mdShow"
+                @blur="compileToMd"
             />
-                <!-- v-show="!mdShow"
-                @blur="compileToMd" -->
             <!-- markdown的样式被reset设置，在root.css中将其覆盖 -->
-            <!-- <div class="note-ext-md-box" ref="mdDiv" v-show="mdShow" @click="focusTextarea"></div> -->
+            <div class="note-ext-md-box" ref="mdDiv" v-show="mdShow" @click="focusTextarea"></div>
         </div>
     </div>
 </template>
@@ -38,6 +38,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from '@vue/runtim
 import { copyObjToReactive, parseReactiveToObj } from '@/utils/utils';
 import { ElInput } from 'element-plus'
 import { marked } from 'marked'
+import hljs from 'highlight.js'
 export default {
     name: 'CellCard',
     props: {
@@ -62,7 +63,7 @@ export default {
             chrome.runtime.sendMessage({func: 'getCellById', id: cellId.value}, (response)=>{
                 if (response) {
                     copyObjToReactive(cellInfo, response);
-                    // compileToMd(); // 初始化markdown
+                    compileToMd(); // 初始化markdown
                 }
             });
         })
@@ -146,6 +147,13 @@ export default {
             mdShow.value = true;
             mdDiv.value.innerHTML = marked.parse(cellInfo.content);
         }
+        marked.setOptions({
+            highlight: function(code) {
+                return hljs.highlightAuto(code).value;
+            },
+            langPrefix: 'hljs language-',
+            breaks: true,
+        })
         return {
             cellInfo,
             textareaStyle,
