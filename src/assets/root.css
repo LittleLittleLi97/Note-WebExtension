@@ -74,3 +74,9 @@
     border: 1px solid var(--note-ext-line);
     box-sizing: border-box;
 }
+
+.note-ext-highlight-text {
+    color: var(--note-ext-font);
+
+    cursor: pointer;
+}

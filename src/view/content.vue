@@ -3,7 +3,7 @@
     <div class="note-area" ref="noteDiv" style="visibility: hidden;">
         <Note v-show="noteState" @closeNote="closeNote"></Note>
     </div>
-    <!-- <ContextFloatBox @showNote="showNote"></ContextFloatBox> -->
+    <ContextFloatBox @showNote="showNote"></ContextFloatBox>
 </template>
 
 <script>

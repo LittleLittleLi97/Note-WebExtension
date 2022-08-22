@@ -5,20 +5,23 @@ export function updateSelection(range) {
     selection.addRange(range);
 }
 
-export function highlightText(range) {
+export function highlightText(id, color) {
 
     document.designMode = 'on';
     document.execCommand('BackColor', false, 'yellow');
     document.designMode = 'off';
 
+    renderElement(id, color);
+
+    selection.empty();
 }
 
+// 暂不用
 export function highlightByInfo(info) {
     const startEl = getElementByPath(info.startPath);
     const endEl = getElementByPath(info.endPath);
     const range = new Range();
-    // console.log('on start el', startEl.childNodes[0])
-    // console.log('on end el', endEl.childNodes[0])
+
     range.setStart(startEl.childNodes[0], info.startOffset);
     range.setEnd(endEl.childNodes[0], info.endOffset);
 
@@ -28,7 +31,7 @@ export function highlightByInfo(info) {
 }
 
 // 定位元素所在位置
-export function getSelectorPath(el) { // 需要改进！！！！！
+export function getSelectorPath(el) {
     let path = [], parent;
     while (parent = el.parentNode) {
         let tag = el.tagName, siblings;
@@ -45,6 +48,7 @@ export function getSelectorPath(el) { // 需要改进！！！！！
     return path;
 }
 
+// 记录highlight范围
 export function getHighlightInfo(range) {
     return {
         // startPath: getSelectorPath(range.startContainer.parentElement),
@@ -58,24 +62,34 @@ export function getHighlightInfo(range) {
     }
 }
 
-export function addCellDataIdForElement(range, id) {
+export function renderElement(id, color) {
+    function _func(el) {
+        el.setAttribute('data-note-ext-cell-id', id);
+        el.className = 'note-ext-highlight-text';
+        el.style.cssText = `background-color: var(--note-ext-${color});`;
+    }
+
     let st = selection.anchorNode.parentElement;
     let ed = selection.focusNode.parentElement;
-    st.setAttribute('data-note-ext-cell-id', id);
+    _func(st);
     while (st != ed) {
         while (st!= ed && st.children.length) st = st.children[0];
-        st.setAttribute('data-note-ext-cell-id', id);
+        _func(st);
         while (st != ed && !st.nextElementSibling) st = st.parentNode;
         if (st != ed) st = st.nextElementSibling;
     }
-    selection.empty();
 }
 
 export function getElementByPath(path) {
     let el = document;
     path.forEach((item)=>{
         let splitItem = item.split(':');
-        el = splitItem.length > 1 ? el.querySelectorAll(splitItem[0])[splitItem[1]] : el.querySelector(item);
+        if (splitItem.length > 1) {
+            el = el.children[splitItem[1]];
+        } else {
+            el = el.querySelector(item);
+        }
+        // el = splitItem.length > 1 ? el.querySelectorAll(splitItem[0])[splitItem[1]] : el.querySelector(item);
     });
     return el;
 }
