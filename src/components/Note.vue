@@ -77,7 +77,7 @@ import NoteManager from '@/components/NoteManager'
 import PubSub from 'pubsub-js'
 export default {
     name: 'Note',
-    emits: ['closeNote'],
+    emits: ['showNote', 'closeNote'],
     components: {
         CellCard,
         NoteManager
@@ -143,19 +143,29 @@ export default {
             PubSub.subscribe('addHighlightCell', (msg, id)=>{
                 if (isNewNote.value) { // 如果有默认创建的cell，则替换此cell
                     noteInfo.children[0] = id;
+                    _update();
                 } else {
-                    noteInfo.children.push(id);
-                }
-                saveNote({newContent:'加入了新的注释...'});
-                chrome.runtime.sendMessage({
-                    func: 'save',
-                    type: 'cell',
-                    data: {
-                        id,
-                        content: '',
-                        label: 'blue'
+                    let index = noteInfo.children.indexOf(id);
+                    if (index === -1) {
+                        noteInfo.children.push(id);
+                        _update();
                     }
-                });
+                }
+                showNoteEvent();
+                
+                function _update() {
+                    saveNote({newContent:'加入了新的注释...'});
+                    chrome.runtime.sendMessage({
+                        func: 'save',
+                        type: 'cell',
+                        data: {
+                            id,
+                            content: '',
+                            label: 'blue'
+                        }
+                    });
+
+                }
             });
         })
 
@@ -254,6 +264,10 @@ export default {
             saveNote({});
         }
 
+        // 打开Note
+        function showNoteEvent() {
+            context.emit('showNote');
+        }
         // 关闭Note
         function closeNoteEvent() {
             context.emit('closeNote');
@@ -318,6 +332,7 @@ export default {
             ...changeCollect(),
             saveNote,
             addCell,
+            showNoteEvent,
             closeNoteEvent,
             ...noteManagerFunction(),
         }

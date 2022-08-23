@@ -82,13 +82,23 @@ export function renderElement(id, color) {
 
 export function getElementByPath(path) {
     let el = document;
+    console.log(path)
     path.forEach((item)=>{
         let splitItem = item.split(':');
         if (splitItem.length > 1) {
             el = el.children[splitItem[1]];
+            console.log(splitItem);
+            console.log('children分支')
+        } else if (splitItem[0].slice(0,1) === '#') {
+            el = el.querySelector(item);
+            console.log(splitItem);
+            console.log('id分支')
         } else {
             el = el.querySelector(item);
+            console.log(splitItem);
+            console.log('单个分支')
         }
+        console.log(el);
         // el = splitItem.length > 1 ? el.querySelectorAll(splitItem[0])[splitItem[1]] : el.querySelector(item);
     });
     return el;

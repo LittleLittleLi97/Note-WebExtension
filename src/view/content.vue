@@ -1,7 +1,7 @@
 <template>
     <NoteFloatBox @click="showNote" v-show="!noteState"></NoteFloatBox>
     <div class="note-area" ref="noteDiv" style="visibility: hidden;">
-        <Note v-show="noteState" @closeNote="closeNote"></Note>
+        <Note v-show="noteState" @showNote="showNote" @closeNote="closeNote"></Note>
     </div>
     <ContextFloatBox @showNote="showNote"></ContextFloatBox>
 </template>

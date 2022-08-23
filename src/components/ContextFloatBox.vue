@@ -1,9 +1,14 @@
 <template>
-    <div class="float-box" v-show="boxState" ref="floatBoxDiv" @click="addCell">
+    <div class="float-box" v-show="boxState" ref="boxDiv">
         <div class="box-inner">
-            <i class="iconfont icon-bianji"></i>
+            <i class="iconfont icon-bianji" @click="addCell"></i>
+            <i class="iconfont icon-shanchu" v-show="modifyState" @click="deleteHighlight"></i>
         </div>
     </div>
+    <!-- <div class="float-box" v-show="modifyBoxState" ref="modifyBoxDiv">
+        <div class="box-inner">
+        </div>
+    </div> -->
 </template>
 
 <script>
@@ -16,13 +21,18 @@ export default {
     name: 'ContextFloatBox',
     emits: ['showNote'],
     setup(props, context) {
-        const boxState = ref(false);
-        const floatBoxDiv = ref(null);
         const info = reactive({
             url: '',
             area: {},
-        })
+        });
+        const boxState = ref(false);
+        const boxDiv = ref(null);
+        const modifyState = ref(false);
+
         let range = null;
+        let cellId = null;
+        let mode = 'highlight';
+
         onMounted(()=>{
             // 初始化信息
             info.url = removeUrlQuery(window.location.href);
@@ -42,42 +52,86 @@ export default {
             // 选中文字事件
             document.addEventListener('mouseup', (event)=>{
                 let text = selection.toString();
-                if (text) {
-                    // 坐标有问题
-                    floatBoxDiv.value.style.cssText = `top: ${event.clientY}px; left: ${event.clientX}px;`;
-                    boxState.value = true;
+                let tCellId = event.target.getAttribute('data-note-ext-cell-id');
 
-                    // 存储range
-                    range = selection.getRangeAt(0);
+                let res = text.length > 0 || tCellId;
+                if (res) {
+                    // 坐标有问题
+                    boxDiv.value.style.cssText = `top: ${event.clientY}px; left: ${event.clientX}px;`;
+                    boxState.value = true;
+                    if (tCellId) {
+                        cellId = tCellId;
+                        mode = 'modify';
+                        modifyState.value = true;
+                    } else if (text.length > 0) {
+                        mode = 'highlight';
+                        range = selection.getRangeAt(0);
+                    } 
                 } else {
                     boxState.value = false;
+                    modifyState.value = false;
+                    selection.empty();
                 }
             })
         });
+
         // 写笔记事件
-        function addCell() {
-            const newCellId = nanoid();
-            const el = range.commonAncestorContainer.parentElement;
-            const elPath = getSelectorPath(el);
-            console.log('elPath', elPath);
+        function writeFunction() {
+            // const writeBoxState = ref(false);
+            // const writeBoxDiv = ref(null);
 
-            updateSelection(range);
-            highlightText(newCellId, 'blue');
+            function addCell() {
+                if (mode === 'modify') { // 在modify下点击
+                console.log('click yeah')
+                    PubSub.publish('addHighlightCell', cellId);
+                    return;
+                }
+                const newCellId = nanoid();
+                const el = range.commonAncestorContainer.parentElement;
+                const elPath = getSelectorPath(el);
+                console.log('elPath', elPath);
 
-            info.area[newCellId] = {
-                elPath,
-                innerHTML: el.innerHTML
-            };
-            console.log('save', info.area)
+                updateSelection(range);
+                highlightText(newCellId, 'blue');
 
-            chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
-            PubSub.publish('addHighlightCell', newCellId);
-            context.emit('showNote');
+                info.area[newCellId] = {
+                    elPath,
+                    innerHTML: el.innerHTML
+                };
+                console.log('save', info.area)
+
+                chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
+                PubSub.publish('addHighlightCell', newCellId);
+                context.emit('showNote');
+            }
+            onMounted(()=>{
+
+            })
+            return {
+                // writeBoxState,
+                // writeBoxDiv,
+                addCell,
+            }
+        }
+
+        function modifyFunction() {
+            function deleteHighlight() {
+                console.log('delete', cellId);
+            }
+            onMounted(()=>{
+                document.addEventListener('click', (event)=>{
+                })
+            })
+            return {
+                deleteHighlight,
+            }
         }
         return {
             boxState,
-            floatBoxDiv,
-            addCell,
+            boxDiv,
+            modifyState,
+            ...writeFunction(),
+            ...modifyFunction(),
         }
     }
 }
@@ -88,8 +142,8 @@ export default {
     position: absolute;
     z-index: 9999;
 
-    width: 48px;
-    height: 40px;
+    // width: 48px;
+    // height: 40px;
 
     padding: 4px;
 
@@ -105,21 +159,26 @@ export default {
         justify-content: center;
         align-items: center;
 
-        width: 40px;
-        height: 32px;
-
-        padding: 4px 8px;
-
-        border-radius: 4px;
-
-        box-sizing: border-box;
-
-        &:hover {
-            background-color: var(--note-ext-context-hover);
-        }
         .iconfont {
             font-size: 24px;
             color: var(--note-ext-font);
+            line-height: 32px;
+            text-align: center;
+
+            width: 32px;
+            height: 32px;
+
+            margin: 0 2px;
+
+            border-radius: 4px;
+    
+            box-sizing: border-box;
+
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--note-ext-context-hover);
+            }
         }
     }
 }
