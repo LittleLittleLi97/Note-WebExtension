@@ -1,3 +1,7 @@
+import { finder } from '@medv/finder'
+
+const reNodeIndex = /:nth-child\(([0-9]*)\)/;
+
 export const selection = window.getSelection();
 
 export function updateSelection(range) {
@@ -31,7 +35,7 @@ export function highlightByInfo(info) {
 }
 
 // 定位元素所在位置
-export function getSelectorPath(el) {
+export function getSelectorPath2(el) {
     let path = [], parent;
     while (parent = el.parentNode) {
         let tag = el.tagName, siblings;
@@ -46,6 +50,27 @@ export function getSelectorPath(el) {
         el = parent;
     };
     return path;
+}
+export function getSelectorPath3(el) {
+    let res = finder(el);
+    res = res.split(' > ')
+    return res;
+}
+export function getSelectorPath(el) {
+    const li = [];
+    while(el !== document) {
+        if (el.id) {
+            li.unshift(`#${el.id}`);
+            break;
+        } else if (el.className) {
+            li.unshift(`.${el.className.replace(' ', '.')}`);
+        } else {
+            let siblings = el.parentNode.children;
+            li.unshift([].indexOf.call(siblings, el));
+        }
+        el = el.parentNode;
+    }
+    return li;
 }
 
 // 记录highlight范围
@@ -82,23 +107,14 @@ export function renderElement(id, color) {
 
 export function getElementByPath(path) {
     let el = document;
-    console.log(path)
+    console.log(path);
     path.forEach((item)=>{
-        let splitItem = item.split(':');
-        if (splitItem.length > 1) {
-            el = el.children[splitItem[1]];
-            console.log(splitItem);
-            console.log('children分支')
-        } else if (splitItem[0].slice(0,1) === '#') {
-            el = el.querySelector(item);
-            console.log(splitItem);
-            console.log('id分支')
+        if (typeof item === 'number') {
+            el = el.children[item];
         } else {
             el = el.querySelector(item);
-            console.log(splitItem);
-            console.log('单个分支')
         }
-        console.log(el);
+        console.log(el)
         // el = splitItem.length > 1 ? el.querySelectorAll(splitItem[0])[splitItem[1]] : el.querySelector(item);
     });
     return el;
