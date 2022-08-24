@@ -1,6 +1,6 @@
 <template>
     <transition>
-        <div class="note-wrapper" @click="closeContextMenu">
+        <div class="note-wrapper" @click="closeContextMenu" id="note-ext-main-content-area">
             <div class="note-main-area" @contextmenu="openContextMenu">
                 <div class="note-header">
                     <div class="header-top">
@@ -140,13 +140,13 @@ export default {
             })
 
             // 响应文字高亮
-            PubSub.subscribe('addHighlightCell', (msg, id)=>{
+            PubSub.subscribe('addHighlightCell', (msg, {id, text})=>{
                 if (isNewNote.value) { // 如果有默认创建的cell，则替换此cell
                     noteInfo.children[0] = id;
                     _update();
                 } else {
                     let index = noteInfo.children.indexOf(id);
-                    if (index === -1) {
+                    if (index === -1) { // 如果children中没有，push；如果有则不push
                         noteInfo.children.push(id);
                         _update();
                     }
@@ -160,11 +160,10 @@ export default {
                         type: 'cell',
                         data: {
                             id,
-                            content: '',
+                            content: `> ${text}`,
                             label: 'blue'
                         }
                     });
-
                 }
             });
         })

@@ -29,6 +29,7 @@ export default {
         const boxDiv = ref(null);
         const modifyState = ref(false);
 
+        let excludeElement = null; // 排除区域，content页面的主体部分不应该标注highlight
         let range = null;
         let cellId = null;
         let mode = 'highlight';
@@ -49,8 +50,12 @@ export default {
                 }
             });
 
+            // 排除区域
+            excludeElement = document.getElementById('note-ext-main-content-area');
+
             // 选中文字事件
             document.addEventListener('mouseup', (event)=>{
+                if (excludeElement.contains(event.target)) return;
                 let text = selection.toString();
                 let tCellId = event.target.getAttribute('data-note-ext-cell-id');
 
@@ -78,34 +83,34 @@ export default {
 
         // 写笔记事件
         function writeFunction() {
-            // const writeBoxState = ref(false);
-            // const writeBoxDiv = ref(null);
 
             function addCell() {
+                updateSelection(range);
+                const text = selection.toString();
+                
                 if (mode === 'modify') { // 在modify下点击
-                    PubSub.publish('addHighlightCell', cellId);
+                    PubSub.publish('addHighlightCell', {id: cellId, text});
+                    selection.empty();
                     return;
                 }
                 const newCellId = nanoid();
                 const el = range.commonAncestorContainer.parentElement;
                 const elKey = getTopElementkey(el);
 
-                updateSelection(range);
+                // updateSelection(range);
                 highlightText(newCellId, 'blue');
 
                 info.area[elKey] = getElementByKey(elKey).innerHTML;
                 console.log('save', info.area)
 
                 chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
-                PubSub.publish('addHighlightCell', newCellId);
+                PubSub.publish('addHighlightCell', {id: newCellId, text});
                 context.emit('showNote');
             }
             onMounted(()=>{
 
             })
             return {
-                // writeBoxState,
-                // writeBoxDiv,
                 addCell,
             }
         }

@@ -60,6 +60,7 @@
     --note-ext-purple: #B146C2;
 }
 
+/* markdown */
 .note-ext-md-box ul {
     margin-left: 15px;
 }
@@ -75,6 +76,15 @@
     box-sizing: border-box;
 }
 
+.note-ext-md-box blockquote {
+    border-left: 5px solid var(--note-ext-line);
+
+    padding-left: 5px;
+
+    box-sizing: border-box;
+}
+
+/* highlight */
 .note-ext-highlight-text {
     color: var(--note-ext-font);
 
