@@ -1,4 +1,5 @@
 import { finder } from '@medv/finder'
+import { isNum } from './jsExt';
 
 const reNodeIndex = /:nth-child\(([0-9]*)\)/;
 
@@ -63,7 +64,7 @@ export function getSelectorPath(el) {
             li.unshift(`#${el.id}`);
             break;
         } else if (el.className) {
-            li.unshift(`.${el.className.replace(' ', '.')}`);
+            li.unshift(`.${el.className.replaceAll(' ', '.')}`);
         } else {
             let siblings = el.parentNode.children;
             li.unshift([].indexOf.call(siblings, el));
@@ -71,6 +72,18 @@ export function getSelectorPath(el) {
         el = el.parentNode;
     }
     return li;
+}
+export function getTopElementkey(el) {
+    console.log(el)
+    while (el.parentNode !== document.body) el = el.parentNode;
+    if (el.id) {
+        return `#${el.id}`;
+    } else if (el.className) {
+        return `.${el.className.replaceAll(' ', '.')}`;
+    } else {
+        let siblings = el.parentNode.children;
+        return [].indexOf.call(siblings, el);
+    }
 }
 
 // 记录highlight范围
@@ -107,15 +120,27 @@ export function renderElement(id, color) {
 
 export function getElementByPath(path) {
     let el = document;
-    console.log(path);
     path.forEach((item)=>{
         if (typeof item === 'number') {
             el = el.children[item];
+        } else if (isNum(item)) {
+            el = el.children[parseInt(item)];
         } else {
             el = el.querySelector(item);
         }
-        console.log(el)
         // el = splitItem.length > 1 ? el.querySelectorAll(splitItem[0])[splitItem[1]] : el.querySelector(item);
     });
+    return el;
+}
+
+export function getElementByKey(key) {
+    let el = document.body;
+
+    if (isNum(key)) {
+        el = el.children[parseInt(key)];
+    } else {
+        el = el.querySelector(key);
+    }
+
     return el;
 }

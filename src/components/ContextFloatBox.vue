@@ -15,7 +15,7 @@
 import { onMounted, reactive, ref } from '@vue/runtime-core'
 import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
-import { getElementByPath, getSelectorPath, highlightText, selection, updateSelection } from '@/utils/dom.js';
+import { getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, selection, updateSelection } from '@/utils/dom.js';
 import { parseReactiveToObj, copyObjToReactive, removeUrlQuery } from '@/utils/utils';
 export default {
     name: 'ContextFloatBox',
@@ -41,8 +41,8 @@ export default {
                     copyObjToReactive(info, response);
                     let area = info.area;
                     for (let key in area) {
-                        const { elPath, innerHTML } = area[key];
-                        const el = getElementByPath(elPath);
+                        const innerHTML = area[key];
+                        const el = getElementByKey(key);
                         el.innerHTML = innerHTML;
                     }
                     console.log(info);
@@ -88,16 +88,14 @@ export default {
                 }
                 const newCellId = nanoid();
                 const el = range.commonAncestorContainer.parentElement;
-                const elPath = getSelectorPath(el);
-                console.log('elPath', elPath);
+                const elKey = getTopElementkey(el);
 
                 updateSelection(range);
                 highlightText(newCellId, 'blue');
 
-                info.area[newCellId] = {
-                    elPath,
-                    innerHTML: el.innerHTML
-                };
+                console.log(elKey)
+                console.log(getElementByKey(elKey));
+                info.area[elKey] = getElementByKey(elKey).innerHTML;
                 console.log('save', info.area)
 
                 chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
