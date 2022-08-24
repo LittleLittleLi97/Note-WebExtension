@@ -15,7 +15,7 @@
 import { onMounted, reactive, ref } from '@vue/runtime-core'
 import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
-import { getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, selection, updateSelection } from '@/utils/dom.js';
+import { getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom.js';
 import { parseReactiveToObj, copyObjToReactive, removeUrlQuery } from '@/utils/utils';
 export default {
     name: 'ContextFloatBox',
@@ -66,6 +66,7 @@ export default {
                     } else if (text.length > 0) {
                         mode = 'highlight';
                         range = selection.getRangeAt(0);
+                        modifyState.value = false;
                     } 
                 } else {
                     boxState.value = false;
@@ -82,7 +83,6 @@ export default {
 
             function addCell() {
                 if (mode === 'modify') { // 在modify下点击
-                console.log('click yeah')
                     PubSub.publish('addHighlightCell', cellId);
                     return;
                 }
@@ -93,8 +93,6 @@ export default {
                 updateSelection(range);
                 highlightText(newCellId, 'blue');
 
-                console.log(elKey)
-                console.log(getElementByKey(elKey));
                 info.area[elKey] = getElementByKey(elKey).innerHTML;
                 console.log('save', info.area)
 
@@ -114,7 +112,13 @@ export default {
 
         function modifyFunction() {
             function deleteHighlight() {
-                console.log('delete', cellId);
+                const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${cellId}"]`);
+                elList.forEach((item)=>{
+                    let key = getTopElementkey(item); // 先拿key，去掉span后找不到parentNode
+                    removeHighlight(item);
+                    info.area[key] = getElementByKey(key).innerHTML;
+                });
+                chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
             }
             onMounted(()=>{
                 document.addEventListener('click', (event)=>{

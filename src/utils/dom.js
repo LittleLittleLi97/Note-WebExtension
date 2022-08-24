@@ -144,3 +144,12 @@ export function getElementByKey(key) {
 
     return el;
 }
+
+export function removeHighlight(el) {
+    // 正则需要加上/g，Uncaught TypeError: String.prototype.replaceAll called with a non-global RegExp argument
+    let innerHtml = el.innerHTML;
+    innerHtml = innerHtml.replaceAll(/background-color: var\(--note-ext-[\S]*\);/g, '');
+    innerHtml = innerHtml.replaceAll('note-ext-highlight-text', '');
+    innerHtml = innerHtml.replaceAll(/data-note-ext-cell-id="[\S]*"/g, '');
+    el.parentNode.innerHTML = el.parentNode.innerHTML.replace(el.outerHTML, innerHtml);
+}
