@@ -10,6 +10,7 @@
             <span class="show-title" v-show="showTitleState">{{ collectInfo.name }}</span>
             <input 
                 type="text" 
+                class="title-input"
                 ref="renameInputBox" 
                 v-show="!showTitleState" 
                 v-model="newName" 
@@ -129,7 +130,18 @@ export default {
                 margin-right: 5px;
             }
 
-            input {
+            .title-input {
+                font-size: 15px;
+                color: inherit;
+
+                width: 270px;
+
+                background-color: transparent;
+
+                border-radius: 1px;
+                border: 2px solid var(--note-ext-popup-title-focus);
+                outline: none;
+
                 box-sizing: border-box;
             }
         }
@@ -139,7 +151,7 @@ export default {
         }
         .card-area {
             display: grid;
-            grid-gap: 10px;
+            // grid-gap: 10px;
 
             // margin-top: 10px;
             padding: 0 11px;

@@ -18,13 +18,14 @@
             @closeContextMenu="closeContextMenu"
             @deleteItem="deleteItem"
             @renameItem="renameItem"
+            @createItem="createItem"
         ></CollectManager>
     </div>
     <CreateCollectPopover></CreateCollectPopover>
 </template>
 
 <script>
-import { computed, onMounted, reactive, ref } from '@vue/runtime-core'
+import { computed, nextTick, onMounted, reactive, ref } from '@vue/runtime-core'
 import FolderSection from '@/components/FolderSection'
 import CollectManager from '@/components/CollectManager'
 import CreateCollectPopover from '@/components/CreateCollectPopover'
@@ -111,34 +112,48 @@ export default {
             function renameItem() {
                 if (collectId) {
                     let id = collectId;
-                    PubSub.publish('renameCollect', id);
-                    PubSub.subscribe('renameCollectFinish', (msg, newName)=>{
-                        console.log('renameCollectFinish', newName)
-                        collectList[id].name = newName;
-                        chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
-                        let children = collectList[id].children;
-                        children.forEach((item)=>{
-                            chrome.runtime.sendMessage({func: 'getNoteById', id: item}, (response)=>{
-                                response.collect = newName;
-                                chrome.runtime.sendMessage({func: 'save', type: 'note', data: response});
-                            });
-                        });
-                        PubSub.unsubscribe('renameCollectFinish');
-                    });
+                    _renameCollect(id);
                 }
                 if (noteId) {
                     let id = noteId;
                     PubSub.publish('renameNote', id);
                 }
             }
+            function createItem() {
+                let id = nanoid();
+                collectList[id] = {
+                    id,
+                    name: '新建文件夹',
+                    children: []
+                };
+                chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
+                _renameCollect(id);
+            }
             onMounted(()=>{
                 // 创建新的收藏夹
-                PubSub.subscribe('createCollectEnd', (msg, name)=>{
-                    let id = nanoid();
-                    collectList[id] = {id, name, children: []};
-                    chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
-                })
+                // CreateCollectPopover.vue的订阅
+                // PubSub.subscribe('createCollectEnd', (msg, name)=>{
+                //     let id = nanoid();
+                //     collectList[id] = {id, name, children: []};
+                //     chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
+                // })
             })
+            function _renameCollect(id) {
+                PubSub.publish('renameCollect', id);
+                PubSub.subscribe('renameCollectFinish', (msg, newName)=>{
+                    console.log('renameCollectFinish', newName)
+                    collectList[id].name = newName;
+                    chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
+                    let children = collectList[id].children;
+                    children.forEach((item)=>{
+                        chrome.runtime.sendMessage({func: 'getNoteById', id: item}, (response)=>{
+                            response.collect = newName;
+                            chrome.runtime.sendMessage({func: 'save', type: 'note', data: response});
+                        });
+                    });
+                    PubSub.unsubscribe('renameCollectFinish');
+                });
+            }
             return {
                 collectManagerShow,
                 collectManagerDiv,
@@ -147,6 +162,7 @@ export default {
                 closeContextMenu,
                 deleteItem,
                 renameItem,
+                createItem,
             }
         }
         return {

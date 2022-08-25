@@ -8,6 +8,7 @@
                     <span class="show-title" v-show="showTitleState">{{ noteInfo.title }}</span>
                     <input 
                         type="text" 
+                        class="title-input"
                         ref="renameInputBox" 
                         v-show="!showTitleState" 
                         v-model="newName" 
@@ -102,6 +103,14 @@ export default {
 
         box-sizing: border-box;
 
+        transition: all 0.3s;
+
+        @media (prefers-color-scheme: light) {
+            &:hover {
+                box-shadow: 0px 1px 8px 0px #00000033;
+            }
+        }
+
         .web-icon {
             width: 76px;
             height: 76px;
@@ -134,7 +143,18 @@ export default {
                 overflow: hidden;
                 text-overflow: ellipsis;
 
-                input {
+                .title-input {
+                    font-size: inherit;
+                    color: inherit;
+
+                    width: 180px;
+
+                    background-color: transparent;
+
+                    border-radius: 1px;
+                    border: 2px solid var(--note-ext-popup-title-focus);
+                    outline: none;
+
                     box-sizing: border-box;
                 }
             }

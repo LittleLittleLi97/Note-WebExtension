@@ -13,6 +13,7 @@
 </template>
 
 <script>
+// 暂时不用
 import { ref } from '@vue/reactivity';
 import { onMounted } from '@vue/runtime-core';
 import PubSub from 'pubsub-js'

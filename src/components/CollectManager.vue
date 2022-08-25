@@ -9,13 +9,13 @@
                 <i class="iconfont icon-add"></i>
                 <span class="option-name">新建...</span>
             </li>
-            <li class="option-item" v-show="type==='local'" @click="deleteItemEvent">
-                <i class="iconfont icon-shanchu"></i>
-                <span class="option-name">删除</span>
-            </li>
             <li class="option-item" v-show="type==='local'" @click="renameItemEvent">
                 <i class="iconfont icon-zhongmingming1"></i>
                 <span class="option-name">重命名</span>
+            </li>
+            <li class="option-item" v-show="type==='local'" @click="deleteItemEvent">
+                <i class="iconfont icon-shanchu"></i>
+                <span class="option-name">删除</span>
             </li>
             <!-- <li class="option-item">
                 <i class="iconfont icon-link"></i>
@@ -39,11 +39,12 @@ export default {
     // popup收藏夹右键管理
     name: 'CollectManager',
     props: ["type"],
-    emits: ["closeContextMenu", "deleteItem", "renameItem"], // 先执行事件任务，再关闭contextMenu
+    emits: ["closeContextMenu", "deleteItem", "renameItem", "createItem"], // 先执行事件任务，再关闭contextMenu
     setup(props, context) {
         const type =  computed(()=>props.type);
         function createCollectEvent() {
-            PubSub.publish('createCollectStart');
+            // PubSub.publish('createCollectStart');
+            context.emit('createItem');
             context.emit('closeContextMenu');
         }
         function deleteItemEvent() {
