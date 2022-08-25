@@ -5,17 +5,13 @@
             <i class="iconfont icon-shanchu" v-show="modifyState" @click="deleteHighlight"></i>
         </div>
     </div>
-    <!-- <div class="float-box" v-show="modifyBoxState" ref="modifyBoxDiv">
-        <div class="box-inner">
-        </div>
-    </div> -->
 </template>
 
 <script>
 import { onMounted, reactive, ref } from '@vue/runtime-core'
 import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
-import { getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom.js';
+import { changeLabelColor, getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom.js';
 import { parseReactiveToObj, copyObjToReactive, removeUrlQuery } from '@/utils/utils';
 export default {
     name: 'ContextFloatBox',
@@ -78,6 +74,14 @@ export default {
                     modifyState.value = false;
                     selection.empty();
                 }
+            });
+
+            PubSub.subscribe('changeLabel', (msg, {id, color})=>{
+                console.log('get')
+                const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${id}"]`);
+                elList.forEach((el)=>{
+                    changeLabelColor(el, color);
+                })
             })
         });
 
@@ -85,19 +89,22 @@ export default {
         function writeFunction() {
 
             function addCell() {
-                updateSelection(range);
-                const text = selection.toString();
-                
+
                 if (mode === 'modify') { // 在modify下点击
+                    const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${cellId}"]`);
+                    let text = '';
+                    elList.forEach((el)=>text += el.innerHTML);
                     PubSub.publish('addHighlightCell', {id: cellId, text});
                     selection.empty();
                     return;
                 }
+
                 const newCellId = nanoid();
                 const el = range.commonAncestorContainer.parentElement;
                 const elKey = getTopElementkey(el);
 
-                // updateSelection(range);
+                updateSelection(range);
+                const text = selection.toString();
                 highlightText(newCellId, 'blue');
 
                 info.area[elKey] = getElementByKey(elKey).innerHTML;
@@ -107,15 +114,13 @@ export default {
                 PubSub.publish('addHighlightCell', {id: newCellId, text});
                 context.emit('showNote');
             }
-            onMounted(()=>{
-
-            })
             return {
                 addCell,
             }
         }
 
         function modifyFunction() {
+
             function deleteHighlight() {
                 const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${cellId}"]`);
                 elList.forEach((item)=>{
@@ -125,10 +130,6 @@ export default {
                 });
                 chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
             }
-            onMounted(()=>{
-                document.addEventListener('click', (event)=>{
-                })
-            })
             return {
                 deleteHighlight,
             }

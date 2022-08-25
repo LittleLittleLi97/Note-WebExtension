@@ -38,7 +38,8 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from '@vue/runtim
 import { copyObjToReactive, parseReactiveToObj } from '@/utils/utils';
 import { ElInput } from 'element-plus'
 import { marked } from 'marked'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js' // markdown代码高亮
+import PubSub from 'pubsub-js'
 export default {
     name: 'CellCard',
     props: {
@@ -119,6 +120,8 @@ export default {
                 labelListShow.value = false;
                 document.removeEventListener('click', cancelChangeLabel);
                 chrome.runtime.sendMessage({func: 'save', type: 'cell', data: cellInfo});
+                console.log('change')
+                PubSub.publish('changeLabel', {id: cellInfo.id, color});
             }
             function cancelChangeLabel(event) {
                 if (!labelListBox.value.contains(event.target)) {

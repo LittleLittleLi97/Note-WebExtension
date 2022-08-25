@@ -153,3 +153,9 @@ export function removeHighlight(el) {
     innerHtml = innerHtml.replaceAll(/data-note-ext-cell-id="[\S]*"/g, '');
     el.parentNode.innerHTML = el.parentNode.innerHTML.replace(el.outerHTML, innerHtml);
 }
+
+export function changeLabelColor(el, color) {
+    console.log(el);
+    console.log(el.style.cssText)
+    el.style.cssText = el.style.cssText.replace(/var\(--note-ext-[\S]*\)/, `var(--note-ext-${color})`)
+}
