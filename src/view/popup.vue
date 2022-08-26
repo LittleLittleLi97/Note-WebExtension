@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import NoteCollect from '@/components/NoteCollect.vue'
+import NoteCollect from '@/components/popup/Collect.vue'
 export default {
 	name: "popupView",
 	components: {

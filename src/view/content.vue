@@ -8,9 +8,9 @@
 
 <script>
 import { onMounted, ref } from 'vue'
-import Note from '@/components/Note'
-import NoteFloatBox from '@/components/NoteFloatBox'
-import ContextFloatBox from '@/components/ContextFloatBox'
+import Note from '@/components/content/Note'
+import NoteFloatBox from '@/components/content/NoteFloatBox'
+import ContextFloatBox from '@/components/content/ContextFloatBox'
 export default {
     name: 'contentView',
     components: {

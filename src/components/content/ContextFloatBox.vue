@@ -102,7 +102,7 @@ export default {
                 const newCellId = nanoid();
                 const el = range.commonAncestorContainer.parentElement;
                 const elKey = getTopElementkey(el);
-
+                console.log('range', range);
                 updateSelection(range);
                 const text = selection.toString();
                 highlightText(newCellId, 'blue');

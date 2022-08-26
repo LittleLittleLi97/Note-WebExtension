@@ -132,7 +132,7 @@ chrome.runtime.onMessage.addListener(
 			case 'delete':
 				db.deleteDB(request.type, request.id, ()=>sendResponse('OK'));
 				break;
-			case 'print':
+			case 'print': // 由于popup重写了右键，不能打开检查，所以在此console.log
 				console.log(request.c);
 			default:
 				break;

@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import CollectCard from '@/components/CollectCard'
+import CollectCard from '@/components/popup/CollectCard'
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from '@vue/runtime-core'
 import PubSub from 'pubsub-js';
 export default {

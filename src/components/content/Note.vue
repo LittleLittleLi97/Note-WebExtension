@@ -72,8 +72,8 @@ import { reactive, ref } from '@vue/reactivity'
 import { computed, nextTick, onMounted, watch } from '@vue/runtime-core';
 import { nanoid } from 'nanoid'
 import { copyObjToReactive, removeUrlQuery, parseReactiveToObj } from '@/utils/utils'
-import CellCard from '@/components/CellCard'
-import NoteManager from '@/components/NoteManager'
+import CellCard from '@/components/content/CellCard'
+import NoteManager from '@/components/content/NoteManager'
 import PubSub from 'pubsub-js'
 export default {
     name: 'Note',
@@ -160,7 +160,7 @@ export default {
                         type: 'cell',
                         data: {
                             id,
-                            content: `> ${text}`,
+                            content: `> ${text.trim()}`,
                             label: 'blue'
                         }
                     });

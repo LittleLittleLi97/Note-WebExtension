@@ -107,8 +107,13 @@ export function renderElement(id, color) {
         el.style.cssText = `background-color: var(--note-ext-${color});`;
     }
 
-    let st = selection.anchorNode.parentElement;
+    // st的表达式用于解决用户可能选择空白行的bug
+    let st = selection.anchorNode.children ? selection.anchorNode : selection.anchorNode.parentElement;
     let ed = selection.focusNode.parentElement;
+    // console.log('node', selection.anchorNode)
+    // console.log('children', selection.anchorNode.children)
+    // console.log('st', st);
+    // console.log('ed', ed);
     _func(st);
     while (st != ed) {
         while (st!= ed && st.children.length) st = st.children[0];

@@ -26,13 +26,13 @@
 
 <script>
 import { computed, nextTick, onMounted, reactive, ref } from '@vue/runtime-core'
-import FolderSection from '@/components/FolderSection'
-import CollectManager from '@/components/CollectManager'
-import CreateCollectPopover from '@/components/CreateCollectPopover'
+import FolderSection from '@/components/popup/FolderSection'
+import CollectManager from '@/components/popup/CollectManager'
+import CreateCollectPopover from '@/components/popup/CreateCollectPopover'
 import PubSub from 'pubsub-js'
 import { nanoid } from 'nanoid'
 export default {
-    name: 'NoteCollect',
+    name: 'Collect',
     components: {
         FolderSection,
         CollectManager,
