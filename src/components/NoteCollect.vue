@@ -111,8 +111,7 @@ export default {
             }
             function renameItem() {
                 if (collectId) {
-                    let id = collectId;
-                    _renameCollect(id);
+                    _renameCollect(collectId);
                 }
                 if (noteId) {
                     let id = noteId;
@@ -153,6 +152,11 @@ export default {
                     });
                     PubSub.unsubscribe('renameCollectFinish');
                 });
+                PubSub.subscribe('cancelRenameCollect', ()=>{
+                    // 取消重命名后一定要去掉上次的订阅，不然在下一次重命名时，上次的订阅也会响应，造成多个Collect被重命名
+                    PubSub.unsubscribe('renameCollectFinish');
+                    PubSub.unsubscribe('cancelRenameCollect');
+                })
             }
             return {
                 collectManagerShow,

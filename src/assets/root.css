@@ -86,7 +86,7 @@
 
 /* highlight */
 .note-ext-highlight-text {
-    color: var(--note-ext-font);
+    color: #fff;
 
     cursor: pointer;
 }

@@ -66,6 +66,7 @@ export default {
             function cancelRename() {
                 showTitleState.value = true;
                 newName.value = '';
+                PubSub.publish('cancelRenameCollect');
             }
             onMounted(()=>{
                 PubSub.subscribe('renameCollect', (msg, collectId)=>{

@@ -132,6 +132,8 @@ chrome.runtime.onMessage.addListener(
 			case 'delete':
 				db.deleteDB(request.type, request.id, ()=>sendResponse('OK'));
 				break;
+			case 'print':
+				console.log(request.c);
 			default:
 				break;
 		}
