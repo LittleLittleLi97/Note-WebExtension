@@ -18,3 +18,12 @@ export function parseReactiveToObj(reactive) {
     console.log(obj);
     return obj;
 }
+
+export function download(fileName, blob) {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+}

@@ -1,6 +1,10 @@
 <template>
     <transition>
-        <div class="note-wrapper" @click="closeContextMenu" id="note-ext-main-content-area">
+        <div 
+            class="note-wrapper" 
+            @click="closeContextMenu($event), closeMoreMenu($event)" 
+            id="note-ext-main-content-area"
+        >
             <div class="note-main-area" @contextmenu="openContextMenu">
                 <div class="note-header">
                     <div class="header-top">
@@ -20,13 +24,26 @@
                             >
                         </div>
                         <div class="more">
-                            <i class="iconfont icon-gengduo"></i>
+                            <i class="iconfont icon-gengduo" ref="openMoreDiv" @click="openMoreMenu"></i>
                             <i class="iconfont icon-shanchu2" @click="closeNoteEvent"></i>
+                            <div class="more-gengduo" v-show="moreMenuShow">
+                                <base-menu>
+                                    <base-menu-item
+                                        icon="iconfont icon-file-txt-fill"
+                                        title="导出txt"
+                                        @click="exportNote('txt')"
+                                    ></base-menu-item>
+                                    <base-menu-item
+                                        icon="iconfont icon-file-markdown"
+                                        title="导出md"
+                                        @click="exportNote('md')"
+                                    ></base-menu-item>
+                                </base-menu>
+                            </div>
                         </div>
                     </div>
                     <div class="classification-area">
                         <i class="iconfont icon-shoucang"></i>
-                        <!-- <div class="classification">{{ noteInfo.collect }}</div> -->
                         <select class="classification"
                             v-model="noteInfo.collect_id"
                             v-show="collectState"
@@ -71,16 +88,20 @@
 import { reactive, ref } from '@vue/reactivity'
 import { computed, nextTick, onMounted, watch } from '@vue/runtime-core';
 import { nanoid } from 'nanoid'
-import { copyObjToReactive, removeUrlQuery, parseReactiveToObj } from '@/utils/utils'
+import PubSub from 'pubsub-js'
+import { copyObjToReactive, removeUrlQuery, parseReactiveToObj, download } from '@/utils/utils'
 import CellCard from '@/components/content/CellCard'
 import NoteManager from '@/components/content/NoteManager'
-import PubSub from 'pubsub-js'
+import baseMenu from '@/components/base/base-menu'
+import baseMenuItem from '@/components/base/base-menu-item'
 export default {
     name: 'Note',
     emits: ['showNote', 'closeNote'],
     components: {
         CellCard,
-        NoteManager
+        NoteManager,
+        baseMenu,
+        baseMenuItem,
     },
     setup(props, context) {
         const collectList = reactive({});
@@ -323,6 +344,37 @@ export default {
                 deleteCell,
             }
         }
+        // more目录
+        function moreMenuFuntion() {
+            const moreMenuShow = ref(false);
+            const openMoreDiv = ref(null);
+            function openMoreMenu() {
+                moreMenuShow.value = true;
+            }
+            function closeMoreMenu(event) {
+                if (!openMoreDiv.value.contains(event.target)) moreMenuShow.value = false;
+            }
+            function exportNote(type='txt') {
+                const fileName = `${noteInfo.title}.${type}`;
+                let text = type === 'txt' ? `noteInfo.title\n\n` : `# ${noteInfo.title}\n\n`;
+                const p = Promise.all(noteInfo.children.map((id)=>chrome.runtime.sendMessage({func: 'getCellById', id})))
+                p.then((data)=>{
+                    for (let i = 0; i < data.length; i++) {
+                        text += data[i].content;
+                        if (i !== data.length - 1) text += '\n\n---\n\n';
+                    }
+                    const myBlob = new Blob([text], { type: "text/plain" });
+                    download(fileName, myBlob);
+                })
+            }
+            return {
+                moreMenuShow,
+                openMoreDiv,
+                openMoreMenu,
+                closeMoreMenu,
+                exportNote,
+            }
+        }
         return {
             collectList,
             noteInfo,
@@ -334,6 +386,7 @@ export default {
             showNoteEvent,
             closeNoteEvent,
             ...noteManagerFunction(),
+            ...moreMenuFuntion(),
         }
     }
 }
@@ -420,6 +473,8 @@ export default {
                     }
                 }
                 .more {
+                    position: relative;
+
                     display: flex;
                     align-items: center;
         
@@ -442,6 +497,11 @@ export default {
                         &:hover {
                             background-color: var(--note-ext-icon-hover);
                         }
+                    }
+                    .more-gengduo {
+                        position: absolute;
+                        top: -3px;
+                        right: 70px;
                     }
                 }
             }

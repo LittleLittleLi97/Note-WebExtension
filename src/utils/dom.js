@@ -1,8 +1,6 @@
 import { finder } from '@medv/finder'
 import { isNum } from './jsExt';
 
-const reNodeIndex = /:nth-child\(([0-9]*)\)/;
-
 export const selection = window.getSelection();
 
 export function updateSelection(range) {
