@@ -363,8 +363,10 @@ export default {
                 const p = Promise.all(noteInfo.children.map((id)=>chrome.runtime.sendMessage({func: 'getById', type: 'cell', id})))
                 p.then((data)=>{
                     for (let i = 0; i < data.length; i++) {
-                        text += data[i].content;
-                        if (i !== data.length - 1) text += '\n\n---\n\n';
+                        if (data[i]) { // note.children中添加了值，但可能cell中并没有输入内容，因此在cell表中还不存在
+                            text += data[i].content;
+                            if (i !== data.length - 1) text += '\n\n---\n\n';
+                        }
                     }
                     const myBlob = new Blob([text], { type: "text/plain" });
                     download(fileName, myBlob);
