@@ -131,4 +131,25 @@ export default class DataBase {
             request.onerror = errorCallback;
         })
     }
+    cursorDelete(storeName, indexName, indexValue) {
+        this.dbState.then((db)=>{
+            var store = db.transaction(storeName, "readwrite").objectStore(storeName);
+            var request = store.index(indexName).openCursor(IDBKeyRange.only(indexValue));
+            request.onsuccess = function (e) {
+                var cursor = e.target.result;
+                var deleteRequest;
+                 if (cursor) {
+                    deleteRequest = cursor.delete(); // 请求删除当前项
+                    deleteRequest.onerror = function () {
+                    console.log("游标删除该记录失败");
+                };
+                deleteRequest.onsuccess = function () {
+                    console.log("游标删除该记录成功");
+                };
+                cursor.continue();
+              }
+            };
+            request.onerror = function (e) {};
+        })
+      }
 }

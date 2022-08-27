@@ -58,7 +58,7 @@ export default {
                 let res = text.length > 0 || tCellId;
                 if (res) {
                     // 坐标有问题
-                    boxDiv.value.style.cssText = `top: ${event.clientY}px; left: ${event.clientX}px;`;
+                    boxDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
                     boxState.value = true;
                     if (tCellId) {
                         cellId = tCellId;

@@ -31,6 +31,7 @@ import CollectManager from '@/components/popup/CollectManager'
 import CreateCollectPopover from '@/components/popup/CreateCollectPopover'
 import PubSub from 'pubsub-js'
 import { nanoid } from 'nanoid'
+import { deleteCollect, deleteNote } from '@/utils/dbRequest'
 export default {
     name: 'Collect',
     components: {
@@ -83,27 +84,25 @@ export default {
                 collectId = null;
             }
             function deleteItem() { // 没有删除cell
-                console.log('delete', collectId, noteId)
                 if (collectId) {
-                    console.log('delete collect')
-                    chrome.runtime.sendMessage({func: 'delete', type: 'collect', id: collectId});
-                    let children = collectList[collectId].children;
-                    children.forEach((item)=>{
-                        chrome.runtime.sendMessage({func: 'delete', type: 'note', id: item});
-                    });
+                    // chrome.runtime.sendMessage({func: 'delete', type: 'collect', id: collectId});
+                    // let children = collectList[collectId].children;
+                    // children.forEach((item)=>{
+                    //     chrome.runtime.sendMessage({func: 'delete', type: 'note', id: item});
+                    // });
+                    deleteCollect(collectId);
                     delete collectList[collectId];
                 }
                 if (noteId) {
-                    console.log('delete note id: ', noteId);
                     let id = noteId; // 异步的原因，response的回调中noteId已被改为null, 需要保存下来
-                    chrome.runtime.sendMessage({func: 'getNoteById', id}, (response)=>{
+                    chrome.runtime.sendMessage({func: 'getById', type: 'note', id}, (response)=>{
                         // 找到collect的id
                         let collect = collectList[response.collect_id]
                         let children = collect.children;
                         let index = children.indexOf(id);
                         if (index !== -1) children.splice(index, 1);
                         chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collect});
-                        chrome.runtime.sendMessage({func: 'delete', type: 'note', id});
+                        deleteNote(id);
                     })
                 }
                 collectId = null;
@@ -145,7 +144,7 @@ export default {
                     chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
                     let children = collectList[id].children;
                     children.forEach((item)=>{
-                        chrome.runtime.sendMessage({func: 'getNoteById', id: item}, (response)=>{
+                        chrome.runtime.sendMessage({func: 'getById', type: 'note', id: item}, (response)=>{
                             response.collect = newName;
                             chrome.runtime.sendMessage({func: 'save', type: 'note', data: response});
                         });

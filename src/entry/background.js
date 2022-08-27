@@ -104,11 +104,23 @@ chrome.runtime.onMessage.addListener(
 					sendResponse(event.target.result);
 				});
 				break;
-			case 'getNoteById':
-				db.getDataByKey('note', request.id, (event)=>{
+			case 'getById':
+				db.getDataByKey(request.type, request.id, (event)=>{
 					sendResponse(event.target.result);
 				});
 				break;
+			case 'getByIndex':
+				db.getDataByIndex(request.type, request.indexName, request.indexValue, (event)=>{
+					let result = event.target.result;
+					if (result.length > 0) sendResponse(result);
+					else sendResponse(null);
+				});
+				break;
+			// case 'getNoteById':
+			// 	db.getDataByKey('note', request.id, (event)=>{
+			// 		sendResponse(event.target.result);
+			// 	});
+			// 	break;
 			case 'getNoteByUrl':
 				db.getDataByIndex('note', 'url', request.url, (event)=>{
 					let result = event.target.result;
@@ -116,11 +128,11 @@ chrome.runtime.onMessage.addListener(
 					else sendResponse(null);
 				});
 				break;
-			case 'getCellById':
-				db.getDataByKey('cell', request.id, (event)=>{
-					sendResponse(event.target.result);
-				});
-				break;
+			// case 'getCellById':
+			// 	db.getDataByKey('cell', request.id, (event)=>{
+			// 		sendResponse(event.target.result);
+			// 	});
+			// 	break;
 			case 'getHighlightByUrl':
 				db.getDataByKey('highlight', request.url, (event)=>{
 					sendResponse(event.target.result);
@@ -132,6 +144,8 @@ chrome.runtime.onMessage.addListener(
 			case 'delete':
 				db.deleteDB(request.type, request.id, ()=>sendResponse('OK'));
 				break;
+			case 'deleteByIndex':
+				db.cursorDelete(request.type, request.indexName, request.indexValue, ()=>sendResponse('OK'));
 			case 'print': // 由于popup重写了右键，不能打开检查，所以在此console.log
 				console.log(request.c);
 			default:

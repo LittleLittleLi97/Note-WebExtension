@@ -38,7 +38,7 @@ export default {
         const noteId = computed(()=>props.noteId);
         const noteInfo = reactive({});
         onMounted(()=>{
-            chrome.runtime.sendMessage({func: 'getNoteById', id: noteId.value}, (response)=>{
+            chrome.runtime.sendMessage({func: 'getById', type: 'note', id: noteId.value}, (response)=>{
                 copyObjToReactive(noteInfo, response);
             });
         })

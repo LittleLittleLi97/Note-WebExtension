@@ -61,7 +61,7 @@ export default {
             label: 'blue',
         });
         onMounted(()=>{
-            chrome.runtime.sendMessage({func: 'getCellById', id: cellId.value}, (response)=>{
+            chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: cellId.value}, (response)=>{
                 if (response) {
                     copyObjToReactive(cellInfo, response);
                     compileToMd(); // 初始化markdown

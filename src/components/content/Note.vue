@@ -229,6 +229,7 @@ export default {
             const collectState = ref(true); // true常态 false修改
             const collectInputBox = ref(null);
             let lastCollectId = noteInfo.collect_id; // 新建文件夹前，点击新建。。。，导致下一次watch中oldValue值不对
+            let changeState = 'fulfilled';
 
             function createCollectEnd() {
                 const id = nanoid();
@@ -241,19 +242,21 @@ export default {
                 chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]}, ()=>{
                     noteInfo.collect = name;
                     noteInfo.collect_id = id;
-                    collectState.value = true;
+                    changeState = 'fulfilled';
+                    cancelCreateCollect();
                 });
             }
             function cancelCreateCollect() {
-                noteInfo.collect_id = lastCollectId;
+                if (changeState === 'pending') noteInfo.collect_id = lastCollectId;
                 collectState.value = true;
                 collectInputBox.value.value = '';
             }
             watch(()=>noteInfo.collect_id, (newValue, oldValue)=>{
                 if (!newValue || !oldValue) return;
-                if (newValue == createCollectButton.value) { // 新建收藏夹
+                if (newValue == createCollectButton.value) { // 开始新建收藏夹
                     collectState.value = false;
                     lastCollectId = oldValue;
+                    changeState = 'pending';
                     nextTick(()=>collectInputBox.value.focus());
                     return;
                 }
@@ -357,7 +360,7 @@ export default {
             function exportNote(type='txt') {
                 const fileName = `${noteInfo.title}.${type}`;
                 let text = type === 'txt' ? `noteInfo.title\n\n` : `# ${noteInfo.title}\n\n`;
-                const p = Promise.all(noteInfo.children.map((id)=>chrome.runtime.sendMessage({func: 'getCellById', id})))
+                const p = Promise.all(noteInfo.children.map((id)=>chrome.runtime.sendMessage({func: 'getById', type: 'cell', id})))
                 p.then((data)=>{
                     for (let i = 0; i < data.length; i++) {
                         text += data[i].content;
