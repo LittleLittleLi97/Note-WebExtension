@@ -2,21 +2,31 @@
     <div class="float-box" v-show="boxState" ref="boxDiv">
         <div class="box-inner">
             <i class="iconfont icon-bianji" @click="addCell"></i>
-            <i class="iconfont icon-shanchu" v-show="modifyState" @click="deleteHighlight"></i>
+            <i class="iconfont icon-shanchu" v-show="modifyState" @click="deleteHighlightStart"></i>
         </div>
     </div>
+    <base-dialog 
+        v-show="deleteDialogShow" 
+        text="是否删除对应的笔记部分？"
+        @cancelFunction="deleteHighlight"
+        @confirmFunction="deleteHighlightAndCell"
+    ></base-dialog>
 </template>
 
 <script>
 import { onMounted, reactive, ref } from '@vue/runtime-core'
 import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
+import baseDialog from '@/components/base/base-dialog'
 import { changeLabelColor, getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom.js';
 import { parseReactiveToObj, copyObjToReactive, removeUrlQuery } from '@/utils/utils';
 import { isEmptyObj } from '@/utils/jsExt';
 export default {
     name: 'ContextFloatBox',
     emits: ['showNote'],
+    components: {
+        baseDialog,
+    },
     setup(props, context) {
         const info = reactive({
             url: '',
@@ -57,7 +67,6 @@ export default {
 
                 let res = text.length > 0 || tCellId;
                 if (res) {
-                    // 坐标有问题
                     boxDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
                     boxState.value = true;
                     if (tCellId) {
@@ -92,6 +101,11 @@ export default {
                 } else if (toMode === 'source') {
                     _source();
                 }
+            });
+
+            // 删除cell时的删除highlight
+            PubSub.subscribe('deleteHighlight', (msg, id)=>{
+                _deleteHighlight(id);
             })
         });
 
@@ -151,19 +165,44 @@ export default {
         }
 
         function modifyFunction() {
-
+            const deleteDialogShow = ref(false);
+            function deleteHighlightStart() {
+                chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: cellId}, (response)=>{
+                    if (response) {
+                        deleteDialogShow.value = true;
+                    } else {
+                        _deleteHighlight(cellId);
+                    }
+                });
+            }
+            function deleteHighlightEnd() {
+                deleteDialogShow.value = false;
+            }
             function deleteHighlight() {
-                const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${cellId}"]`);
+                deleteHighlightEnd();
+                _deleteHighlight(cellId);
+            }
+            function deleteHighlightAndCell(){
+                deleteHighlightEnd();
+                deleteHighlight();
+                console.log('hl', cellId);
+                PubSub.publish('deleteCell', cellId);
+            }
+            return {
+                deleteDialogShow,
+                deleteHighlightStart,
+                deleteHighlight,
+                deleteHighlightAndCell,
+            }
+        }
+        function _deleteHighlight(cellId) {
+            const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${cellId}"]`);
                 elList.forEach((item)=>{
                     let key = getTopElementkey(item); // 先拿key，去掉span后找不到parentNode
                     removeHighlight(item);
                     info.area[key] = getElementByKey(key).innerHTML;
                 });
-                chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
-            }
-            return {
-                deleteHighlight,
-            }
+            chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
         }
         return {
             boxState,

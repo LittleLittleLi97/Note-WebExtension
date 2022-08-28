@@ -79,8 +79,14 @@
                 </div>
             </div>
             <div class="note-manager" v-show="noteManagerShow" ref="noteManagerDiv">
-                <NoteManager @deleteCell="deleteCell"></NoteManager>
+                <NoteManager @deleteCell="deleteCellStart"></NoteManager>
             </div>
+            <base-dialog 
+                v-show="deleteDialogShow" 
+                text="是否删除对应的标注部分？"
+                @cancelFunction="deleteCell"
+                @confirmFunction="deleteCellAndHighlight"
+            ></base-dialog>
         </div>
     </transition>
 </template>
@@ -95,6 +101,7 @@ import CellCard from '@/components/content/CellCard'
 import NoteManager from '@/components/content/NoteManager'
 import baseMenu from '@/components/base/base-menu'
 import baseMenuItem from '@/components/base/base-menu-item'
+import baseDialog from '@/components/base/base-dialog'
 export default {
     name: 'Note',
     emits: ['showNote', 'closeNote'],
@@ -103,6 +110,7 @@ export default {
         NoteManager,
         baseMenu,
         baseMenuItem,
+        baseDialog,
     },
     setup(props, context) {
         const collectList = reactive({});
@@ -161,34 +169,6 @@ export default {
             chrome.runtime.sendMessage({func: 'getCollect'}, (response)=>{
                 for (let key in response) collectList[response[key].id] = response[key];
                 _getnoteInfo();
-            })
-
-            // 响应文字高亮
-            PubSub.subscribe('addHighlightCell', (msg, {id, text})=>{
-                if (isNewNote.value) { // 如果有默认创建的cell，则替换此cell
-                    noteInfo.children[0] = id;
-                    _update();
-                } else {
-                    let index = noteInfo.children.indexOf(id);
-                    if (index === -1) { // 如果children中没有，push；如果有则不push
-                        noteInfo.children.push(id);
-                        _update();
-                    }
-                }
-                showNoteEvent();
-                
-                function _update() {
-                    saveNote({newContent:'加入了新的注释...'});
-                    chrome.runtime.sendMessage({
-                        func: 'save',
-                        type: 'cell',
-                        data: {
-                            id,
-                            content: `> ${text.trim()}`,
-                            label: 'blue'
-                        }
-                    });
-                }
             });
         })
 
@@ -335,20 +315,45 @@ export default {
             function stopWheel(event) { // 关闭鼠标滚轮滑动事件，页面滚动会导致定位错误
                 event.preventDefault();
             }
-            function deleteCell() {
-                let id = cellId;
-                let children = noteInfo.children;
-                let index = children.indexOf(id);
-                if (index !== -1) children.splice(index, 1);
-                chrome.runtime.sendMessage({func: 'save', type: 'note', data: noteInfo});
-                chrome.runtime.sendMessage({func: 'delete', type: 'cell', id});
+
+            // 删除cell操作
+            function deleteCellFunction() {
+                const deleteDialogShow = ref(false);
+                function deleteCellStart() {
+                    chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: cellId}, (response)=>{
+                        console.log('isHighlight', response.highlight);
+                        if (response.highlight) {
+                            deleteDialogShow.value = true;
+                        } else {
+                            deleteCell();
+                        }
+                    });
+                }
+                function deleteCellEnd() {
+                    deleteDialogShow.value = false;
+                }
+                function deleteCell() {
+                    _deleteCell(cellId);
+                    deleteCellEnd();
+                }
+                function deleteCellAndHighlight() {
+                    deleteCell();
+                    PubSub.publish('deleteHighlight', cellId);
+                }
+                return {
+                    deleteDialogShow,
+                    deleteCellStart,
+                    deleteCellEnd,
+                    deleteCell,
+                    deleteCellAndHighlight,
+                }
             }
             return {
                 noteManagerShow,
                 noteManagerDiv,
                 openContextMenu,
                 closeContextMenu,
-                deleteCell,
+                ...deleteCellFunction(),
             }
         }
         // more目录
@@ -372,6 +377,7 @@ export default {
                 exportNote,
             }
         }
+        // highlight模式 source模式
         function modeFunction() {
             const modeShowDiv = ref(null);
             let mode = 'highlight';
@@ -406,6 +412,50 @@ export default {
                 changeMode
             }
         }
+        function highlightFunction() {
+            onMounted(()=>{
+                // 响应文字高亮
+                PubSub.subscribe('addHighlightCell', (msg, {id, text})=>{
+                    if (isNewNote.value) { // 如果有默认创建的cell，则替换此cell
+                        noteInfo.children[0] = id;
+                        _update();
+                    } else {
+                        let index = noteInfo.children.indexOf(id);
+                        if (index === -1) { // 如果children中没有，push；如果有则不push
+                            noteInfo.children.push(id);
+                            _update();
+                        }
+                    }
+                    showNoteEvent();
+                    
+                    function _update() {
+                        saveNote({newContent:'加入了新的注释...'});
+                        chrome.runtime.sendMessage({
+                            func: 'save',
+                            type: 'cell',
+                            data: {
+                                id,
+                                content: `> ${text.trim()}`,
+                                label: 'blue',
+                                highlight: true
+                            }
+                        });
+                    }
+                });
+                // 响应删除cell
+                PubSub.subscribe('deleteCell', (msg, cellId)=>{
+                    _deleteCell(cellId);
+                })
+            })
+        }
+        function _deleteCell(id) {
+            let children = noteInfo.children;
+            let index = children.indexOf(id);
+            if (index !== -1) children.splice(index, 1);
+            // chrome.runtime.sendMessage({func: 'save', type: 'note', data: noteInfo});
+            saveNote({newContent: '删除了一些部分...'});
+            chrome.runtime.sendMessage({func: 'delete', type: 'cell', id});
+        }
         return {
             collectList,
             noteInfo,
@@ -419,6 +469,7 @@ export default {
             ...noteManagerFunction(),
             ...moreMenuFuntion(),
             ...modeFunction(),
+            ...highlightFunction(),
         }
     }
 }
