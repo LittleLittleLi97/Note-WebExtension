@@ -13,6 +13,7 @@ import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
 import { changeLabelColor, getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom.js';
 import { parseReactiveToObj, copyObjToReactive, removeUrlQuery } from '@/utils/utils';
+import { isEmptyObj } from '@/utils/jsExt';
 export default {
     name: 'ContextFloatBox',
     emits: ['showNote'],
@@ -28,6 +29,8 @@ export default {
         let excludeElement = null; // 排除区域，content页面的主体部分不应该标注highlight
         let range = null;
         let cellId = null;
+        let contextMode = 'highlight';
+        const sourceArea = {}; // 保留的原始dom
         let mode = 'highlight';
 
         onMounted(()=>{
@@ -36,13 +39,9 @@ export default {
             chrome.runtime.sendMessage({func: 'getHighlightByUrl', url: info.url}, (response)=>{
                 if (response) {
                     copyObjToReactive(info, response);
-                    let area = info.area;
-                    for (let key in area) {
-                        const innerHTML = area[key];
-                        const el = getElementByKey(key);
-                        el.innerHTML = innerHTML;
-                    }
-                    console.log(info);
+                    _highlight();
+                    // if (!isEmptyObj(info.area)) 
+                    PubSub.publish('changeModeFromContext', 'highlight');
                 }
             });
 
@@ -51,6 +50,7 @@ export default {
 
             // 选中文字事件
             document.addEventListener('mouseup', (event)=>{
+                if (mode !== 'highlight') return;
                 if (excludeElement.contains(event.target)) return;
                 let text = selection.toString();
                 let tCellId = event.target.getAttribute('data-note-ext-cell-id');
@@ -62,10 +62,10 @@ export default {
                     boxState.value = true;
                     if (tCellId) {
                         cellId = tCellId;
-                        mode = 'modify';
+                        contextMode = 'modify';
                         modifyState.value = true;
                     } else if (text.length > 0) {
-                        mode = 'highlight';
+                        contextMode = 'highlight';
                         range = selection.getRangeAt(0);
                         modifyState.value = false;
                     } 
@@ -76,21 +76,51 @@ export default {
                 }
             });
 
+            // 更改标签
             PubSub.subscribe('changeLabel', (msg, {id, color})=>{
                 console.log('get')
                 const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${id}"]`);
                 elList.forEach((el)=>{
                     changeLabelColor(el, color);
                 })
+            });
+
+            // 显示highlight还是原网页
+            PubSub.subscribe('changeModeFromNote', (msg, toMode)=>{
+                if (toMode === 'highlight') {
+                    _highlight();
+                } else if (toMode === 'source') {
+                    _source();
+                }
             })
         });
+
+        function _highlight() {
+            const area = info.area;
+            mode = 'highlight';
+            for (let key in area) {
+                const innerHTML = area[key];
+                const el = getElementByKey(key);
+                sourceArea[key] = el.innerHTML;
+                el.innerHTML = innerHTML;
+            }
+        }
+
+        function _source() {
+            const area = info.area;
+            mode = 'source';
+            for (let key in sourceArea) {
+                const el = getElementByKey(key);
+                el.innerHTML = sourceArea[key];
+            }
+        }
 
         // 写笔记事件
         function writeFunction() {
 
             function addCell() {
 
-                if (mode === 'modify') { // 在modify下点击
+                if (contextMode === 'modify') { // 在modify下点击
                     const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${cellId}"]`);
                     let text = '';
                     elList.forEach((el)=>text += el.innerHTML);
@@ -100,14 +130,15 @@ export default {
                 }
 
                 const newCellId = nanoid();
-                const el = range.commonAncestorContainer.parentElement;
-                const elKey = getTopElementkey(el);
-                console.log('range', range);
+                const elKey = getTopElementkey(range.commonAncestorContainer.parentElement);
+                const el = getElementByKey(elKey);
+                if (!sourceArea[elKey]) sourceArea[elKey] = el.innerHTML;
+
                 updateSelection(range);
                 const text = selection.toString();
                 highlightText(newCellId, 'blue');
 
-                info.area[elKey] = getElementByKey(elKey).innerHTML;
+                info.area[elKey] = el.innerHTML;
                 console.log('save', info.area)
 
                 chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});

@@ -24,6 +24,7 @@
                             >
                         </div>
                         <div class="more">
+                            <i class="iconfont icon-pen" style="color: var(--note-ext-yellow);" ref="modeShowDiv" @click="changeMode"></i>
                             <i class="iconfont icon-gengduo" ref="openMoreDiv" @click="openMoreMenu"></i>
                             <i class="iconfont icon-shanchu2" @click="closeNoteEvent"></i>
                             <div class="more-gengduo" v-show="moreMenuShow">
@@ -380,6 +381,40 @@ export default {
                 exportNote,
             }
         }
+        function modeFunction() {
+            const modeShowDiv = ref(null);
+            let mode = 'highlight';
+            function changeMode() {
+                if (mode === 'source') {
+                    _highlight();
+                    PubSub.publish('changeModeFromNote', 'highlight');
+                } else if (mode === 'highlight'){
+                    _source();
+                    PubSub.publish('changeModeFromNote', 'source');
+                }
+            }
+            onMounted(()=>{
+                PubSub.subscribe('changeModeFromContext', (msg, toMode)=>{
+                    if (toMode === 'highlight') {
+                        _highlight();
+                    } else if (toMode === 'source'){
+                        _source();
+                    }
+                })
+            })
+            function _highlight() {
+                mode = 'highlight';
+                modeShowDiv.value.style.cssText = 'color: var(--note-ext-yellow)';
+            }
+            function _source() {
+                mode = 'source';
+                modeShowDiv.value.style.cssText = '';
+            }
+            return {
+                modeShowDiv,
+                changeMode
+            }
+        }
         return {
             collectList,
             noteInfo,
@@ -392,6 +427,7 @@ export default {
             closeNoteEvent,
             ...noteManagerFunction(),
             ...moreMenuFuntion(),
+            ...modeFunction(),
         }
     }
 }
@@ -433,7 +469,7 @@ export default {
                 width: 100%;
                 height: 56px;
     
-                margin-left: 5px; // 下面收藏夹hover动画的padding的5px，这里设置让文字对齐。
+                // margin-left: 5px; // 下面收藏夹hover动画的padding的5px，这里设置让文字对齐。
     
                 .title {
                     font-size: 22px;
@@ -451,6 +487,10 @@ export default {
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
+
+                        padding: 0 5px;
+
+                        box-sizing: border-box;
     
                         transition: background-color 0.2s;
     
@@ -482,7 +522,7 @@ export default {
 
                     display: flex;
                     align-items: center;
-        
+
                     .iconfont {
                         font-size: 22px;
                         text-align: center;
@@ -541,6 +581,8 @@ export default {
                     letter-spacing: 0px;
                     text-align: left;
     
+                    width: 100px;
+
                     margin-left: 10px;
     
                     background-color: transparent;
@@ -557,6 +599,18 @@ export default {
                         color: var(--note-ext-font);
                         background-color: var(--note-ext-theme2);
                     }
+                }
+                .collect-input {
+                    color: inherit;
+
+                    width: 100px;
+
+                    margin-left: 10px;
+
+                    background-color: transparent;
+
+                    border: none;
+                    outline: none;
                 }
             }
         }
