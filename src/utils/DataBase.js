@@ -51,6 +51,7 @@ export default class DataBase {
                     this.updateDB('collect', {
                         id: 'defaultcollect',
                         name: '默认收藏夹',
+                        createTime: Date.now(),
                         children: []
                     })
                 }

@@ -101,7 +101,10 @@ chrome.runtime.onMessage.addListener(
 		switch (request.func) { // 需要重构
 			case 'getCollect':
 				db.getAllData('collect', (event)=>{
-					sendResponse(event.target.result);
+					let result = event.target.result;
+					result = result.sort((a, b)=>a.createTime - b.createTime);
+					console.log(result);
+					sendResponse(result);
 				});
 				break;
 			case 'getById':

@@ -88,7 +88,7 @@ export default {
                 noteId = null;
                 collectId = null;
             }
-            function deleteItem() { // 没有删除cell
+            function deleteItem() {
                 if (collectId) {
                     // chrome.runtime.sendMessage({func: 'delete', type: 'collect', id: collectId});
                     // let children = collectList[collectId].children;
@@ -127,6 +127,7 @@ export default {
                 collectList[id] = {
                     id,
                     name: '新建文件夹',
+                    createTime: Date.now(),
                     children: []
                 };
                 chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});

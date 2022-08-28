@@ -1,7 +1,6 @@
-function isNum(str) {
-    if (!str) return null;
-    let toInt = parseInt(str);
-    return toInt == str ? toInt : null;
-}
+const obj = {
+    a: 1,
+    b: 2
+};
 
-console.log(isNum('123'));
+console.log(Object.values(obj)[0]);

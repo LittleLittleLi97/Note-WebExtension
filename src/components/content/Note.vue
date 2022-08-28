@@ -136,29 +136,31 @@ export default {
         // 初始化信息
         onMounted(()=>{
             // note信息
-            let icon1 = document.querySelector("link[rel='apple-touch-icon']");
-            let icon2 = document.querySelector("link[rel='shortcut icon']");
-            let icon3 = document.querySelector("link[rel='icon']");
-            let iconValid = icon1 || icon2 || icon3;
-            console.log(iconValid.href);
-            noteInfo.url_icon = iconValid ? iconValid.href : '/img/Icon-128.png';
-            noteInfo.url = removeUrlQuery(window.location.href);
-
-            chrome.runtime.sendMessage({func: 'getNoteByUrl', url: noteInfo.url}, (response)=>{
-                if (response) {
-                    copyObjToReactive(noteInfo, response);
-                } else { // 默认创建的cell，在写入内容后保存
-                    isNewNote.value = true;
-                    noteInfo.id = nanoid();
-                    noteInfo.children.push(nanoid());
-                    noteInfo.title = document.getElementsByTagName('title')[0].innerText;
-                    noteInfo.collect_id = 'defaultcollect';
-                }
-            });
+            function _getnoteInfo() {
+                let icon1 = document.querySelector("link[rel='apple-touch-icon']");
+                let icon2 = document.querySelector("link[rel='shortcut icon']");
+                let icon3 = document.querySelector("link[rel='icon']");
+                let iconValid = icon1 || icon2 || icon3;
+                noteInfo.url_icon = iconValid ? iconValid.href : '/img/Icon-128.png';
+                noteInfo.url = removeUrlQuery(window.location.href);
+    
+                chrome.runtime.sendMessage({func: 'getNoteByUrl', url: noteInfo.url}, (response)=>{
+                    if (response) {
+                        copyObjToReactive(noteInfo, response);
+                    } else { // 默认创建的cell，在写入内容后保存
+                        isNewNote.value = true;
+                        noteInfo.id = nanoid();
+                        noteInfo.children.push(nanoid());
+                        noteInfo.title = document.getElementsByTagName('title')[0].innerText;
+                        noteInfo.collect_id = Object.values(collectList)[0].id;
+                    }
+                });
+            }
 
             // collect列表
             chrome.runtime.sendMessage({func: 'getCollect'}, (response)=>{
                 for (let key in response) collectList[response[key].id] = response[key];
+                _getnoteInfo();
             })
 
             // 响应文字高亮
@@ -238,6 +240,7 @@ export default {
                 collectList[id] = {
                     id,
                     name,
+                    createTime: Date.now(),
                     children: []
                 };
                 chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]}, ()=>{
