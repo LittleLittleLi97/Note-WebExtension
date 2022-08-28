@@ -90,7 +90,7 @@ import { reactive, ref } from '@vue/reactivity'
 import { computed, nextTick, onMounted, watch } from '@vue/runtime-core';
 import { nanoid } from 'nanoid'
 import PubSub from 'pubsub-js'
-import { copyObjToReactive, removeUrlQuery, parseReactiveToObj, download } from '@/utils/utils'
+import { copyObjToReactive, removeUrlQuery, parseReactiveToObj, download, downloadNote } from '@/utils/utils'
 import CellCard from '@/components/content/CellCard'
 import NoteManager from '@/components/content/NoteManager'
 import baseMenu from '@/components/base/base-menu'
@@ -359,19 +359,7 @@ export default {
                 if (!openMoreDiv.value.contains(event.target)) moreMenuShow.value = false;
             }
             function exportNote(type='txt') {
-                const fileName = `${noteInfo.title}.${type}`;
-                let text = type === 'txt' ? `noteInfo.title\n\n` : `# ${noteInfo.title}\n\n`;
-                const p = Promise.all(noteInfo.children.map((id)=>chrome.runtime.sendMessage({func: 'getById', type: 'cell', id})))
-                p.then((data)=>{
-                    for (let i = 0; i < data.length; i++) {
-                        if (data[i]) { // note.children中添加了值，但可能cell中并没有输入内容，因此在cell表中还不存在
-                            text += data[i].content;
-                            if (i !== data.length - 1) text += '\n\n---\n\n';
-                        }
-                    }
-                    const myBlob = new Blob([text], { type: "text/plain" });
-                    download(fileName, myBlob);
-                })
+                downloadNote(type, {title: noteInfo.title, cellList: noteInfo.children});
             }
             return {
                 moreMenuShow,

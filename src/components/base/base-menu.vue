@@ -1,9 +1,8 @@
 <template>
     <div class="collect-manager">
-        <ul class="option-list">
+        <div class="option-list">
             <slot></slot>
-            <!-- <div class="divding-line"></div> -->
-        </ul>
+        </div>
     </div>
 </template>
 
@@ -33,10 +32,6 @@ export default {
 
             box-sizing: border-box;
 
-        }
-        .dividing-line {
-            width: 100%;
-            border-top: 1px solid var(--note-ext-line);
         }
     }
 </style>

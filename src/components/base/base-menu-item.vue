@@ -1,8 +1,8 @@
 <template>
-    <li class="option-item">
+    <div class="option-item">
         <i :class="icon"></i>
         <span class="option-name">{{ title }}</span>
-    </li>
+    </div>
 </template>
 
 <script>

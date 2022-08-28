@@ -19,6 +19,7 @@
             @deleteItem="deleteItem"
             @renameItem="renameItem"
             @createItem="createItem"
+            @exportNode="exportNode"
         ></CollectManager>
     </div>
     <CreateCollectPopover></CreateCollectPopover>
@@ -32,6 +33,7 @@ import CreateCollectPopover from '@/components/popup/CreateCollectPopover'
 import PubSub from 'pubsub-js'
 import { nanoid } from 'nanoid'
 import { deleteCollect, deleteNote } from '@/utils/dbRequest'
+import { downloadNote } from '@/utils/utils'
 export default {
     name: 'Collect',
     components: {
@@ -68,14 +70,17 @@ export default {
                         let tempNoteId = item.getAttribute('data-noteId');
                         let tempCollectId = item.getAttribute('data-collectId');
                         if (tempNoteId || tempCollectId) {
-                            if (tempNoteId) noteId = tempNoteId;
-                            if (tempCollectId) collectId = tempCollectId;
+                            // if (tempNoteId) 
+                            noteId = tempNoteId;
+                            // if (tempCollectId) 
+                            collectId = tempCollectId;
                             flag = true;
                         }
                     } catch (error) {
                     }
                 });
-                if (flag) collectManagerType.value = 'local';
+                if (noteId) collectManagerType.value = 'note';
+                else if (collectId) collectManagerType.value = 'folder';
                 else collectManagerType.value = 'global';
             }
             function closeContextMenu() {
@@ -127,6 +132,9 @@ export default {
                 chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
                 _renameCollect(id);
             }
+            function exportNode(type) {
+                downloadNote(type, {noteId});
+            }
             onMounted(()=>{
                 // 创建新的收藏夹
                 // CreateCollectPopover.vue的订阅
@@ -143,7 +151,7 @@ export default {
                     collectList[id].name = newName;
                     chrome.runtime.sendMessage({func: 'save', type: 'collect', data: collectList[id]});
                     let children = collectList[id].children;
-                    children.forEach((item)=>{
+                    children.forEach((item)=>{ // 更新note中的collect_name
                         chrome.runtime.sendMessage({func: 'getById', type: 'note', id: item}, (response)=>{
                             response.collect = newName;
                             chrome.runtime.sendMessage({func: 'save', type: 'note', data: response});
@@ -166,6 +174,7 @@ export default {
                 deleteItem,
                 renameItem,
                 createItem,
+                exportNode,
             }
         }
         return {
