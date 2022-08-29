@@ -2,7 +2,10 @@
     <div class="pop-content" @contextmenu="openContextMenu" @click="closeContextMenu">
         <div class="header">
             <div class="title">MyNote</div>
-            <i class="iconfont icon-gengduo"></i>
+            <div class="icons">
+                <i class="iconfont icon-folder-add" @click="createItem"></i>
+                <i class="iconfont icon-gengduo"></i>
+            </div>  
         </div>
         <div class="body">
             <FolderSection 
@@ -227,24 +230,32 @@ export default {
             font-family: Segoe UI;
             font-weight: bold;
         }
-        .iconfont {
-            font-size: 22px;
-            text-align: center;
-            line-height: 30px;
+        .icons {
+            position: relative;
+            display: flex;
+            align-items: center;
+            .iconfont {
+                font-size: 22px;
+                text-align: center;
+                line-height: 30px;
 
-            width: 30px;
-            height: 30px;
+                width: 30px;
+                height: 30px;
 
-            border-radius: 5px;
+                margin-left: 8px;
 
-            cursor: pointer;
+                border-radius: 2px;
 
-            transition: background-color 0.2s;
+                cursor: pointer;
 
-            &:hover {
-                background-color: var(--note-ext-icon-hover);
+                transition: background-color 0.2s;
+
+                &:hover {
+                    background-color: var(--note-ext-icon-hover);
+                }
             }
         }
+        
     }
     .body {
         display: grid;
