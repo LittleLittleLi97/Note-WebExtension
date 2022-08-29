@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "31538570",
+      "name": "folder add",
+      "font_class": "folder-add",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
       "icon_id": "6145620",
       "name": "pen",
       "font_class": "pen",

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@medv/finder": "^2.1.0",
+    "cnpm": "^8.3.0",
     "core-js": "^3.8.3",
     "element-plus": "^2.2.11",
     "highlight.js": "^11.6.0",
