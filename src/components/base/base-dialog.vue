@@ -4,8 +4,8 @@
             <div class="content-wrapper">
                 <div class="text">{{ text }}</div>
                 <div class="button-area">
-                    <div class="cancel" @click="cancelEvent">取消</div>
-                    <div class="confirm" @click="confirmEvent">确认</div>
+                    <div class="button cancel" @click="cancelEvent">取消</div>
+                    <div class="button confirm" @click="confirmEvent">确认</div>
                 </div>
             </div>
         </div>
@@ -34,6 +34,10 @@ export default {
 </script>
 
 <style scoped lang="less">
+
+
+
+
 .dialog-wrapper {
     position: absolute;
     top: 0;
@@ -42,7 +46,7 @@ export default {
     width: 100%;
     height: 100%;
 
-    // background-color: #fff;
+    background-color: var(--note-ext-mask-background);
 
     .dialog-inner {
         position: absolute;
@@ -57,6 +61,8 @@ export default {
 
         background-color: var(--note-ext-theme2);
 
+        border-radius: 4px;
+
         .content-wrapper {
             width: 100%;
             height: 100%;
@@ -65,13 +71,33 @@ export default {
 
             box-sizing: border-box;
 
-            .input-box {
-                width: 100%;
+            display: flex;
+            align-content: space-around;
+            justify-content: space-between;
+            flex-direction: column;
 
-                box-sizing: border-box;
+            .text {
+
+                margin-left: 12px;
+
             }
+
             .button-area {
+                display: flex;
+                justify-content: space-around;
+
                 color: var(--note-ext-font);
+
+                .button {
+                    background-color: var(--note-ext-blue);
+                    width: 100px;
+                    height: 28px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 2px;
+                    color: var(--note-ext-font);
+                }
             }
         }
     }
