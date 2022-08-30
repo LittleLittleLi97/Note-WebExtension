@@ -180,6 +180,8 @@ export default {
 
     width: 100%;
 
+    min-height: 48px;
+
     padding: 10px;
 
     background-color: var(--note-ext-card);
