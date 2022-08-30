@@ -39,6 +39,12 @@
                                         title="导出md"
                                         @click="exportNote('md')"
                                     ></base-menu-item>
+                                    <!-- <base-menu-line></base-menu-line>
+                                    <base-menu-item
+                                        icon="iconfont icon-shanchu"
+                                        title="清空标注"
+                                        @click="clearAllHighlight"
+                                    ></base-menu-item> -->
                                 </base-menu>
                             </div>
                         </div>
@@ -101,6 +107,7 @@ import CellCard from '@/components/content/CellCard'
 import NoteManager from '@/components/content/NoteManager'
 import baseMenu from '@/components/base/base-menu'
 import baseMenuItem from '@/components/base/base-menu-item'
+import baseMenuLine from '@/components/base/base-menu-line'
 import baseDialog from '@/components/base/base-dialog'
 export default {
     name: 'Note',
@@ -110,6 +117,7 @@ export default {
         NoteManager,
         baseMenu,
         baseMenuItem,
+        baseMenuLine,
         baseDialog,
     },
     setup(props, context) {
@@ -337,6 +345,8 @@ export default {
                     deleteCellEnd();
                 }
                 function deleteCellAndHighlight() {
+                    // 清空标注，如果不删除cell的话，还得去掉每个cell记录中的highlight标记
+                    // 先不添加此功能
                     deleteCell();
                     PubSub.publish('deleteHighlight', cellId);
                 }
@@ -369,12 +379,16 @@ export default {
             function exportNote(type='txt') {
                 downloadNote(type, {title: noteInfo.title, cellList: noteInfo.children});
             }
+            function clearAllHighlight() {
+                PubSub.publish('clearAllHighlight');
+            }
             return {
                 moreMenuShow,
                 openMoreDiv,
                 openMoreMenu,
                 closeMoreMenu,
                 exportNote,
+                clearAllHighlight,
             }
         }
         // highlight模式 source模式

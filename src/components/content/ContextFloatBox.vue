@@ -81,7 +81,7 @@ export default {
                 } else {
                     boxState.value = false;
                     modifyState.value = false;
-                    selection.empty();
+                    // selection.empty();
                 }
             });
 
@@ -106,7 +106,16 @@ export default {
             // 删除cell时的删除highlight
             PubSub.subscribe('deleteHighlight', (msg, id)=>{
                 _deleteHighlight(id);
-            })
+            });
+
+            // 清空highlight
+            PubSub.subscribe('clearAllHighlight', ()=>{
+                let nowMode = mode;
+                _source();
+                info.area = {};
+                chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
+                if (nowMode === 'highlight') _highlight();
+            });
         });
 
         function _highlight() {
