@@ -39,9 +39,10 @@ export default {
 
 
 .dialog-wrapper {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
+    z-index: 10001;
 
     width: 100%;
     height: 100%;
@@ -49,7 +50,7 @@ export default {
     background-color: var(--note-ext-mask-background);
 
     .dialog-inner {
-        position: absolute;
+        position: fixed;
         left: 50%;
         top: 50%;
 
@@ -77,9 +78,9 @@ export default {
             flex-direction: column;
 
             .text {
+                color: var(--note-ext-font);
 
                 margin-left: 12px;
-
             }
 
             .button-area {
@@ -97,6 +98,8 @@ export default {
                     align-items: center;
                     border-radius: 2px;
                     color: var(--note-ext-font);
+
+                    cursor: pointer;
                 }
             }
         }

@@ -212,6 +212,13 @@ export default {
                     info.area[key] = getElementByKey(key).innerHTML;
                 });
             chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
+            // 更改cell记录中的highlight标记
+            chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: cellId}, (response)=>{
+                if (response) {
+                    response.highlight = false;
+                    chrome.runtime.sendMessage({func: 'save', type: 'cell', data: response});
+                }
+            })
         }
         return {
             boxState,
