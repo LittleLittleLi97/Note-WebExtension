@@ -8,6 +8,7 @@
     <base-dialog 
         v-show="deleteDialogShow" 
         text="是否删除对应的笔记部分？"
+        @closeFunction="deleteHighlightEnd"
         @cancelFunction="deleteHighlight"
         @confirmFunction="deleteHighlightAndCell"
     ></base-dialog>
@@ -200,6 +201,7 @@ export default {
             return {
                 deleteDialogShow,
                 deleteHighlightStart,
+                deleteHighlightEnd,
                 deleteHighlight,
                 deleteHighlightAndCell,
             }

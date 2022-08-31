@@ -2,6 +2,9 @@
     <div class="dialog-wrapper">
         <div class="dialog-inner">
             <div class="content-wrapper">
+                <div class="close-icon">
+                    <i class="iconfont icon-shanchu2" @click="closeEvent"></i>
+                </div>
                 <div class="text">{{ text }}</div>
                 <div class="button-area">
                     <div class="button cancel" @click="cancelEvent">取消</div>
@@ -16,8 +19,11 @@
 export default {
     name: 'base-dialog',
     props: ["text"],
-    emits: ["cancelFunction", "confirmFunction"],
+    emits: ["closeFunction", "cancelFunction", "confirmFunction"],
     setup(props, context) {
+        function closeEvent() {
+            context.emit('closeFunction')
+        }
         function cancelEvent() {
             context.emit('cancelFunction');
         }
@@ -26,6 +32,7 @@ export default {
         }
         return {
             text: props.text,
+            closeEvent,
             cancelEvent,
             confirmEvent,
         }
@@ -34,10 +41,6 @@ export default {
 </script>
 
 <style scoped lang="less">
-
-
-
-
 .dialog-wrapper {
     position: fixed;
     top: 0;
@@ -57,7 +60,7 @@ export default {
         transform: translate(-50%, -100%);
 
         width: 300px;
-        height: 100px;
+        // height: 120px;
 
 
         background-color: var(--note-ext-theme2);
@@ -72,10 +75,33 @@ export default {
 
             box-sizing: border-box;
 
-            display: flex;
-            align-content: space-around;
-            justify-content: space-between;
-            flex-direction: column;
+            // display: flex;
+            // align-content: space-around;
+            // justify-content: space-between;
+            // flex-direction: column;
+
+            .close-icon {
+                display: flex;
+                justify-content: end;
+
+                .iconfont {
+                    font-size: 22px;
+                    color: var(--note-ext-font);
+                    text-align: center;
+                    line-height: 30px;
+
+                    width: 30px;
+                    height: 30px;
+
+                    border-radius: 5px;
+
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: var(--note-ext-icon-hover);
+                    }
+                }
+            }
 
             .text {
                 color: var(--note-ext-font);
@@ -86,6 +112,8 @@ export default {
             .button-area {
                 display: flex;
                 justify-content: space-around;
+
+                margin-top: 20px;
 
                 color: var(--note-ext-font);
 

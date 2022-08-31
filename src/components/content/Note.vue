@@ -90,6 +90,7 @@
             <base-dialog 
                 v-show="deleteDialogShow" 
                 text="是否删除对应的标注部分？"
+                @closeFunction="deleteCellEnd"
                 @cancelFunction="deleteCell"
                 @confirmFunction="deleteCellAndHighlight"
             ></base-dialog>
