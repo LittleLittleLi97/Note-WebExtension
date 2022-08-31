@@ -86,6 +86,7 @@
             </div>
             <div class="note-manager" v-show="noteManagerShow" ref="noteManagerDiv">
                 <NoteManager 
+                    :cellId="manipulateCellId"
                     @findHighlight="findHighlight"
                     @deleteCell="deleteCellStart"
                 ></NoteManager>
@@ -296,7 +297,8 @@ export default {
         function noteManagerFunction() {
             const noteManagerShow = ref(false);
             const noteManagerDiv = ref(null);
-            let cellId = null;
+            const manipulateCellId = ref(null);
+            // let cellId = null;
             function openContextMenu(event) {
                 const path = event.path;
                 let flag = false;
@@ -304,7 +306,7 @@ export default {
                     try {
                         let tempCellId = item.getAttribute('data-cellId');
                         if (tempCellId) {
-                            cellId = tempCellId;
+                            manipulateCellId.value = tempCellId;
                             flag = true;
                             event.preventDefault();
                             // 定位依据.note-wrapper fixed
@@ -317,7 +319,7 @@ export default {
                 });
                 if (!flag) { // 右键了别的地方
                     closeContextMenu();
-                    cellId = null;
+                    manipulateCellId.value = null;
                 }
             }
             function closeContextMenu() {
@@ -331,7 +333,7 @@ export default {
             // 查找highlight操作
             function findHighlightFunction() {
                 function findHighlight() {
-                    PubSub.publish('findHighlight', cellId);
+                    PubSub.publish('findHighlight', manipulateCellId.value);
                 }
                 return {
                     findHighlight,
@@ -342,7 +344,7 @@ export default {
             function deleteCellFunction() {
                 const deleteDialogShow = ref(false);
                 function deleteCellStart() {
-                    chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: cellId}, (response)=>{
+                    chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: manipulateCellId.value}, (response)=>{
                         console.log('isHighlight', response.highlight);
                         if (response.highlight) {
                             deleteDialogShow.value = true;
@@ -355,14 +357,14 @@ export default {
                     deleteDialogShow.value = false;
                 }
                 function deleteCell() {
-                    _deleteCell(cellId);
+                    _deleteCell(manipulateCellId.value);
                     deleteCellEnd();
                 }
                 function deleteCellAndHighlight() {
                     // 清空标注，如果不删除cell的话，还得去掉每个cell记录中的highlight标记
                     // 先不添加此功能
                     deleteCell();
-                    PubSub.publish('deleteHighlight', cellId);
+                    PubSub.publish('deleteHighlight', manipulateCellId.value);
                 }
                 return {
                     deleteDialogShow,
@@ -375,6 +377,7 @@ export default {
             return {
                 noteManagerShow,
                 noteManagerDiv,
+                manipulateCellId,
                 openContextMenu,
                 closeContextMenu,
                 ...findHighlightFunction(),
