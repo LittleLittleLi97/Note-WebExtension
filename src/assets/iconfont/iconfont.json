@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "902003",
+      "name": "find",
+      "font_class": "find",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
       "icon_id": "31538570",
       "name": "folder add",
       "font_class": "folder-add",

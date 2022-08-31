@@ -85,7 +85,10 @@
                 </div>
             </div>
             <div class="note-manager" v-show="noteManagerShow" ref="noteManagerDiv">
-                <NoteManager @deleteCell="deleteCellStart"></NoteManager>
+                <NoteManager 
+                    @findHighlight="findHighlight"
+                    @deleteCell="deleteCellStart"
+                ></NoteManager>
             </div>
             <base-dialog 
                 v-show="deleteDialogShow" 
@@ -182,8 +185,8 @@ export default {
         })
 
         // 初始化样式
+        const cellAreaDiv = ref(null);
         function initStyle() {
-            const cellAreaDiv = ref(null);
             onMounted(()=>{
                 cellAreaDiv.value.style.cssText = `height: ${window.innerHeight - 112}px`;
             })
@@ -325,6 +328,16 @@ export default {
                 event.preventDefault();
             }
 
+            // 查找highlight操作
+            function findHighlightFunction() {
+                function findHighlight() {
+                    PubSub.publish('findHighlight', cellId);
+                }
+                return {
+                    findHighlight,
+                }
+            }
+
             // 删除cell操作
             function deleteCellFunction() {
                 const deleteDialogShow = ref(false);
@@ -364,6 +377,7 @@ export default {
                 noteManagerDiv,
                 openContextMenu,
                 closeContextMenu,
+                ...findHighlightFunction(),
                 ...deleteCellFunction(),
             }
         }
@@ -460,6 +474,14 @@ export default {
                 // 响应删除cell
                 PubSub.subscribe('deleteCell', (msg, cellId)=>{
                     _deleteCell(cellId);
+                });
+                // 响应findCell
+                PubSub.subscribe('findCell', (msg, id)=>{
+                    context.emit('showNote');
+                    nextTick(()=>{
+                        const el = document.querySelector(`div[data-cellId="${id}"`);
+                        cellAreaDiv.value.scrollTop = el.offsetTop - 115;
+                    })
                 })
             })
         }

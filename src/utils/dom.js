@@ -162,3 +162,7 @@ export function changeLabelColor(el, color) {
     console.log(el.style.cssText)
     el.style.cssText = el.style.cssText.replace(/var\(--note-ext-[\S]*\)/, `var(--note-ext-${color})`)
 }
+
+export function getAllElementsByCellId(id) {
+    return document.querySelectorAll(`span[data-note-ext-cell-id="${id}"]`);
+}

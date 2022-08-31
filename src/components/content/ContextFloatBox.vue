@@ -2,6 +2,7 @@
     <div class="float-box" v-show="boxState" ref="boxDiv">
         <div class="box-inner">
             <i class="iconfont icon-bianji" @click="addCell"></i>
+            <i class="iconfont icon-find" v-show="modifyState" @click="findCell"></i>
             <i class="iconfont icon-shanchu" v-show="modifyState" @click="deleteHighlightStart"></i>
         </div>
     </div>
@@ -19,7 +20,7 @@ import { onMounted, reactive, ref } from '@vue/runtime-core'
 import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
 import baseDialog from '@/components/base/base-dialog'
-import { changeLabelColor, getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom.js';
+import { changeLabelColor, getAllElementsByCellId, getElementByKey, getElementByPath, getSelectorPath, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom.js';
 import { parseReactiveToObj, copyObjToReactive, removeUrlQuery } from '@/utils/utils';
 import { isEmptyObj } from '@/utils/jsExt';
 export default {
@@ -89,7 +90,7 @@ export default {
             // 更改标签
             PubSub.subscribe('changeLabel', (msg, {id, color})=>{
                 console.log('get')
-                const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${id}"]`);
+                const elList = getAllElementsByCellId(id);
                 elList.forEach((el)=>{
                     changeLabelColor(el, color);
                 })
@@ -116,6 +117,12 @@ export default {
                 info.area = {};
                 chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
                 if (nowMode === 'highlight') _highlight();
+            });
+
+            PubSub.subscribe('findHighlight', (msg, id)=>{
+                const elList = getAllElementsByCellId(id);
+                const el = elList[0];
+                window.scrollTo(el.offsetLeft, el.offsetTop);
             });
         });
 
@@ -145,7 +152,7 @@ export default {
             function addCell() {
 
                 if (contextMode === 'modify') { // 在modify下点击
-                    const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${cellId}"]`);
+                    const elList = getAllElementsByCellId(cellId);
                     let text = '';
                     elList.forEach((el)=>text += el.innerHTML);
                     PubSub.publish('addHighlightCell', {id: cellId, text});
@@ -175,39 +182,54 @@ export default {
         }
 
         function modifyFunction() {
-            const deleteDialogShow = ref(false);
-            function deleteHighlightStart() {
-                chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: cellId}, (response)=>{
-                    if (response) {
-                        deleteDialogShow.value = true;
-                    } else {
-                        _deleteHighlight(cellId);
-                    }
-                });
+            function findCellFunction() {
+                function findCell() {
+                    PubSub.publish('findCell', cellId);
+                }
+                return {
+                    findCell,
+                }
             }
-            function deleteHighlightEnd() {
-                deleteDialogShow.value = false;
-            }
-            function deleteHighlight() {
-                deleteHighlightEnd();
-                _deleteHighlight(cellId);
-            }
-            function deleteHighlightAndCell(){
-                deleteHighlightEnd();
-                deleteHighlight();
-                console.log('hl', cellId);
-                PubSub.publish('deleteCell', cellId);
+
+            function deleteFunction() {
+                const deleteDialogShow = ref(false);
+                function deleteHighlightStart() {
+                    chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: cellId}, (response)=>{
+                        if (response) {
+                            deleteDialogShow.value = true;
+                        } else {
+                            _deleteHighlight(cellId);
+                        }
+                    });
+                }
+                function deleteHighlightEnd() {
+                    deleteDialogShow.value = false;
+                }
+                function deleteHighlight() {
+                    deleteHighlightEnd();
+                    _deleteHighlight(cellId);
+                }
+                function deleteHighlightAndCell(){
+                    deleteHighlightEnd();
+                    deleteHighlight();
+                    console.log('hl', cellId);
+                    PubSub.publish('deleteCell', cellId);
+                }
+                return {
+                    deleteDialogShow,
+                    deleteHighlightStart,
+                    deleteHighlightEnd,
+                    deleteHighlight,
+                    deleteHighlightAndCell,
+                }
             }
             return {
-                deleteDialogShow,
-                deleteHighlightStart,
-                deleteHighlightEnd,
-                deleteHighlight,
-                deleteHighlightAndCell,
+                ...findCellFunction(),
+                ...deleteFunction(),
             }
         }
         function _deleteHighlight(cellId) {
-            const elList = document.querySelectorAll(`span[data-note-ext-cell-id="${cellId}"]`);
+            const elList = getAllElementsByCellId(cellId);
                 elList.forEach((item)=>{
                     let key = getTopElementkey(item); // 先拿key，去掉span后找不到parentNode
                     removeHighlight(item);
