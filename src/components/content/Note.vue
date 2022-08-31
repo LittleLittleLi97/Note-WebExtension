@@ -47,6 +47,9 @@
                                     ></base-menu-item> -->
                                 </base-menu>
                             </div>
+                            <div>
+                                <Tooltip></Tooltip>
+                            </div>
                         </div>
                     </div>
                     <div class="classification-area">
@@ -68,6 +71,7 @@
                             v-show="!collectState"
                             @keypress.enter="createCollectEnd"
                             @blur="cancelCreateCollect"
+                            @focus="focusAll"
                         >
                     </div>
                 </div>
@@ -114,17 +118,19 @@ import baseMenu from '@/components/base/base-menu'
 import baseMenuItem from '@/components/base/base-menu-item'
 import baseMenuLine from '@/components/base/base-menu-line'
 import baseDialog from '@/components/base/base-dialog'
+import Tooltip from '@/components/others/Tooltip'
 export default {
     name: 'Note',
     emits: ['showNote', 'closeNote'],
     components: {
-        CellCard,
-        NoteManager,
-        baseMenu,
-        baseMenuItem,
-        baseMenuLine,
-        baseDialog,
-    },
+    CellCard,
+    NoteManager,
+    baseMenu,
+    baseMenuItem,
+    baseMenuLine,
+    baseDialog,
+    Tooltip
+},
     setup(props, context) {
         const collectList = reactive({});
         const noteInfo = reactive({
@@ -557,8 +563,11 @@ export default {
                     font-size: 22px;
                     font-weight: bold;
                     text-align: left;
+
+                    margin: 0px;
     
                     width: 256px;
+                    height: 36px;
     
                     border-radius: 5px;
     
@@ -569,6 +578,12 @@ export default {
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
+
+                        font-family: 'Segoe UI';
+                        font-weight: inherit;
+
+                        width: 100%;
+                        height: 100%;
 
                         padding: 0 5px;
 
@@ -586,7 +601,11 @@ export default {
                     .title-input {
                         font-size: inherit;
                         color: inherit;
+                        font-family: 'Segoe UI';
                         font-weight: inherit;
+
+                        width: 100%;
+                        height: 100%;
     
                         background-color: transparent;
     
@@ -650,7 +669,11 @@ export default {
                 &:hover {
                     background-color: var(--note-ext-icon-hover);
                 }
-    
+
+                &:focus {
+                    background-color: var(--note-ext-icon-hover);
+                }
+
                 .iconfont {
                     font-size: 20px;
                 }
@@ -665,7 +688,7 @@ export default {
     
                     width: 100px;
 
-                    margin-left: 10px;
+                    margin: 0px 0px 0px 10px;
     
                     background-color: transparent;
     

@@ -3,8 +3,9 @@
         <div class="header">
             <div class="title">MyNote</div>
             <div class="icons">
-                <i class="iconfont icon-folder-add" @click="createItem"></i>
+                <i class="iconfont icon-folder-add" @click="createItem" @mouseenter="showTooltip" @mouseleave="hideTooltip"></i>
                 <i class="iconfont icon-gengduo"></i>
+                <Tooltip></Tooltip>
             </div>  
         </div>
         <div class="body">
@@ -37,13 +38,19 @@ import PubSub from 'pubsub-js'
 import { nanoid } from 'nanoid'
 import { deleteCollect, deleteNote } from '@/utils/dbRequest'
 import { downloadNote } from '@/utils/utils'
+import Tooltip from '../others/Tooltip.vue'
 export default {
     name: 'Collect',
     components: {
         FolderSection,
         CollectManager,
         CreateCollectPopover,
+        Tooltip
     },
+    // props: {
+    //     tooltipShow,
+    //     tooltipText
+    // },
     setup() {
         // 初始化数据
         const collectList = reactive({});
@@ -185,6 +192,15 @@ export default {
             collectList,
             ...collectManagerFunction(),
         }
+    },
+    methods: {
+        showTooltip() {
+            Tooltip.methods.enter("try");
+            Tooltip.methods.move(this.event);
+        },
+        hideTooltip() {
+            Tooltip.methods.leave();
+        }
     }
 }
 </script>
@@ -229,6 +245,7 @@ export default {
             font-size: 22px;
             font-family: Segoe UI;
             font-weight: bold;
+            user-select: none;
         }
         .icons {
             position: relative;

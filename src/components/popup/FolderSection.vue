@@ -152,7 +152,7 @@ export default {
             }
             .icon-default {
                 display: inline-block;
-                transition: all .5s;
+                transition: all 0.2s;
             }
         }
 

@@ -1,44 +1,39 @@
 <template>
-    <div
-        @mouseenter="enter" 
-        @mouseleave="leave" 
-        @mousemove="move">
-        鼠标触碰元素
-    </div>
- 
- 
-<div v-show="popUpShow" class="hover_con" :style="positionStyle">
-悬浮框
-</div>
+  	<div v-show="tooltipShow" class="hover_con" :style="positionStyle">{{tooltipText}}</div>
 </template>
 
 <script>
 export default {
-    name: '',
+    name: 'Tooltip',
+	// props: {
+	// 	tooltipShow: Boolean,
+	// 	tooltipText: String
+	// },
     data() {
       return {
-        popUpShow:false,
-        
-        positionStyle:{top:'0px',left:'0px'}
+        tooltipShow: false,
+        tooltipText: '',
+        positionStyle: {top:'0px',left:'0px'}
       }
     },
     methods: {
-      enter() {
-        this.popUpShow = true
+      enter(str) {
+        this.tooltipShow = true
+		this.tooltipText = str
       },
       leave() {
-        this.popUpShow = false
+        this.tooltipShow = false
       },
       move(event) {
-        const x = event.pageX + 15 + 'px'
-        const y = event.pageY + 10 + 'px'
+        const x = this.event.pageX + 15 + 'px'
+        const y = this.event.pageY + 10 + 'px'
         this.positionStyle = { top: y, left: x }  
       }
     }
 }
 </script>
 
-<style>
+<style scoped lang="less">
 .hover_con{
     position: fixed;
     max-width: 220px;

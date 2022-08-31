@@ -180,7 +180,7 @@ export default {
 
     width: 100%;
 
-    min-height: 48px;
+    min-height: 56px;
 
     padding: 10px;
 

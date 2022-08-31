@@ -87,6 +87,8 @@ export default {
 <style scoped lang="less">
     .collect-card {
         display: flex;
+        align-items: center;
+        justify-content: space-evenly;
 
         color: var(--note-ext-font);
 
@@ -99,21 +101,34 @@ export default {
         background-color: var(--note-ext-card);
 
         border-radius: 5px;
-        border: 1px solid var(--note-ext-card-border);
 
         box-sizing: border-box;
 
-        transition: all 0.3s;
+        transition: all 0.2s;
 
         @media (prefers-color-scheme: light) {
+            box-shadow: 0px 0px 2px 0px #0000003F;
             &:hover {
-                box-shadow: 0px 1px 8px 0px #00000033;
+                box-shadow: 0px 2px 8px 0px #00000033;
+                .right-info {
+                    .title {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            box-shadow: 0px 0px 2px 0px #0000003F;
+            &:hover {
+                box-shadow: 0px 4px 8px 0px #0000003F;
             }
         }
 
         .web-icon {
-            width: 76px;
-            height: 76px;
+            width: 64px;
+            height: 64px;
+            user-select: none;
 
             img {
                 width: 100%;
@@ -143,6 +158,8 @@ export default {
                 overflow: hidden;
                 text-overflow: ellipsis;
 
+                user-select: none;
+
                 .title-input {
                     font-size: inherit;
                     color: inherit;
@@ -165,8 +182,10 @@ export default {
                 font-weight: regular;
                 line-height: normal;
 
+                height: 40px;
                 margin-top: 5px;
 
+                user-select: none;
 
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
