@@ -3,7 +3,8 @@
         <div class="dialog-inner">
             <div class="content-wrapper">
                 <div class="close-icon">
-                    <i class="iconfont icon-shanchu2" @click="closeEvent"></i>
+                    <!-- <i class="iconfont icon-shanchu2" @click="closeEvent"></i> -->
+                    <base-iconfont icon="icon-shanchu2" @click="closeEvent"></base-iconfont>
                 </div>
                 <div class="text">{{ text }}</div>
                 <div class="button-area">
@@ -16,10 +17,14 @@
 </template>
 
 <script>
+import baseIconfont from '@/components/base/base-iconfont'
 export default {
     name: 'base-dialog',
     props: ["text"],
     emits: ["closeFunction", "cancelFunction", "confirmFunction"],
+    components: {
+        baseIconfont,
+    },
     setup(props, context) {
         function closeEvent() {
             context.emit('closeFunction')
@@ -83,24 +88,6 @@ export default {
             .close-icon {
                 display: flex;
                 justify-content: end;
-
-                .iconfont {
-                    font-size: 22px;
-                    color: var(--note-ext-font);
-                    text-align: center;
-                    line-height: 30px;
-
-                    width: 30px;
-                    height: 30px;
-
-                    border-radius: 5px;
-
-                    cursor: pointer;
-
-                    &:hover {
-                        background-color: var(--note-ext-icon-hover);
-                    }
-                }
             }
 
             .text {
@@ -125,7 +112,7 @@ export default {
                     justify-content: center;
                     align-items: center;
                     border-radius: 2px;
-                    color: var(--note-ext-font);
+                    color: #fff; // 固定白色，黑色看不清
 
                     cursor: pointer;
                 }

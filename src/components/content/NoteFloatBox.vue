@@ -32,6 +32,8 @@ export default {
 
     border-radius: 50%;
 
+    box-shadow: 0px 1px 8px 0px #00000033;
+
     box-sizing: border-box;
 
     cursor: pointer;
