@@ -3,10 +3,9 @@
         <div 
             class="title" 
             @click="changeFolderState" 
-            :class="{'title-focus': folderState.collectCardShow}" 
             :data-collectId="collectInfo.id"
         >
-            <i class="iconfont" :class="folderState.iconfontClass"></i>
+            <i class="iconfont icon-tri-right-bottom-copy icon-default" :class="{'icon-rotate': !folderState.collectCardShow}"></i>
             <span class="show-title" v-show="showTitleState">{{ collectInfo.name }}</span>
             <input 
                 type="text" 
@@ -145,11 +144,18 @@ export default {
 
                 box-sizing: border-box;
             }
+            .show-title {
+                user-select: none;
+            }
+            .icon-rotate {        
+                transform: rotate(-45deg);
+            }
+            .icon-default {
+                display: inline-block;
+                transition: all .5s;
+            }
         }
-        .title-focus {
-            padding: 3px 12px 5px 10px; // 解决加border后文字位移问题，top和left方向都减少2px
-            border: 2px solid var(--note-ext-popup-title-focus);
-        }
+
         .card-area {
             display: grid;
             // grid-gap: 10px;
