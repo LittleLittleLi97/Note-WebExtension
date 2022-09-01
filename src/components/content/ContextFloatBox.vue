@@ -93,7 +93,10 @@ export default {
                 const elList = getAllElementsByCellId(id);
                 elList.forEach((el)=>{
                     changeLabelColor(el, color);
-                })
+                    const elKey = getTopElementkey(el);
+                    info.area[elKey] =  getElementByKey(elKey).innerHTML;
+                });
+                chrome.runtime.sendMessage({func: 'save', type: 'highlight', data: info});
             });
 
             // 显示highlight还是原网页
