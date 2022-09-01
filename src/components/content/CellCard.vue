@@ -207,7 +207,7 @@ export default {
         }
         .label-list {
             position: absolute;
-            top: 100%;
+            top: 22px;
             left: 50%;
             z-index: 10001;
 

@@ -352,7 +352,7 @@ export default {
                 function deleteCellStart() {
                     chrome.runtime.sendMessage({func: 'getById', type: 'cell', id: manipulateCellId.value}, (response)=>{
                         console.log('isHighlight', response.highlight);
-                        if (response.highlight) {
+                        if (response && response.highlight) {
                             deleteDialogShow.value = true;
                         } else {
                             deleteCell();
