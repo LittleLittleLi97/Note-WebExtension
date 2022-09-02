@@ -65,6 +65,13 @@
 }
 
 /* markdown */
+.note-ext-md-box {
+    /* font-family: Segoe UI; */
+}
+.note-ext-md-box p {
+    margin: 0px;
+    padding: 0px;
+}
 .note-ext-md-box ul {
     margin-left: 15px;
 }
@@ -80,10 +87,12 @@
     box-sizing: border-box;
 }
 
+/* markdown代码块 */
 .note-ext-md-box blockquote {
     border-left: 5px solid var(--note-ext-line);
 
     padding-left: 5px;
+    margin: 0px; /* 清除用户代理样式表样式 */
 
     box-sizing: border-box;
 }
