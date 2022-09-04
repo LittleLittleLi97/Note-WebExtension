@@ -42,16 +42,16 @@ npm run build
 
 ### light模式
 
-收藏夹
-![dark收藏夹]<img src="./forshow/light%20popup.png" alt="light收藏夹" style="zoom:50%;" />
+收藏夹 \
+<img src="./forshow/light%20popup.png" alt="light收藏夹" style="zoom:50%;" />
 
 写笔记
 ![light写笔记](./forshow/light%20content.png)
 
 ### dark模式
 
-收藏夹
-![dark收藏夹]<img src="./forshow/dark%20popup.png" alt="dark收藏夹" style="zoom:50%;" />
+收藏夹 \
+<img src="./forshow/dark%20popup.png" alt="dark收藏夹" style="zoom:50%;" />
 
 写笔记
 ![dark写笔记](./forshow/dark%20content.png)
