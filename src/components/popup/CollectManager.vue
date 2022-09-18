@@ -1,8 +1,8 @@
 <template>
     <base-menu>
         <base-menu-item
-            icon="iconfont icon-add"
-            title="新建..."
+            icon="iconfont icon-folder-add"
+            title="添加文件夹"
             v-show="type==='global'"
             @click="createCollectEvent"
         ></base-menu-item>

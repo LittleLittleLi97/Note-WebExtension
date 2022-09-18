@@ -109,7 +109,7 @@ export default {
         @media (prefers-color-scheme: light) {
             box-shadow: 0px 0px 2px 0px #0000003F;
             &:hover {
-                box-shadow: 0px 2px 8px 0px #00000033;
+                box-shadow: 0px 2px 6px 0px #00000033;
                 .right-info {
                     .title {
                         text-decoration: underline;
@@ -121,7 +121,12 @@ export default {
         @media (prefers-color-scheme: dark) {
             box-shadow: 0px 0px 2px 0px #0000003F;
             &:hover {
-                box-shadow: 0px 4px 8px 0px #0000003F;
+                box-shadow: 0px 4px 6px 0px #0000003F;
+                .right-info {
+                    .title {
+                        text-decoration: underline;
+                    }
+                }
             }
         }
 
@@ -151,7 +156,6 @@ export default {
                 font-weight: semibold;
                 line-height: normal;
 
-                height: 28px;
 
                 display: block;
                 white-space: nowrap;
@@ -160,6 +164,9 @@ export default {
 
                 user-select: none;
 
+                .show-title {
+                    text-overflow: ellipsis;
+                }
                 .title-input {
                     font-size: inherit;
                     color: inherit;

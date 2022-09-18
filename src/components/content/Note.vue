@@ -581,6 +581,7 @@ export default {
 
                         font-family: 'Segoe UI';
                         font-weight: inherit;
+                        font-size: inherit;
 
                         width: 100%;
                         height: 100%;
