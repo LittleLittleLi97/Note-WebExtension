@@ -1,4 +1,3 @@
-import { finder } from '@medv/finder'
 import { isNum } from './jsExt';
 
 export const selection = window.getSelection();
@@ -50,11 +49,7 @@ export function getSelectorPath2(el) {
     };
     return path;
 }
-export function getSelectorPath3(el) {
-    let res = finder(el);
-    res = res.split(' > ')
-    return res;
-}
+
 export function getSelectorPath(el) {
     const li = [];
     while(el !== document) {
