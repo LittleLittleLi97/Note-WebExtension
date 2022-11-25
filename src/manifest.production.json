@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "MyNote",
+    "description": "重构代码中...",
+    "version": "0.3.0",
+    "background": {
+        "service_worker": "/background.js"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "/content.js"
+            ]
+        }
+    ]
+}
