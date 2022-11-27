@@ -1,4 +1,9 @@
 import { createApp } from 'vue'
-import popupView from '@/view/popup-view.vue'
+import { createPinia } from 'pinia'
+import PopupView from '@/view/PopupView.vue'
+import '@/assets/root.css'
+import '@/assets/iconfont/iconfont.css'
 
-createApp(popupView).mount('#app')
+const app = createApp(PopupView);
+app.use(createPinia());
+app.mount('#app');
