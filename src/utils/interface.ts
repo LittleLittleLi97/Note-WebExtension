@@ -11,7 +11,6 @@ export interface collectList {
 
 export interface note {
     id: string,
-    collect: string,
     collect_id: string,
     title: string,
     url: string,

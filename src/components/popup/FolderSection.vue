@@ -3,11 +3,12 @@
         <div 
             class="title" 
             @click="changeFolderState" 
+            @contextmenu="openContextMenu"
             :data-collectId="collectInfo.id"
         >
             <i class="iconfont icon-tri-right-bottom-copy icon-default" :class="{'icon-rotate': !folderState.collectCardShow}"></i>
             <span class="show-title">{{ collectInfo.name }}</span>
-            <!-- <input 
+            <input 
                 type="text" 
                 class="title-input"
                 ref="renameInputBox" 
@@ -15,7 +16,7 @@
                 v-model="newName" 
                 @keypress.enter="renameEnd"
                 @blur="cancelRename"
-            > -->
+            >
         </div>
         <div class="card-area" v-show="folderState.collectCardShow">
             <CollectCard 
@@ -25,12 +26,24 @@
             />
         </div>
     </div>
+    <CollectManager 
+        v-model="collectManagerShow" 
+        type="folder" 
+        :id="collectInfo.id" 
+        :location="locationStyle"
+        ref="collectManagerDiv"
+        @rename="renameStart"
+    ></CollectManager>
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, reactive } from 'vue';
+import { defineProps, onMounted, ref, reactive, nextTick } from 'vue';
 import CollectCard from '@/components/popup/CollectCard.vue'
+import CollectManager from './CollectManager.vue';
 import { collect, collectList } from '@/utils/interface';
+import { usePopupStore } from '@/store/popupStore';
+
+const store = usePopupStore();
 const props = defineProps<{
     collectInfo: collect
 }>();
@@ -40,9 +53,38 @@ const folderState = reactive({
     collectCardShow: false,
     iconfontClass: 'icon-tri-right'
 });
-function changeFolderState() { // 收藏夹更改折叠状态
+function changeFolderState() { // 收藏夹更改折叠状态，！此处代码貌似该删除了
     folderState.iconfontClass = folderState.collectCardShow ? 'icon-tri-right' : 'icon-tri-right-bottom-copy';
     folderState.collectCardShow = !folderState.collectCardShow;
+}
+
+// 右键目录管理
+const collectManagerShow = ref(false);
+const locationStyle = ref('');
+function openContextMenu(event: MouseEvent) {
+    event.preventDefault();
+    locationStyle.value = `top: ${event.pageY}px; left: ${event.pageX}px;`;
+    collectManagerShow.value = true;
+}
+
+// 重命名部分
+const showTitleState = ref(true);
+const renameInputBox = ref();
+const newName = ref('');
+function renameStart() {
+    showTitleState.value = false;
+    nextTick(()=>{
+        renameInputBox.value.focus();
+    })
+}
+function renameEnd() {
+    collectInfo.name = newName.value;
+    store.updateCollect(collectInfo);
+    cancelRename();
+}
+function cancelRename() {
+    showTitleState.value = true;
+    newName.value = '';
 }
 </script>
 

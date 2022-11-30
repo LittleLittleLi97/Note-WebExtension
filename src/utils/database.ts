@@ -10,7 +10,7 @@ export const getDB = async ()=>{
             const noteStore = db.createObjectStore("note", { keyPath: "id" });
             noteStore.createIndex("id", "id", { unique: true });
             noteStore.createIndex("title", "title", { unique: false });
-            noteStore.createIndex("collect", "collect", { unique: false });
+            // noteStore.createIndex("collect", "collect", { unique: false });
             noteStore.createIndex("collect_id", "collect_id", { unique: false });
             noteStore.createIndex("url", "url", { unique: false });
     

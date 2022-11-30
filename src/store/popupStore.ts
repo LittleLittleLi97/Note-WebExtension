@@ -21,16 +21,18 @@ export const usePopupStore = defineStore('popup', ()=>{
             console.log(collectList)
         })
     }
+    function updateCollect(data: collect) {
+        collectList[data.id] = data;
+        db.put('collect', JSON.parse(JSON.stringify(data)));
+    }
     function getNote(id: string) {
         db.get('note', id).then((data: note)=>{
             noteInfo[data.id] = data;
-            console.log(noteInfo)
-            console.log(noteInfo[data.id])
         })
     }
     function updateNote(data: note) {
         noteInfo[data.id] = data;
-        db.put('note', data);
+        db.put('note', JSON.parse(JSON.stringify(data)));
     }
 
     function tempUpdateDB() {
@@ -57,6 +59,7 @@ export const usePopupStore = defineStore('popup', ()=>{
         noteInfo,
         initDB,
         getCollectList,
+        updateCollect,
         getNote,
         updateNote,
 

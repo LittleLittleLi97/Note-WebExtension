@@ -19,14 +19,14 @@
             </div>
         </div>
     </a>
-    <div class="collect-manager" v-show="collectManagerShow" ref="collectManagerDiv" @click="closeContextMenu">
-        <CollectManager 
-            type="note" 
-            :id="props.noteId"
-            @renameStart="renameStart"
-        ></CollectManager>
-        <div class="mask"></div>
-    </div>
+    <CollectManager 
+        v-model="collectManagerShow" 
+        type="note" 
+        :id="props.noteId" 
+        :location="locationStyle"
+        ref="collectManagerDiv"
+        @rename="renameStart"
+    ></CollectManager>
 </template>
 
 <script setup lang="ts">
@@ -48,14 +48,11 @@ onMounted(()=>{
 
 // 右键目录部分
 const collectManagerShow = ref(false);
-const collectManagerDiv = ref();
+const locationStyle = ref('');
 function openContextMenu(event: MouseEvent) {
     event.preventDefault();
-    collectManagerDiv.value.style.cssText = `top: ${event.pageY}px; left: ${event.pageX}px;`;
+    locationStyle.value = `top: ${event.pageY}px; left: ${event.pageX}px;`;
     collectManagerShow.value = true;
-}
-function closeContextMenu() {
-    collectManagerShow.value = false;
 }
 
 // 重命名部分
@@ -69,17 +66,8 @@ function renameStart() {
     })
 }
 function renameEnd() {
-    
-    store.updateNote({
-        id: 'noteid001',
-            collect: 'item',
-            collect_id: '123',
-            title: '新的题目',
-            url: 'www.baidu.com',
-            url_icon: '',
-            content: '内容在此',
-            children: []
-    });
+    noteInfo.value.title = newName.value;
+    store.updateNote(noteInfo.value);
     cancelRename();
 }
 function cancelRename() {
@@ -204,22 +192,6 @@ function cancelRename() {
             text-overflow: ellipsis;
             -webkit-box-orient: vertical;
         }
-    }
-}
-.collect-manager {
-    position: absolute;
-    z-index: 100;
-
-    .mask {
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-
-        width: 100%;
-        height: 100%;
-
-        // background-color: black;
     }
 }
 </style>
