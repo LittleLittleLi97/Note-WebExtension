@@ -1,4 +1,6 @@
 import { openDB, deleteDB, wrap, unwrap } from 'idb';
+import { IDBPDatabase } from 'idb';
+import { collectList, collect, note } from './interface';
 
 export const getDB = async ()=>{
     return await openDB('temp', 1, {
@@ -24,3 +26,10 @@ export const getDB = async ()=>{
         }
     })
 }
+
+export const DBMethods = {
+    get: 'get',
+    getAll: 'getAll',
+    getFromIndex: 'getFromIndex',
+    put: 'put',
+};

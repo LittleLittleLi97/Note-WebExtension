@@ -18,7 +18,6 @@ export const usePopupStore = defineStore('popup', ()=>{
     function getCollectList() {
         db.getAll('collect').then((data: Array<collect>)=>{
             for (const key in data) collectList[data[key].id] = data[key];
-            console.log(collectList)
         })
     }
     function updateCollect(data: collect) {
@@ -47,7 +46,7 @@ export const usePopupStore = defineStore('popup', ()=>{
             collect: 'item',
             collect_id: '123',
             title: '题目',
-            url: 'www.baidu.com',
+            url: 'https://www.baidu.com/',
             url_icon: '',
             content: '内容在此',
             children: []

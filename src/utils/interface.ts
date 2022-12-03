@@ -18,3 +18,11 @@ export interface note {
     content: string,
     children: Array<string>
 }
+
+export interface BGrequest {
+    type: string,
+    func: string,
+    params: [string, string?, string?]
+}
+
+export type DBReFunc = (storeName: string, indexName?: string, query?: string)=>any;
