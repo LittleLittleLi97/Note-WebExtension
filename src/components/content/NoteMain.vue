@@ -1,17 +1,26 @@
 <template>
     <transition>
-        <div class="note-wraper">
-            
+        <div class="note-wrapper">
+            <div class="note-main-area">
+
+                <div class="note-header">
+                    <div class="header-top">
+                        <HeaderTitle></HeaderTitle>
+                        <HeaderMore></HeaderMore>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </transition>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from '@vue/reactivity'
 import { computed, nextTick, onMounted, watch } from '@vue/runtime-core';
 import { defineEmits } from 'vue';
-import { nanoid } from 'nanoid'
 import { useContentStore } from '@/store/contentStore';
+import HeaderTitle from './parts/HeaderTitle.vue';
+import HeaderMore from './parts/HeaderMore.vue';
 // import PubSub from 'pubsub-js'
 // import { copyObjToReactive, removeUrlQuery, parseReactiveToObj, download, downloadNote } from '@/utils/utils'
 // import CellCard from '@/components/content/CellCard'
@@ -68,39 +77,6 @@ onMounted(()=>{
                 height: 56px;
     
                 // margin-left: 5px; // 下面收藏夹hover动画的padding的5px，这里设置让文字对齐。
-    
-                .more {
-                    position: relative;
-
-                    display: flex;
-                    align-items: center;
-
-                    .iconfont {
-                        font-size: 22px;
-                        text-align: center;
-                        line-height: 30px;
-    
-                        width: 30px;
-                        height: 30px;
-        
-                        margin-left: 12px;
-    
-                        border-radius: 5px;
-    
-                        transition: background-color 0.2s;
-    
-                        cursor: pointer;
-    
-                        &:hover {
-                            background-color: var(--note-ext-icon-hover);
-                        }
-                    }
-                    .more-gengduo {
-                        position: absolute;
-                        top: -3px;
-                        right: 70px;
-                    }
-                }
             }
             .classification-area {
                 display: inline-flex; // 宽度自适应，不占整行

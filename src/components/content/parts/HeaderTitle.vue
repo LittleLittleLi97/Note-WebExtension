@@ -1,10 +1,10 @@
 <template>
-    <!-- <div class="title">
+    <div class="title">
         <span class="title-show" 
-            v-show="titleState" 
-            @click="changeTitleStart"
         >{{ noteInfo.title }}</span>
-        <input 
+        <!-- v-show="titleState" 
+        @click="changeTitleStart" -->
+        <!-- <input 
             type="text" 
             class="title-input" 
             ref="titleInputBox" 
@@ -12,12 +12,16 @@
             v-show="!titleState"
             @keypress.enter="changeTitleEnd" 
             @blur="changeTitleEnd"
-            >
-    </div> -->
+            > -->
+    </div>
 </template>
 
 <script setup lang="ts">
+import { useContentStore } from '@/store/contentStore';
+import { computed } from '@vue/reactivity';
 
+const store = useContentStore();
+const noteInfo = computed(()=>store.noteInfo);
 </script>
 
 <style scoped lang="less">

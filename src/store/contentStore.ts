@@ -20,25 +20,31 @@ export const useContentStore = defineStore('popup', ()=>{
         collect_id: '123',
         children: [],
     });
-    async function initStore() {
+    function initStore() {
         _getNote();
+        _getCollectList();
     }
-    async function _getNote() {
+    function _getNote() {
         chrome.runtime.sendMessage({
             type: 'db',
             func: DBMethods.getFromIndex,
             params: ['note', 'url', noteInfo.url]
-        }, (r)=>console.log(r))
-        // chrome.runtime.sendMessage({
-        //     type: 'db',
-        //     func: DBMethods.getAll,
-        //     params: ['note']
-        // })
+        }, (data: note)=>{
+            copyObjToReactive(noteInfo, data);
+        });
     }
-    function getCollectList() {
-        1
+    function _getCollectList() {
+        chrome.runtime.sendMessage({
+            type: 'db',
+            func: DBMethods.getAll,
+            params: ['collect']
+        }, (data: Array<collect>)=>{
+            for (const key in data) collectList[data[key].id] = data[key];
+        })
     }
     return {
+        collectList,
+        noteInfo,
         initStore,
     }
 })

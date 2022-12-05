@@ -2,10 +2,8 @@
     <div class="dividing-line"></div>
 </template>
 
-<script>
-export default {
-    name: 'base-menu-line',
-}
+<script setup lang="ts">
+
 </script>
 
 <style scoped lang="less">

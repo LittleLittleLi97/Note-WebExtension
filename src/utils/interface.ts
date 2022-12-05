@@ -26,3 +26,8 @@ export interface BGrequest {
 }
 
 export type DBReFunc = (storeName: string, indexName?: string, query?: string)=>any;
+
+export interface showControlFuncObj {
+    showNote: ()=>void,
+    closeNote: ()=>void
+};

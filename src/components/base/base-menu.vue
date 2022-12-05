@@ -6,10 +6,8 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'base-menu',
-}
+<script setup lang="ts">
+
 </script>
 
 <style scoped lang="less">
