@@ -6,7 +6,7 @@ export interface collect {
 }
 
 export interface collectList {
-    [id: string] : collect;
+    [id: string] : collect
 }
 
 export interface note {
@@ -17,6 +17,19 @@ export interface note {
     url_icon: string,
     content: string,
     children: Array<string>
+}
+
+export interface cell {
+    id: string,
+    collect_id: string,
+    note_id: string,
+    content: string,
+    label: string,
+    highlight: boolean
+}
+
+export interface cellList {
+    [id: string] : cell
 }
 
 export interface BGrequest {

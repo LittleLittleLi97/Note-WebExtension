@@ -4,6 +4,7 @@ import { reactive, ReactiveEffect, ref } from 'vue'
 import { collect, collectList, note } from '@/utils/interface';
 import { getDB } from '@/utils/database';
 import { IDBPDatabase } from 'idb';
+import { reactiveToObj } from '@/utils/utils';
 
 export const usePopupStore = defineStore('popup', ()=>{
     let db: IDBPDatabase;
@@ -22,7 +23,7 @@ export const usePopupStore = defineStore('popup', ()=>{
     }
     function updateCollect(data: collect) {
         collectList[data.id] = data;
-        db.put('collect', JSON.parse(JSON.stringify(data)));
+        db.put('collect', reactiveToObj(data));
     }
     function getNote(id: string) {
         db.get('note', id).then((data: note)=>{
@@ -31,7 +32,7 @@ export const usePopupStore = defineStore('popup', ()=>{
     }
     function updateNote(data: note) {
         noteInfo[data.id] = data;
-        db.put('note', JSON.parse(JSON.stringify(data)));
+        db.put('note', reactiveToObj(data));
     }
 
     function tempUpdateDB() {

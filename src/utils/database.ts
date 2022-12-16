@@ -30,6 +30,8 @@ export const getDB = async ()=>{
 export const DBMethods = {
     get: 'get',
     getAll: 'getAll',
-    getFromIndex: 'getFromIndex',
     put: 'put',
+    getFromIndex: 'getFromIndex',
+    getAllFromIndex: 'getAllFromIndex',
+    getAllKeysFromIndex: 'getAllKeysFromIndex',
 };
