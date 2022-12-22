@@ -43,7 +43,7 @@ onMounted(async()=>{
     await store.initDB();
     // store.tempUpdateDB();
     store.getCollectList();
-    store.tempUpdateDB();
+    // store.tempUpdateDB();
 })
 </script>
 

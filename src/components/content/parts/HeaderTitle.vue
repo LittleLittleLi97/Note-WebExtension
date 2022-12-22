@@ -1,7 +1,8 @@
 <template>
     <div class="title">
-        <span class="title-show" 
-        >{{ noteInfo.title }}</span>
+        <baseChangeableSpan v-model="noteInfo.title"></baseChangeableSpan>
+        <!-- <span class="title-show" 
+        >{{ noteInfo.title }}</span> -->
         <!-- v-show="titleState" 
         @click="changeTitleStart" -->
         <!-- <input 
@@ -12,16 +13,23 @@
             v-show="!titleState"
             @keypress.enter="changeTitleEnd" 
             @blur="changeTitleEnd"
-            > -->
+        > -->
     </div>
 </template>
 
 <script setup lang="ts">
 import { useContentStore } from '@/store/contentStore';
 import { computed } from '@vue/reactivity';
+import { ref, watch } from 'vue';
+
+import baseChangeableSpan from '@/components/base/base-changeable-span.vue';
 
 const store = useContentStore();
 const noteInfo = computed(()=>store.noteInfo);
+
+watch(()=>noteInfo.value.title, ()=>{
+    store.saveNote();
+})
 </script>
 
 <style scoped lang="less">
@@ -38,51 +46,5 @@ const noteInfo = computed(()=>store.noteInfo);
     border-radius: 5px;
 
     overflow: hidden;
-
-    .title-show {
-        display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-
-        font-family: 'Segoe UI';
-        font-weight: inherit;
-        font-size: inherit;
-
-        width: 100%;
-        height: 100%;
-
-        padding: 0 5px;
-
-        box-sizing: border-box;
-
-        transition: background-color 0.2s;
-
-        cursor: pointer;
-
-        &:hover {
-            background-color: var(--note-ext-icon-hover);
-        }
-    }
-
-    .title-input {
-        font-size: inherit;
-        color: inherit;
-        font-family: 'Segoe UI';
-        font-weight: inherit;
-
-        width: 100%;
-        height: 100%;
-
-        background-color: transparent;
-
-        border: none;
-
-        outline: none;
-
-        &:focus {
-            background-color: var(--note-ext-icon-hover);
-        }
-    }
 }
 </style>
