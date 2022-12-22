@@ -46,14 +46,14 @@ export const useContentStore = defineStore('popup', ()=>{
         if (isNewNote) {
             isNewNote = false;
             collectList[noteInfo.collect_id].children.push(noteInfo.id);
-            saveCollect();
+            saveCollect(noteInfo.collect_id);
         }
     }
-    function saveCollect() {
+    function saveCollect(collect_id: string) {
         chrome.runtime.sendMessage({
             type: 'db',
             func: DBMethods.put,
-            params: ['collect', reactiveToObj(collectList[noteInfo.collect_id])]
+            params: ['collect', reactiveToObj(collectList[collect_id])]
         });
     }
     function createCell() {
@@ -66,6 +66,32 @@ export const useContentStore = defineStore('popup', ()=>{
             content: '',
             label: 'blue',
             highlight: false
+        }
+    }
+    function newCollect(name: string, note_id: string, del_collect_id: string) {
+        // 创建新收藏夹
+        const id = nanoid();
+        collectList[id] = {
+            id,
+            name,
+            children: [],
+            createTime: Date.now()
+        }
+        changeCollect(id, del_collect_id);
+    }
+    function changeCollect(newCollect_id: string, oldCollect_id: string){
+        if (collectList[newCollect_id] && collectList[oldCollect_id]) {
+            // 新收藏夹添加note记录
+            collectList[newCollect_id].children.push(noteInfo.id);
+            saveCollect(newCollect_id);
+            // 旧收藏夹的children中删除note记录
+            const children = collectList[oldCollect_id].children;
+            const index = children.indexOf(noteInfo.id);
+            if (index !== -1) children.splice(index, 1);
+            saveCollect(oldCollect_id);
+            // 更改note记录
+            noteInfo.collect_id = newCollect_id;
+            saveNote();
         }
     }
     function _getCell(noteId: string) {
@@ -85,7 +111,6 @@ export const useContentStore = defineStore('popup', ()=>{
         }, (data: note)=>{
             if (data) {
                 _getCell(data.id);
-                console.log(data.children)
                 copyObjToReactive(noteInfo, data);
             }
             else { // 新页面
@@ -100,7 +125,6 @@ export const useContentStore = defineStore('popup', ()=>{
             func: DBMethods.getAll,
             params: ['collect']
         }, (data: Array<collect>)=>{
-            console.log(data)
             for (const key in data) collectList[data[key].id] = data[key];
         })
     }
@@ -111,5 +135,7 @@ export const useContentStore = defineStore('popup', ()=>{
         saveCell,
         saveNote,
         initStore,
+        newCollect,
+        changeCollect,
     }
 })

@@ -40,7 +40,7 @@ export const usePopupStore = defineStore('popup', ()=>{
             id: '123',
             name: 'item',
             children: ['noteid001'],
-            createTime: 'now'
+            createTime: Date.now()
         })
         db.put('note', {
             id: 'noteid001',

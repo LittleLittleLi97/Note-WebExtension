@@ -1,19 +1,6 @@
 <template>
     <div class="title">
         <baseChangeableSpan v-model="noteInfo.title"></baseChangeableSpan>
-        <!-- <span class="title-show" 
-        >{{ noteInfo.title }}</span> -->
-        <!-- v-show="titleState" 
-        @click="changeTitleStart" -->
-        <!-- <input 
-            type="text" 
-            class="title-input" 
-            ref="titleInputBox" 
-            v-model="noteInfo.title" 
-            v-show="!titleState"
-            @keypress.enter="changeTitleEnd" 
-            @blur="changeTitleEnd"
-        > -->
     </div>
 </template>
 

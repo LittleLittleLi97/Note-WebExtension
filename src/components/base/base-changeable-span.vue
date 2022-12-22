@@ -36,7 +36,7 @@ function changeStart() {
 }
 function changeEnd() {
     if (changeInfo.state) { // 避免enter和blur两次触发
-        emit('update:modelValue', changeInfo.value);
+        if (changeInfo.value.length > 0) emit('update:modelValue', changeInfo.value);
         changeInfo.state = false;
         changeInfo.value = '';
     }

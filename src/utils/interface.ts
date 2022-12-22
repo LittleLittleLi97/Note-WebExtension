@@ -2,7 +2,7 @@ export interface collect {
     id: string,
     name: string,
     children: Array<string>,
-    createTime: string
+    createTime: number
 }
 
 export interface collectList {
