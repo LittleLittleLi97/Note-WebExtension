@@ -56,6 +56,10 @@ export const useContentStore = defineStore('popup', ()=>{
             params: ['collect', reactiveToObj(collectList[collect_id])]
         });
     }
+    function addCell() {
+        const id = createCell();
+        saveCell(id);
+    }
     function createCell() {
         const id = nanoid();
         noteInfo.children.push(id);
@@ -67,6 +71,7 @@ export const useContentStore = defineStore('popup', ()=>{
             label: 'blue',
             highlight: false
         }
+        return id;
     }
     function newCollect(name: string, note_id: string, del_collect_id: string) {
         // 创建新收藏夹
@@ -132,6 +137,7 @@ export const useContentStore = defineStore('popup', ()=>{
         collectList,
         noteInfo,
         cellList,
+        addCell,
         saveCell,
         saveNote,
         initStore,

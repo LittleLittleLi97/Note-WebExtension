@@ -31,19 +31,18 @@
 
 <script setup lang="ts">
 import { usePopupStore } from '@/store/popupStore';
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 
 import FolderSection from '@/components/popup/FolderSection.vue'
 
 
 const store = usePopupStore();
-const collectList = store.collectList;
+const collectList = computed(()=>store.collectList);
 
 onMounted(async()=>{
     await store.initDB();
-    // store.tempUpdateDB();
+    store.tempUpdateDB();
     store.getCollectList();
-    // store.tempUpdateDB();
 })
 </script>
 

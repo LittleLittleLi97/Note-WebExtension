@@ -10,7 +10,7 @@
                 icon="iconfont icon-zhongmingming1"
                 title="重命名"
                 v-show="type==='folder' || type==='note'"
-                @click="renameFunction"
+                @click="emit('rename')"
                 ></base-menu-item>
             
             <div class="for-note" v-show="type==='note'">
@@ -31,6 +31,7 @@
                 <base-menu-item
                     icon="iconfont icon-shanchu"
                     title="删除"
+                    @click="emit('delete')"
                 ></base-menu-item>
             </div>
         </base-menu>
@@ -53,7 +54,7 @@ const props = defineProps<{
     id: string,
     location?: string
 }>();
-const emit = defineEmits(["update:modelValue", "rename"]); // 先执行事件任务，再关闭contextMenu
+const emit = defineEmits(["update:modelValue", "rename", "delete"]); // 先执行事件任务，再关闭contextMenu
 
 const isShow = computed({
     get() {
@@ -65,29 +66,6 @@ const isShow = computed({
 })
 const type = computed(()=>props.type);
 
-function renameFunction() {
-    emit("rename");
-}
-
-// const type =  computed(()=>props.type);
-// function createCollectEvent() {
-//     // PubSub.publish('createCollectStart');
-
-//     emit('createItem');
-//     emit('closeContextMenu');
-// }
-// function deleteItemEvent() {
-//     emit('deleteItem');
-//     emit('closeContextMenu');
-// }
-// function renameItemEvent() {
-//     emit('renameItem');
-//     emit('closeContextMenu');
-// }
-// function exportNoteEvent(type: any) {
-//     emit('exportNode', type);
-//     emit('closeContextMenu');
-// }
 </script>
 
 <style scoped lang="less">

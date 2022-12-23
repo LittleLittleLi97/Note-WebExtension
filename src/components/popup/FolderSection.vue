@@ -7,7 +7,7 @@
             :data-collectId="collectInfo.id"
         >
             <i class="iconfont icon-tri-right-bottom-copy icon-default" :class="{'icon-rotate': !folderState.collectCardShow}"></i>
-            <span class="show-title">{{ collectInfo.name }}</span>
+            <span class="show-title" v-show="showTitleState">{{ collectInfo.name }}</span>
             <input 
                 type="text" 
                 class="title-input"
@@ -33,11 +33,12 @@
         :location="locationStyle"
         ref="collectManagerDiv"
         @rename="renameStart"
+        @delete="deleteItem"
     ></CollectManager>
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, ref, reactive, nextTick } from 'vue';
+import { defineProps, computed, ref, reactive, nextTick } from 'vue';
 import CollectCard from '@/components/popup/CollectCard.vue'
 import CollectManager from './CollectManager.vue';
 import { collect, collectList } from '@/utils/interface';
@@ -47,7 +48,7 @@ const store = usePopupStore();
 const props = defineProps<{
     collectInfo: collect
 }>();
-const collectInfo = reactive(props.collectInfo);
+const collectInfo = computed(()=>props.collectInfo);
 
 const folderState = reactive({
     collectCardShow: false,
@@ -78,13 +79,17 @@ function renameStart() {
     })
 }
 function renameEnd() {
-    collectInfo.name = newName.value;
-    store.updateCollect(collectInfo);
+    collectInfo.value.name = newName.value;
+    store.updateCollect(collectInfo.value);
     cancelRename();
 }
 function cancelRename() {
     showTitleState.value = true;
     newName.value = '';
+}
+
+function deleteItem() {
+    store.deleteCollect(collectInfo.value.id);
 }
 </script>
 

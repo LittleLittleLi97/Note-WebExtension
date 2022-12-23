@@ -10,12 +10,17 @@
                     </div>
                     <HeaderClassification></HeaderClassification>
                 </div>
-                <div class="cell-area">
-                    <CellCard 
-                        v-for="cellId in noteInfo.children"
-                        :key="cellId"
-                        :cellId="cellId"
-                    ></CellCard>
+                <div class="note-body">
+                    <div class="cell-area">
+                        <CellCard 
+                            v-for="cellId in noteInfo.children"
+                            :key="cellId"
+                            :cellId="cellId"
+                        ></CellCard>
+                    </div>
+                    <div class="add-cell-button" @click="addCell">
+                        <i class="iconfont icon-add"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -35,6 +40,10 @@ const emit = defineEmits(['showNote', 'closeNote']);
 const store = useContentStore();
 
 const noteInfo = computed(()=>store.noteInfo);
+
+function addCell() {
+    store.addCell();
+}
 
 onMounted(()=>{
     store.initStore();
@@ -81,19 +90,25 @@ onMounted(()=>{
                 // margin-left: 5px; // 下面收藏夹hover动画的padding的5px，这里设置让文字对齐。
             }
         }
-        .cell-area {
-            flex: 1;
+        .note-body {
+            
             display: flex;
             flex-direction: column;
             align-items: center;
-    
-            padding: 10px 20px;
-    
-            overflow-y: scroll;
-            scroll-behavior: contain;
-    
-            &::-webkit-scrollbar {
-                display: none;
+
+            .cell-area {
+                display: grid;
+                grid-gap: 10px;
+        
+                width: 100%;
+                padding: 10px 20px;
+        
+                overflow-y: scroll;
+                scroll-behavior: contain;
+        
+                &::-webkit-scrollbar {
+                    display: none;
+                }
             }
             .add-cell-button {
                 text-align: center;

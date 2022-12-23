@@ -26,6 +26,7 @@
         :location="locationStyle"
         ref="collectManagerDiv"
         @rename="renameStart"
+        @delete="deleteItem"
     ></CollectManager>
 </template>
 
@@ -73,6 +74,10 @@ function renameEnd() {
 function cancelRename() {
     showTitleState.value = true;
     newName.value = '';
+}
+
+function deleteItem() {
+    store.deleteNote(noteInfo.value.id);
 }
 </script>
 

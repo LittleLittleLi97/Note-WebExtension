@@ -21,9 +21,18 @@ export const usePopupStore = defineStore('popup', ()=>{
             for (const key in data) collectList[data[key].id] = data[key];
         })
     }
+    function saveCollect(id: string) {
+        db.put('collect', reactiveToObj(collectList[id]));
+    }
     function updateCollect(data: collect) {
         collectList[data.id] = data;
         db.put('collect', reactiveToObj(data));
+    }
+    function deleteCollect(id: string) {
+        db.delete('collect', id);
+        const children = collectList[id].children;
+        children.forEach((item)=>deleteNote(item));
+        delete collectList[id];
     }
     function getNote(id: string) {
         db.get('note', id).then((data: note)=>{
@@ -33,6 +42,20 @@ export const usePopupStore = defineStore('popup', ()=>{
     function updateNote(data: note) {
         noteInfo[data.id] = data;
         db.put('note', reactiveToObj(data));
+    }
+    function deleteNote(id: string) {
+        db.delete('note', id);
+        const collect_id = noteInfo[id].collect_id;
+        const collect_children = collectList[collect_id].children;
+        const index = collect_children.indexOf(id);
+        collect_children.splice(index, 1);
+        saveCollect(collect_id);
+        const children = noteInfo[id].children;
+        children.forEach((item)=>{
+            db.delete('cell', item);
+        });
+        db.delete('highlight', noteInfo[id].url);
+        delete noteInfo[id];
     }
 
     function tempUpdateDB() {
@@ -59,9 +82,12 @@ export const usePopupStore = defineStore('popup', ()=>{
         noteInfo,
         initDB,
         getCollectList,
+        saveCollect,
         updateCollect,
+        deleteCollect,
         getNote,
         updateNote,
+        deleteNote,
 
         tempUpdateDB,
     }
