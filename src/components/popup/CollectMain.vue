@@ -3,7 +3,7 @@
         <div class="header">
             <div class="title">MyNote</div>
             <div class="icons">
-                <i class="iconfont icon-folder-add"></i>
+                <i class="iconfont icon-folder-add" @click="createCollectShow=true"></i>
                 <i class="iconfont icon-gengduo"></i>
                 <!-- <Tooltip></Tooltip> -->
             </div>  
@@ -16,26 +16,17 @@
             />
         </div>
     </div>
-    <!-- <div class="collect-manager" v-show="collectManagerShow" ref="collectManagerDiv">
-        <CollectManager 
-            :type="collectManagerType"
-            @closeContextMenu="closeContextMenu"
-            @deleteItem="deleteItem"
-            @renameItem="renameItem"
-            @createItem="createItem"
-            @exportNode="exportNode"
-        ></CollectManager>
-    </div>
-    <CreateCollectPopover></CreateCollectPopover> -->
+    <CreateCollect v-model:show="createCollectShow"></CreateCollect>
 </template>
 
 <script setup lang="ts">
 import { usePopupStore } from '@/store/popupStore';
-import { computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 import FolderSection from '@/components/popup/FolderSection.vue'
+import CreateCollect from './CreateCollect.vue';
 
-
+// 初始化
 const store = usePopupStore();
 const collectList = computed(()=>store.collectList);
 
@@ -44,6 +35,9 @@ onMounted(async()=>{
     store.tempUpdateDB();
     store.getCollectList();
 })
+
+// CreateCollect
+const createCollectShow = ref(false);
 </script>
 
 <style scoped lang="less">

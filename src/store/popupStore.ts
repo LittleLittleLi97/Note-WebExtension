@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { reactive, ReactiveEffect, ref } from 'vue'
+import { nanoid } from 'nanoid'
 
 import { collect, collectList, note } from '@/utils/interface';
 import { getDB } from '@/utils/database';
@@ -27,6 +28,16 @@ export const usePopupStore = defineStore('popup', ()=>{
     function updateCollect(data: collect) {
         collectList[data.id] = data;
         db.put('collect', reactiveToObj(data));
+    }
+    function createCollect(name: string) {
+        const newCollect: collect = {
+            id: nanoid(),
+            name,
+            children: [],
+            createTime: Date.now()
+        };
+        collectList[newCollect.id] = newCollect;
+        saveCollect(newCollect.id);
     }
     function deleteCollect(id: string) {
         db.delete('collect', id);
@@ -84,6 +95,7 @@ export const usePopupStore = defineStore('popup', ()=>{
         getCollectList,
         saveCollect,
         updateCollect,
+        createCollect,
         deleteCollect,
         getNote,
         updateNote,

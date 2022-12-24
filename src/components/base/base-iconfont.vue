@@ -2,24 +2,19 @@
     <i class="iconfont" :class="icon" :style="styleText"></i>
 </template>
 
-<script>
-import { ref } from '@vue/reactivity'
-import { onMounted } from '@vue/runtime-core';
-export default {
-    name: 'base-iconfont',
-    props: ["icon", "size", "fontSize"],
-    setup(props) {
-        const styleText = ref('');
-        onMounted(()=>{
-            if (props.size) styleText.value += `width: ${props.size}; height: ${props.size};`;
-            if (props.fontSize) styleText.value += `font-size: ${props.fontSize}`;
-        })
-        return {
-            icon: props.icon,
-            styleText,
-        }
-    }
-}
+<script setup lang="ts">
+import { ref, onMounted, defineProps } from 'vue'
+
+const props = defineProps<{
+    icon: string,
+    size?: string,
+    fontSize?: string
+}>();
+const styleText = ref('');
+onMounted(()=>{
+    if (props.size) styleText.value += `width: ${props.size}; height: ${props.size};`;
+    if (props.fontSize) styleText.value += `font-size: ${props.fontSize}`;
+})
 </script>
 
 <style scoped lang="less">
