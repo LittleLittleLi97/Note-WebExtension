@@ -3,17 +3,18 @@
         <div class="label-area" ref="labelListBox">
             <div 
                 class="label" 
+                :style="`background-color: var(--note-ext-${cellInfo.label});`"
+                @click="changeLabelStart"
             ></div>
-                <!-- :style="`background-color: var(--note-ext-${cellInfo.label});`"
-                @click="changeLabelStart" -->
-            <!-- <ul class="label-list" v-show="labelListShow">
+            <ul class="label-list" v-show="labelListShow">
                 <li 
                     class="label label-item" 
                     v-for="color in labelList" 
+                    :key="color"
                     :style="`background-color: var(--note-ext-${color});`"
                     @click="changeLabelEnd(color)"
                     ></li>
-            </ul> -->
+            </ul>
         </div>
         <div class="cell-right">
             <el-input
@@ -24,20 +25,22 @@
                 resize="none"
                 v-model="cellInfo.content"
                 ref="textareaDiv"
+                v-show="!mdShow"
+                @blur="compileToMd"
                 />
-            <!-- v-show="!mdShow"
-            @blur="compileToMd" -->
             <!-- markdown的样式被reset设置，在root.css中将其覆盖 -->
-            <!-- <div class="note-ext-md-box" ref="mdDiv" v-show="mdShow" @click="focusTextarea"></div> -->
+            <div class="note-ext-md-box" ref="mdDiv" v-show="mdShow" @click="focusTextarea"></div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, defineProps, watch, onMounted } from 'vue';
-import { cell } from '@/utils/interface';
 import { useContentStore } from '@/store/contentStore';
 import { ElInput } from 'element-plus';
+import { marked } from 'marked'
+import hljs from 'highlight.js'
+import { isEmptyObj } from '@/utils/utils';
 
 const props = defineProps<{
     cellId: string
@@ -76,6 +79,51 @@ watch(()=>cellInfo.value.content, ()=>{
         store.saveCell(props.cellId);
     }, 1000);
 });
+
+// 标签颜色管理
+const labelList = reactive(['blue', 'yellow', 'red', 'green', 'purple']);
+const labelListShow = ref(false);
+const labelListBox = ref();
+function changeLabelStart() {
+    labelListShow.value = true;
+    document.addEventListener('click', cancelChangeLabel);
+}
+function changeLabelEnd(color: string) {
+    if (color !== cellInfo.value.label) {
+        cellInfo.value.label = color;
+        store.saveCell(props.cellId);
+    }
+    labelListShow.value = false;
+    document.removeEventListener('click', cancelChangeLabel);
+}
+function cancelChangeLabel(event: Event) {
+    if (!labelListBox.value.contains(event.target)) {
+        labelListShow.value = false;
+        document.removeEventListener('click', cancelChangeLabel);
+    }
+}
+
+const textareaDiv = ref();
+const mdDiv = ref();
+const mdShow = ref(true);
+function focusTextarea() {
+    mdShow.value = false;
+    textareaDiv.value.focus();
+}
+function compileToMd() {
+    mdShow.value = true;
+    mdDiv.value.innerHTML = marked.parse(cellInfo.value.content);
+}
+marked.setOptions({
+    highlight: function(code: string) {
+        return hljs.highlightAuto(code).value;
+    },
+    langPrefix: 'hljs language-',
+    breaks: true,
+});
+watch(()=>cellInfo.value, (newValue, oldValue)=>{
+    if (isEmptyObj(oldValue)) compileToMd();
+})
 </script>
 
 <style scoped lang="less">

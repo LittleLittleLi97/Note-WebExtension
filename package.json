@@ -9,9 +9,12 @@
     "build-watch": "vue-cli-service  --env.NODE_ENV=development build-watch --mode development"
   },
   "dependencies": {
+    "@types/marked": "^4.0.8",
     "core-js": "^3.8.3",
     "element-plus": "^2.2.26",
+    "highlight.js": "^11.7.0",
     "idb": "^7.1.1",
+    "marked": "^4.0.18",
     "pinia": "^2.0.26",
     "vue": "^3.2.13"
   },

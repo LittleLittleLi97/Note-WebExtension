@@ -7,3 +7,7 @@ export function copyObjToReactive(reactive: any, obj: any) {
 export function reactiveToObj(reactive: object) {
     return JSON.parse(JSON.stringify(reactive));
 }
+
+export function isEmptyObj(obj: object) {
+    return Object.keys(obj).length === 0;
+}

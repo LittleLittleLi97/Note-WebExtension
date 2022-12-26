@@ -32,7 +32,7 @@ const collectList = computed(()=>store.collectList);
 
 onMounted(async()=>{
     await store.initDB();
-    store.tempUpdateDB();
+    // store.tempUpdateDB();
     store.getCollectList();
 })
 
