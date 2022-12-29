@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { reactive, ReactiveEffect, ref, watch } from 'vue'
 import { nanoid } from 'nanoid'
 
-import { cell, cellList, collect, collectList, note } from '@/utils/interface';
+import { cell, cellList, collect, collectList, highlightInterface, note } from '@/utils/interface';
 import { DBMethods, getDB } from '@/utils/database';
 import { getUrlIcon, removeUrlQuery } from '@/utils/webInfo';
 import { copyObjToReactive, reactiveToObj } from '@/utils/utils';
@@ -23,9 +23,14 @@ export const useContentStore = defineStore('popup', ()=>{
         children: [],
     });
     const cellList: cellList = reactive({});
+    const highlight: highlightInterface = reactive({
+        url: removeUrlQuery(window.location.href),
+        area: {}
+    });
     function initStore() {
         _getNote();
         _getCollectList();
+        getHighlight();
     }
     function saveCell(cellId: string) {
         lastCellId = cellId;
@@ -56,6 +61,14 @@ export const useContentStore = defineStore('popup', ()=>{
             params: ['collect', reactiveToObj(collectList[collect_id])]
         });
     }
+    function saveHighlight() {
+        console.log(highlight)
+        chrome.runtime.sendMessage({
+            type: 'db',
+            func: DBMethods.put,
+            params: ['highlight', reactiveToObj(highlight)]
+        });
+    }
     function addCell() {
         const id = createCell();
         saveCell(id);
@@ -72,6 +85,30 @@ export const useContentStore = defineStore('popup', ()=>{
             highlight: false
         }
         return id;
+    }
+    function addHighlightCell(id: string, text: string) {
+        if (isNewNote) {
+            noteInfo.children[0] = id;
+            _update();
+        } else {
+            const index = noteInfo.children.indexOf(id);
+            if (index === -1) {
+                noteInfo.children.push(id);
+                _update();
+            }
+        }
+        function _update() {
+            saveNote();
+            cellList[id] = {
+                id,
+                collect_id: noteInfo.collect_id,
+                note_id: noteInfo.id,
+                content: `> ${text.trim()}`,
+                label: 'blue',
+                highlight: true
+            }
+            saveCell(id);
+        }
     }
     function newCollect(name: string, note_id: string, del_collect_id: string) {
         // 创建新收藏夹
@@ -98,6 +135,18 @@ export const useContentStore = defineStore('popup', ()=>{
             noteInfo.collect_id = newCollect_id;
             saveNote();
         }
+    }
+    function getHighlight() {
+        chrome.runtime.sendMessage({
+            type: 'db',
+            func: DBMethods.get,
+            params: ['highlight', noteInfo.url]
+        }, (response)=>{
+            console.log(highlight)
+            if (response) {
+                copyObjToReactive(highlight, response);
+            }
+        })
     }
     function _getCell(noteId: string) {
         chrome.runtime.sendMessage({
@@ -137,8 +186,12 @@ export const useContentStore = defineStore('popup', ()=>{
         collectList,
         noteInfo,
         cellList,
+        highlight,
         addCell,
         saveCell,
+        addHighlightCell,
+        getHighlight,
+        saveHighlight,
         saveNote,
         initStore,
         newCollect,

@@ -28,8 +28,19 @@ export interface cell {
     highlight: boolean
 }
 
+export interface highlightInterface {
+    url: string,
+    area: {
+        [key: string] : string
+    }
+}
+
 export interface cellList {
     [id: string] : cell
+}
+
+export interface domObj {
+    [key: string]: HTMLElement
 }
 
 export interface BGrequest {

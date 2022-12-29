@@ -1,5 +1,5 @@
 <template>
-    <div class="cell-card">
+    <div class="cell-card" :data-cellId="cellInfo.id">
         <div class="label-area" ref="labelListBox">
             <div 
                 class="label" 
@@ -13,7 +13,7 @@
                     :key="color"
                     :style="`background-color: var(--note-ext-${color});`"
                     @click="changeLabelEnd(color)"
-                    ></li>
+                ></li>
             </ul>
         </div>
         <div class="cell-right">
@@ -121,9 +121,11 @@ marked.setOptions({
     langPrefix: 'hljs language-',
     breaks: true,
 });
-watch(()=>cellInfo.value, (newValue, oldValue)=>{
-    if (isEmptyObj(oldValue)) compileToMd();
-})
+// watch(()=>cellInfo.value, (newValue, oldValue)=>{
+//     if (!isEmptyObj(newValue)) compileToMd();
+// }, {
+//     immediate: true
+// })
 </script>
 
 <style scoped lang="less">

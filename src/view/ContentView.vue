@@ -3,14 +3,14 @@
     <div class="note-area" ref="noteDiv" style="visibility: hidden;">
         <NoteMain v-show="noteState" @showNote="showNote" @closeNote="closeNote"></NoteMain>
     </div>
-    <!-- <ContextFloatBox @showNote="showNote"></ContextFloatBox> -->
+    <ContextHighlight @showNote="showNote"></ContextHighlight>
 </template>
 
 <script setup lang="ts">
 import { onMounted, provide, ref } from 'vue'
 import NoteMain from '@/components/content/NoteMain.vue'
 import NoteFloatBox from '@/components/content/NoteFloatBox.vue'
-// import ContextFloatBox from '@/components/content/ContextFloatBox'
+import ContextHighlight from '@/components/content/ContextHighlight.vue'
 const noteState = ref(true); // false → NoteFloatBox, true → Note
 const noteDiv = ref();
 function showNote() {
