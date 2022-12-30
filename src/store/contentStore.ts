@@ -10,6 +10,7 @@ import { copyObjToReactive, reactiveToObj } from '@/utils/utils';
 export const useContentStore = defineStore('popup', ()=>{
 
     let lastCellId: string | null = null;
+    let isNewNote: boolean;
 
     const collectList: collectList = reactive({});
     const noteInfo: note = reactive({
@@ -47,6 +48,11 @@ export const useContentStore = defineStore('popup', ()=>{
             func: DBMethods.put,
             params: ['note', reactiveToObj(noteInfo)]
         });
+        if (isNewNote) {
+            isNewNote = false;
+            collectList[noteInfo.collect_id].children.push(noteInfo.id);
+            saveCollect(noteInfo.collect_id);
+        }
     }
     function saveCollect(collect_id: string) {
         chrome.runtime.sendMessage({
@@ -122,6 +128,7 @@ export const useContentStore = defineStore('popup', ()=>{
             saveCollect(oldCollect_id);
             // 更改note记录
             noteInfo.collect_id = newCollect_id;
+            isNewNote = false; // 避免新笔记直接更改收藏夹时重复保存collect
             saveNote();
         }
     }
@@ -156,6 +163,8 @@ export const useContentStore = defineStore('popup', ()=>{
         }, (data: note)=>{
             if (data) {
                 copyObjToReactive(noteInfo, data);
+            } else {
+                isNewNote = true;
             }
         });
     }

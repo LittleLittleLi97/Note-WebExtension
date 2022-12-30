@@ -1,0 +1,69 @@
+<template>
+    <div class="collect-manager" v-show="isShow" @click="(isShow=!isShow)" :style="props.location">
+        <base-menu>
+            <base-menu-item 
+                icon="iconfont icon-find" 
+                title="查找"
+                v-show="type === 'highlight'"
+                @click="findEvent"
+            ></base-menu-item>
+            <base-menu-item 
+                icon="iconfont icon-shanchu" 
+                title="删除" 
+                @click="deleteCellEvent"
+            ></base-menu-item>
+        </base-menu>
+        <div class="mask"></div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from '@vue/runtime-core';
+import { defineProps, defineEmits } from 'vue';
+import baseMenu from '@/components/base/base-menu.vue'
+import baseMenuItem from '@/components/base/base-menu-item.vue'
+
+const props = defineProps<{
+    modelValue: boolean,
+    type: string,
+    location?: string
+}>();
+const emit = defineEmits(["update:modelValue", 'findHighlight', 'deleteCell']);
+
+const isShow = computed({
+    get() {
+        console.log(props.modelValue)
+        return props.modelValue;
+    },
+    set(value) {
+        emit("update:modelValue", value);
+    }
+})
+const type = computed(()=>props.type);
+
+function findEvent() {
+    1
+}
+function deleteCellEvent() {
+    1
+}
+</script>
+
+<style scoped lang="less">
+.collect-manager {
+    position: absolute;
+    z-index: 100;
+
+    .mask {
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+
+        width: 100%;
+        height: 100%;
+
+        // background-color: black;
+    }
+}
+</style>

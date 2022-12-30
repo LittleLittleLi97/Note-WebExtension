@@ -1,5 +1,5 @@
 <template>
-    <div class="cell-card" :data-cellId="cellInfo.id">
+    <div class="cell-card" :data-cellId="cellInfo.id" @contextmenu="openContextMenu">
         <div class="label-area" ref="labelListBox">
             <div 
                 class="label" 
@@ -31,6 +31,12 @@
             <!-- markdown的样式被reset设置，在root.css中将其覆盖 -->
             <div class="note-ext-md-box" ref="mdDiv" v-show="mdShow" @click="focusTextarea"></div>
         </div>
+        <CellManager 
+            v-model="managerShow" 
+            :type="cellInfo.highlight ? 'highlight' : 'only-cell'" 
+            :location="locationStyle"
+            ref="collectManagerDiv"
+        ></CellManager>
     </div>
 </template>
 
@@ -40,6 +46,7 @@ import { useContentStore } from '@/store/contentStore';
 import { ElInput } from 'element-plus';
 import { marked } from 'marked'
 import hljs from 'highlight.js'
+import CellManager from './CellManager.vue';
 
 const props = defineProps<{
     cellId: string
@@ -127,10 +134,20 @@ marked.setOptions({
     langPrefix: 'hljs language-',
     breaks: true,
 });
+
+const managerShow = ref(false);
+const locationStyle = ref('');
+function openContextMenu(event: MouseEvent) {
+    event.preventDefault();
+    locationStyle.value = `top: ${event.offsetY}px; left: ${event.offsetX + 55}px;`;
+    managerShow.value = true;
+}
 </script>
 
 <style scoped lang="less">
 .cell-card {
+    position: relative;
+
     display: flex;
 
     color: var(--note-ext-font);
