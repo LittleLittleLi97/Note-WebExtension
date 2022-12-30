@@ -10,7 +10,6 @@ import { copyObjToReactive, reactiveToObj } from '@/utils/utils';
 export const useContentStore = defineStore('popup', ()=>{
 
     let lastCellId: string | null = null;
-    let isNewNote = false;
 
     const collectList: collectList = reactive({});
     const noteInfo: note = reactive({
@@ -19,7 +18,7 @@ export const useContentStore = defineStore('popup', ()=>{
         url_icon: getUrlIcon(),
         title: document.getElementsByTagName('title')[0].innerText,
         content: '',
-        collect_id: '123',
+        collect_id: 'default',
         children: [],
     });
     const cellList: cellList = reactive({});
@@ -48,11 +47,6 @@ export const useContentStore = defineStore('popup', ()=>{
             func: DBMethods.put,
             params: ['note', reactiveToObj(noteInfo)]
         });
-        if (isNewNote) {
-            isNewNote = false;
-            collectList[noteInfo.collect_id].children.push(noteInfo.id);
-            saveCollect(noteInfo.collect_id);
-        }
     }
     function saveCollect(collect_id: string) {
         chrome.runtime.sendMessage({
@@ -87,15 +81,10 @@ export const useContentStore = defineStore('popup', ()=>{
         return id;
     }
     function addHighlightCell(id: string, text: string) {
-        if (isNewNote) {
-            noteInfo.children[0] = id;
+        const index = noteInfo.children.indexOf(id);
+        if (index === -1) {
+            noteInfo.children.push(id);
             _update();
-        } else {
-            const index = noteInfo.children.indexOf(id);
-            if (index === -1) {
-                noteInfo.children.push(id);
-                _update();
-            }
         }
         function _update() {
             saveNote();
@@ -148,14 +137,16 @@ export const useContentStore = defineStore('popup', ()=>{
             }
         })
     }
-    function _getCell(noteId: string) {
-        chrome.runtime.sendMessage({
+    async function getCell(cellId: string) {
+        const data = await chrome.runtime.sendMessage({
             type: 'db',
-            func: DBMethods.getAllFromIndex,
-            params: ['cell', 'note_id', noteId]
-        }, (data: Array<cell>)=>{
-            data.forEach(item=>cellList[item.id] = item);
-        })
+            func: DBMethods.get,
+            params: ['cell', cellId],
+        })!;
+        if (data) {
+            cellList[cellId] = data;
+        }
+        return true;
     }
     function _getNote() {
         chrome.runtime.sendMessage({
@@ -164,12 +155,7 @@ export const useContentStore = defineStore('popup', ()=>{
             params: ['note', 'url', noteInfo.url]
         }, (data: note)=>{
             if (data) {
-                _getCell(data.id);
                 copyObjToReactive(noteInfo, data);
-            }
-            else { // 新页面
-                isNewNote = true;
-                createCell();
             }
         });
     }
@@ -189,6 +175,7 @@ export const useContentStore = defineStore('popup', ()=>{
         highlight,
         addCell,
         saveCell,
+        getCell,
         addHighlightCell,
         getHighlight,
         saveHighlight,

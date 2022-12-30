@@ -40,7 +40,6 @@ import { useContentStore } from '@/store/contentStore';
 import { ElInput } from 'element-plus';
 import { marked } from 'marked'
 import hljs from 'highlight.js'
-import { isEmptyObj } from '@/utils/utils';
 
 const props = defineProps<{
     cellId: string
@@ -79,6 +78,13 @@ watch(()=>cellInfo.value.content, ()=>{
         store.saveCell(props.cellId);
     }, 1000);
 });
+
+onMounted(async ()=>{
+    const result = await store.getCell(props.cellId);
+    if (result) {
+        compileToMd();
+    }
+})
 
 // 标签颜色管理
 const labelList = reactive(['blue', 'yellow', 'red', 'green', 'purple']);
@@ -121,11 +127,6 @@ marked.setOptions({
     langPrefix: 'hljs language-',
     breaks: true,
 });
-// watch(()=>cellInfo.value, (newValue, oldValue)=>{
-//     if (!isEmptyObj(newValue)) compileToMd();
-// }, {
-//     immediate: true
-// })
 </script>
 
 <style scoped lang="less">
