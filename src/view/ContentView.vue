@@ -4,6 +4,7 @@
         <NoteMain v-show="noteState" @showNote="showNote" @closeNote="closeNote"></NoteMain>
     </div>
     <ContextHighlight @showNote="showNote"></ContextHighlight>
+    <DeleteDialog></DeleteDialog>
 </template>
 
 <script setup lang="ts">
@@ -11,6 +12,7 @@ import { onMounted, provide, ref } from 'vue'
 import NoteMain from '@/components/content/NoteMain.vue'
 import NoteFloatBox from '@/components/content/NoteFloatBox.vue'
 import ContextHighlight from '@/components/content/ContextHighlight.vue'
+import DeleteDialog from '@/components/content/DeleteDialog.vue'
 const noteState = ref(true); // false → NoteFloatBox, true → Note
 const noteDiv = ref();
 function showNote() {

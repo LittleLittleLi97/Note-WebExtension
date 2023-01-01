@@ -32,7 +32,6 @@ const emit = defineEmits(["update:modelValue", 'findHighlight', 'deleteCell']);
 
 const isShow = computed({
     get() {
-        console.log(props.modelValue)
         return props.modelValue;
     },
     set(value) {
@@ -45,7 +44,7 @@ function findEvent() {
     1
 }
 function deleteCellEvent() {
-    1
+    emit('deleteCell');
 }
 </script>
 

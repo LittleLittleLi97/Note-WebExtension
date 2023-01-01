@@ -16,10 +16,12 @@
     "idb": "^7.1.1",
     "marked": "^4.0.18",
     "pinia": "^2.0.26",
+    "pubsub-js": "^1.9.4",
     "vue": "^3.2.13"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.179",
+    "@types/pubsub-js": "^1.8.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

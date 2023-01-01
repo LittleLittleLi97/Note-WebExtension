@@ -45,4 +45,5 @@ export const DBMethods = {
     getFromIndex: 'getFromIndex',
     getAllFromIndex: 'getAllFromIndex',
     getAllKeysFromIndex: 'getAllKeysFromIndex',
+    delete: 'delete',
 };

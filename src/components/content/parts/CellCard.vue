@@ -36,6 +36,7 @@
             :type="cellInfo.highlight ? 'highlight' : 'only-cell'" 
             :location="locationStyle"
             ref="collectManagerDiv"
+            @delete-cell="deleteCell"
         ></CellManager>
     </div>
 </template>
@@ -46,6 +47,7 @@ import { useContentStore } from '@/store/contentStore';
 import { ElInput } from 'element-plus';
 import { marked } from 'marked'
 import hljs from 'highlight.js'
+import PubSub from 'pubsub-js'
 import CellManager from './CellManager.vue';
 
 const props = defineProps<{
@@ -54,7 +56,6 @@ const props = defineProps<{
 
 const store = useContentStore();
 const cellInfo = computed(()=>store.cellList[props.cellId] || {});
-// const cellInfo = reactive(store.cellList[props.cellId]);
 
 const textareaStyle = ref(`color: var(--note-ext-font);
                             font-family: Segoe UI;
@@ -141,6 +142,19 @@ function openContextMenu(event: MouseEvent) {
     event.preventDefault();
     locationStyle.value = `top: ${event.offsetY}px; left: ${event.offsetX + 55}px;`;
     managerShow.value = true;
+}
+
+function deleteCell() {
+    if (cellInfo.value.highlight) {
+        PubSub.publish('deleteStartEmit', '标注');
+        PubSub.subscribe('deleteEndEmit', (msg, isDelete: boolean)=>{
+            if (isDelete) PubSub.publish('deleteHighlight', cellInfo.value.id);
+            store.deleteCell(cellInfo.value.id);
+            PubSub.unsubscribe('deleteEndEmit');
+        });
+    } else {
+        store.deleteCell(cellInfo.value.id);
+    }
 }
 </script>
 

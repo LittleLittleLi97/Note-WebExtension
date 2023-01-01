@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { reactive, ReactiveEffect, ref, watch } from 'vue'
 import { nanoid } from 'nanoid'
 
@@ -62,12 +62,14 @@ export const useContentStore = defineStore('popup', ()=>{
         });
     }
     function saveHighlight() {
-        console.log(highlight)
         chrome.runtime.sendMessage({
             type: 'db',
             func: DBMethods.put,
             params: ['highlight', reactiveToObj(highlight)]
         });
+    }
+    function deleteHighlight() {
+        saveHighlight();
     }
     function addCell() {
         const id = createCell();
@@ -85,6 +87,18 @@ export const useContentStore = defineStore('popup', ()=>{
             highlight: false
         }
         return id;
+    }
+    function deleteCell(id: string) {
+        const index = noteInfo.children.indexOf(id);
+        if  (index !== -1) {
+            noteInfo.children.splice(index, 1);
+        }
+        saveNote();
+        chrome.runtime.sendMessage({
+            type: 'db',
+            func: DBMethods.delete,
+            params: ['cell', id]
+        });
     }
     function addHighlightCell(id: string, text: string) {
         const index = noteInfo.children.indexOf(id);
@@ -185,9 +199,11 @@ export const useContentStore = defineStore('popup', ()=>{
         addCell,
         saveCell,
         getCell,
+        deleteCell,
         addHighlightCell,
         getHighlight,
         saveHighlight,
+        deleteHighlight,
         saveNote,
         initStore,
         newCollect,

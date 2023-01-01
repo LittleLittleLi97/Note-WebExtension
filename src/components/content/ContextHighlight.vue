@@ -3,7 +3,7 @@
         <div class="box-inner">
             <i class="iconfont icon-bianji" @click="addCell"></i>
             <i class="iconfont icon-find" v-show="modifyState" @click="findCell"></i>
-            <i class="iconfont icon-shanchu" v-show="modifyState" @click="deleteHighlightStart"></i>
+            <i class="iconfont icon-shanchu" v-show="modifyState" @click="deleteHighlightEvent"></i>
         </div>
     </div>
 </template>
@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, defineEmits } from 'vue';
 import { nanoid } from 'nanoid';
-
+import PubSub from 'pubsub-js'
 import { changeLabelColor, getAllElementsByCellId, getElementByKey, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom';
 import { useContentStore } from '@/store/contentStore';
 import { DBMethods } from '@/utils/database';
@@ -64,8 +64,18 @@ function addCell() {
 function findCell() {
     1
 }
-function deleteHighlightStart() {
-    1
+function deleteHighlightEvent() {
+    const hasCell = store.cellList[cellId];
+    if (hasCell) {
+        PubSub.publish('deleteStartEmit', '笔记');
+        PubSub.subscribe('deleteEndEmit', (msg, isDelete: boolean)=>{
+            if (isDelete) store.deleteCell(cellId);
+            _deleteHighlight(cellId);
+            PubSub.unsubscribe('deleteEndEmit');
+        });
+    } else {
+        _deleteHighlight(cellId);
+    }
 }
 
 onMounted(()=>{
@@ -97,6 +107,10 @@ onMounted(()=>{
             modifyState.value = false;
         }
     });
+
+    PubSub.subscribe('deleteHighlight', (msg, cell_id: string)=>{
+        _deleteHighlight(cell_id);
+    })
 })
 
 function _highlight() {
@@ -118,6 +132,16 @@ function _source() {
         const el = getElementByKey(key);
         el.innerHTML = sourceArea[key];
     }
+}
+
+function _deleteHighlight(cell_id: string) {
+    const elList = getAllElementsByCellId(cell_id);
+        elList.forEach((item)=>{
+            let key = getTopElementkey(item as HTMLElement); // 先拿key，去掉span后找不到parentNode
+            removeHighlight(item as HTMLElement);
+            info.value.area[key] = getElementByKey(key).innerHTML;
+        });
+        store.deleteHighlight();
 }
 </script>
 
