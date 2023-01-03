@@ -9,15 +9,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, defineEmits } from 'vue';
+import { ref, computed, watch, onMounted, defineEmits, inject } from 'vue';
 import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
 import { changeLabelColor, getAllElementsByCellId, getElementByKey, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom';
 import { useContentStore } from '@/store/contentStore';
 import { DBMethods } from '@/utils/database';
 import { isEmptyObj } from '@/utils/utils';
+import { HtmlAttributes } from 'csstype';
+import { showControlFuncObj } from '@/utils/interface';
 
 const emit = defineEmits(['showNote', 'closeNote']);
+const { showNote, closeNote } = inject<showControlFuncObj>('showControl')!;
 const store = useContentStore();
 
 const info = computed(()=>store.highlight);
@@ -62,7 +65,7 @@ function addCell() {
     emit('showNote');
 }
 function findCell() {
-    1
+    showNote();
 }
 function deleteHighlightEvent() {
     const hasCell = store.cellList[cellId];
@@ -108,6 +111,20 @@ onMounted(()=>{
         }
     });
 
+    PubSub.subscribe('changeLabel', (msg, {id, color})=>{
+        const elList = getAllElementsByCellId(id);
+        elList.forEach((el)=>{
+            changeLabelColor(el as HTMLElement, color);
+            const elKey = getTopElementkey(el as HTMLElement);
+            info.value.area[elKey] =  getElementByKey(elKey).innerHTML;
+        });
+        store.saveHighlight();
+    })
+    PubSub.subscribe('findHighlight', (msg, cell_id: string)=>{
+        const elList = getAllElementsByCellId(cell_id);
+        const el = elList[0] as HTMLElement;
+        window.scrollTo(el.offsetLeft, el.offsetTop);
+    })
     PubSub.subscribe('deleteHighlight', (msg, cell_id: string)=>{
         _deleteHighlight(cell_id);
     })

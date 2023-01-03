@@ -36,6 +36,7 @@
             :type="cellInfo.highlight ? 'highlight' : 'only-cell'" 
             :location="locationStyle"
             ref="collectManagerDiv"
+            @find-highlight="findHighlight"
             @delete-cell="deleteCell"
         ></CellManager>
     </div>
@@ -109,6 +110,7 @@ function changeLabelEnd(color: string) {
     }
     labelListShow.value = false;
     document.removeEventListener('click', cancelChangeLabel);
+    if (cellInfo.value.highlight) PubSub.publish('changeLabel', {id: cellInfo.value.id, color});
 }
 function cancelChangeLabel(event: Event) {
     if (!labelListBox.value.contains(event.target)) {
@@ -144,6 +146,9 @@ function openContextMenu(event: MouseEvent) {
     managerShow.value = true;
 }
 
+function findHighlight() {
+    PubSub.publish('findHighlight', cellInfo.value.id);
+}
 function deleteCell() {
     if (cellInfo.value.highlight) {
         PubSub.publish('deleteStartEmit', '标注');

@@ -41,7 +41,7 @@ const isShow = computed({
 const type = computed(()=>props.type);
 
 function findEvent() {
-    1
+    emit('findHighlight');
 }
 function deleteCellEvent() {
     emit('deleteCell');
