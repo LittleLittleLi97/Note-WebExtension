@@ -17,13 +17,13 @@
                 <base-menu-item
                     icon="iconfont icon-file-txt-fill"
                     title="导出txt"
+                    @click="exportNoteEvent('txt')"
                     ></base-menu-item>
-                    <!-- @click="exportNoteEvent('txt')" -->
                 <base-menu-item
                     icon="iconfont icon-file-markdown"
                     title="导出md"
+                    @click="exportNoteEvent('md')"
                     ></base-menu-item>
-                    <!-- @click="exportNoteEvent('md')" -->
             </div>
     
             <div class="delete" v-show="type==='folder' || type==='note'">
@@ -43,7 +43,6 @@
 // popup收藏夹右键管理
 import { computed } from '@vue/runtime-core';
 import { defineProps, defineEmits } from 'vue';
-// import PubSub from 'pubsub-js'
 import baseMenu from '@/components/base/base-menu.vue'
 import baseMenuItem from '@/components/base/base-menu-item.vue'
 import baseMenuLine from '@/components/base/base-menu-line.vue'
@@ -54,7 +53,7 @@ const props = defineProps<{
     id: string,
     location?: string
 }>();
-const emit = defineEmits(["update:modelValue", "rename", "delete"]); // 先执行事件任务，再关闭contextMenu
+const emit = defineEmits(["update:modelValue", "rename", "delete", "download"]); // 先执行事件任务，再关闭contextMenu
 
 const isShow = computed({
     get() {
@@ -65,6 +64,10 @@ const isShow = computed({
     }
 })
 const type = computed(()=>props.type);
+
+function exportNoteEvent(type: string) {
+    emit('download', type)
+}
 
 </script>
 

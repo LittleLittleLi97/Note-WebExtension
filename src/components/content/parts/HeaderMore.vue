@@ -38,8 +38,11 @@ import baseMenu from '@/components/base/base-menu.vue';
 import baseMenuItem from '@/components/base/base-menu-item.vue';
 import baseMenuLine from '@/components/base/base-menu-line.vue';
 import { showControlFuncObj } from '@/utils/interface'
+import { downloadNote } from '@/utils/utils';
+import { useContentStore } from '@/store/contentStore';
 
 const { showNote, closeNote } = inject<showControlFuncObj>('showControl')!;
+const store = useContentStore();
 
 const modeShowDiv = ref();
 const moreMenuShow = ref(false);
@@ -50,8 +53,8 @@ function changeMode() {
 function openMoreMenu() {
     moreMenuShow.value = true;
 }
-function exportNote(a: any) {
-    1
+function exportNote(type: string) {
+    downloadNote(type, store.noteInfo.id);
 }
 </script>
 

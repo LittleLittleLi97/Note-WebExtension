@@ -27,6 +27,7 @@
         ref="collectManagerDiv"
         @rename="renameStart"
         @delete="deleteItem"
+        @download="downloadEvent"
     ></CollectManager>
 </template>
 
@@ -36,6 +37,7 @@ import { computed } from '@vue/reactivity';
 
 import { usePopupStore } from '@/store/popupStore';
 import CollectManager from './CollectManager.vue';
+import { downloadNote } from '@/utils/utils';
 
 const props = defineProps<{
     noteId: string
@@ -78,6 +80,9 @@ function cancelRename() {
 
 function deleteItem() {
     store.deleteNote(noteInfo.value.id);
+}
+function downloadEvent(type: string) {
+    downloadNote(type, noteInfo.value.id);
 }
 </script>
 
