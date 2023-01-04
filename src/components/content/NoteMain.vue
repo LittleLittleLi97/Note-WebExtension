@@ -72,6 +72,11 @@ onMounted(()=>{
     box-sizing: border-box;
 
     .note-main-area {
+        display: flex;
+        flex-direction: column;
+
+        height: 100%;
+
         .note-header {
             padding: 14px 16px;
     
@@ -91,31 +96,30 @@ onMounted(()=>{
             }
         }
         .note-body {
-            
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
 
+            overflow-y: auto;
+            scroll-behavior: contain;
+    
+            &::-webkit-scrollbar {
+                display: none;
+            }
             .cell-area {
                 display: grid;
                 grid-gap: 10px;
         
                 width: 100%;
                 padding: 10px 20px;
-        
-                overflow-y: scroll;
-                scroll-behavior: contain;
-        
-                &::-webkit-scrollbar {
-                    display: none;
-                }
             }
             .add-cell-button {
                 text-align: center;
     
                 width: 50%;
     
-                margin-top: 10px;
+                margin: 10px 0;
     
                 background-color: transparent;
     
