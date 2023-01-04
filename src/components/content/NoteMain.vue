@@ -1,6 +1,6 @@
 <template>
     <transition>
-        <div class="note-wrapper">
+        <div class="note-wrapper" id="note-ext-main-content-area">
             <div class="note-main-area">
 
                 <div class="note-header">

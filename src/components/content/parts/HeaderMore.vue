@@ -1,7 +1,7 @@
 <template>
     <div class="more">
-        <i class="iconfont icon-pen" style="color: var(--note-ext-yellow);" ref="modeShowDiv" @click="changeMode"></i>
-        <i class="iconfont icon-gengduo" ref="openMoreDiv" @click="openMoreMenu"></i>
+        <i class="iconfont icon-pen" :style="mode.style" @click="changeMode"></i>
+        <i class="iconfont icon-gengduo" ref="openMoreDiv" @click="(moreMenuShow=true)"></i>
         <i class="iconfont icon-shanchu2" @click="closeNote()"></i>
         <div class="more-gengduo" v-show="moreMenuShow"  @click="(moreMenuShow=false)">
             <div class="more-list">
@@ -16,24 +16,22 @@
                         title="导出md"
                         @click="exportNote('md')"
                     ></base-menu-item>
-                    <!-- <base-menu-line></base-menu-line>
+                    <base-menu-line></base-menu-line>
                     <base-menu-item
                         icon="iconfont icon-shanchu"
                         title="清空标注"
                         @click="clearAllHighlight"
-                    ></base-menu-item> -->
+                    ></base-menu-item>
                 </base-menu>
             </div>
             <div class="mask"></div>
         </div>
-        <!-- <div>
-            <Tooltip></Tooltip>
-        </div> -->
     </div>
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { inject, ref, computed } from 'vue';
+import PubSub from 'pubsub-js'
 import baseMenu from '@/components/base/base-menu.vue';
 import baseMenuItem from '@/components/base/base-menu-item.vue';
 import baseMenuLine from '@/components/base/base-menu-line.vue';
@@ -44,17 +42,30 @@ import { useContentStore } from '@/store/contentStore';
 const { showNote, closeNote } = inject<showControlFuncObj>('showControl')!;
 const store = useContentStore();
 
-const modeShowDiv = ref();
 const moreMenuShow = ref(false);
 
+const modeList = [
+    {
+        mode: 'highlight',
+        style: 'color: var(--note-ext-yellow);',
+    },
+    {
+        mode: 'source',
+        style: 'color: #fff;',
+    }
+]
+const modeIndex = ref(0);
+const mode = computed(()=>modeList[modeIndex.value]);
 function changeMode() {
-    1
+    modeIndex.value = (modeIndex.value + 1) % modeList.length;
+    PubSub.publish('changeMode', modeList[modeIndex.value].mode);
 }
-function openMoreMenu() {
-    moreMenuShow.value = true;
-}
+
 function exportNote(type: string) {
     downloadNote(type, store.noteInfo.id);
+}
+function clearAllHighlight() {
+    PubSub.publish('clearAllHighlight');
 }
 </script>
 

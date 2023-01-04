@@ -14,9 +14,7 @@ import { nanoid } from 'nanoid';
 import PubSub from 'pubsub-js'
 import { changeLabelColor, getAllElementsByCellId, getElementByKey, getTopElementkey, highlightText, removeHighlight, selection, updateSelection } from '@/utils/dom';
 import { useContentStore } from '@/store/contentStore';
-import { DBMethods } from '@/utils/database';
 import { isEmptyObj } from '@/utils/utils';
-import { HtmlAttributes } from 'csstype';
 import { showControlFuncObj } from '@/utils/interface';
 
 const emit = defineEmits(['showNote', 'closeNote']);
@@ -28,7 +26,7 @@ const boxState = ref(false);
 const boxDiv = ref();
 const modifyState = ref(false);
 
-let excludeElement: HTMLElement | null; // 排除区域，content页面的主体部分不应该标注highlight
+let excludeElement: HTMLElement; // 排除区域，content页面的主体部分不应该标注highlight
 let range: Range;
 let cellId = '';
 let contextMode = 'highlight';
@@ -83,12 +81,12 @@ function deleteHighlightEvent() {
 
 onMounted(()=>{
     // 排除区域
-    excludeElement = document.getElementById('note-ext-main-content-area');
+    excludeElement = document.getElementById('note-ext-main-content-area') as HTMLElement;
     
     // 选中文字事件
     document.addEventListener('mouseup', (event: MouseEvent)=>{
         if (mode !== 'highlight') return;
-        if (excludeElement?.contains(event.target as HTMLElement)) return;
+        if (excludeElement.contains(event.target as HTMLElement)) return;
         let text = selection.toString();
         let tCellId = (event.target as HTMLElement).getAttribute('data-note-ext-cell-id');
 
@@ -128,13 +126,29 @@ onMounted(()=>{
     PubSub.subscribe('deleteHighlight', (msg, cell_id: string)=>{
         _deleteHighlight(cell_id);
     })
+    PubSub.subscribe('changeMode', (msg, toMode: string)=>{
+        switch (toMode) {
+            case 'highlight':
+                _highlight();
+                break;
+            case 'source':
+                _source();
+                break;
+        }
+    })
+    PubSub.subscribe('clearAllHighlight', ()=>{
+        let nowMode = mode;
+        _source();
+        info.value.area = {};
+        store.saveHighlight();
+        if (nowMode === 'highlight') _highlight();
+    })
 })
 
 function _highlight() {
     const area = info.value.area;
     mode = 'highlight';
     for (let key in area) {
-        console.log(key)
         const innerHTML = area[key];
         const el = getElementByKey(key);
         sourceArea[key] = el.innerHTML;
