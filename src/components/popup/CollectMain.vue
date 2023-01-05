@@ -5,7 +5,6 @@
             <div class="icons">
                 <i class="iconfont icon-folder-add" @click="createCollectShow=true"></i>
                 <i class="iconfont icon-gengduo"></i>
-                <!-- <Tooltip></Tooltip> -->
             </div>  
         </div>
         <div class="body">

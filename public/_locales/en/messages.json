@@ -1,0 +1,58 @@
+{
+    "default_favorites": {
+        "message": "Default favorites",
+        "description": "favorites name created by default"
+    },
+    "confirm": {
+        "message": "Confirm",
+        "description": "contextmenu item"
+    },
+    "cancel": {
+        "message": "Cancel",
+        "description": "contextmenu item"
+    },
+    "rename": {
+        "message": "rename",
+        "description": "contextmenu item"
+    },
+    "delete": {
+        "message": "delete",
+        "description": "contextmenu item"
+    },
+    "find": {
+        "message": "find",
+        "description": "contextmenu item"
+    },
+    "export": {
+        "message": "export",
+        "description": "contextmenu item"
+    },
+    "clear_highlight": {
+        "message": "clear highlight",
+        "description": "contextmenu item"
+    },
+    "create_favorites_placeholder": {
+        "message": "Please enter a favorite name...",
+        "description": "placeholder when creating a new favorite"
+    },
+    "write_notes": {
+        "message": "write",
+        "description": "The floating entry name on the right side of the page"
+    },
+    "highlight": {
+        "message": "highlight",
+        "description": "placeholder of delete_corresponding_query"
+    },
+    "note": {
+        "message": "note",
+        "description": "placeholder of delete_corresponding_query"
+    },
+    "delete_corresponding_query": {
+        "message": "Whether to delete the corresponding ... part?",
+        "description": "ask when deleting notes or highlighting in a content page"
+    },
+    "create": {
+        "message": "create...",
+        "description": "create new favorite in a content page"
+    }
+}

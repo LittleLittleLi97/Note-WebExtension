@@ -7,7 +7,7 @@
     >
         <input 
             type="text" 
-            placeholder="请输入收藏夹名称..." 
+            :placeholder="i18n.create_favorites_placeholder" 
             class="input-box" 
             ref="inputBox"
             v-model="collectName"
@@ -16,10 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, defineProps, defineEmits } from 'vue';
+import { ref, reactive, computed, watch, nextTick, defineProps, defineEmits } from 'vue';
 import { usePopupStore } from '@/store/popupStore';
 import baseDialog from '../base/base-dialog.vue';
 
+const i18n = reactive({
+    create_favorites_placeholder: chrome.i18n.getMessage('create_favorites_placeholder')
+});
 const store = usePopupStore();
 const props = defineProps<{
     show: boolean

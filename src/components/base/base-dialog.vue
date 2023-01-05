@@ -7,17 +7,21 @@
             <slot></slot>
         </div>
         <div class="button-area">
-            <div class="button cancel" @click="cancelEvent">取消</div>
-            <div class="button confirm" @click="confirmEvent">确认</div>
+            <div class="button cancel" @click="cancelEvent">{{ i18n.cancel }}</div>
+            <div class="button confirm" @click="confirmEvent">{{ i18n.confirm }}</div>
         </div>
     </base-popover>
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits } from 'vue';
+import { reactive, computed, defineProps, defineEmits } from 'vue';
 import basePopover from './base-popover.vue';
 import baseIconfont from './base-iconfont.vue';
 
+const i18n = reactive({
+    confirm: chrome.i18n.getMessage('confirm'),
+    cancel: chrome.i18n.getMessage('cancel')
+});
 const props = defineProps<{
     show: boolean
 }>();

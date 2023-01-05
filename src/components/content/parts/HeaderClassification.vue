@@ -31,7 +31,7 @@ const store = useContentStore();
 const noteInfo = computed(()=>store.noteInfo);
 const collectList = computed(()=>store.collectList);
 
-const createCollectButton = ref('新建...');
+const createCollectButton = ref(chrome.i18n.getMessage('create'));
 const collectState = ref(true);
 const collectInputBox = ref();
 let lastCollectId = noteInfo.value.collect_id;

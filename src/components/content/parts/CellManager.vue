@@ -3,13 +3,13 @@
         <base-menu>
             <base-menu-item 
                 icon="iconfont icon-find" 
-                title="查找"
+                :title="i18n.find"
                 v-show="type === 'highlight'"
                 @click="findEvent"
             ></base-menu-item>
             <base-menu-item 
                 icon="iconfont icon-shanchu" 
-                title="删除" 
+                :title="i18n.delete" 
                 @click="deleteCellEvent"
             ></base-menu-item>
         </base-menu>
@@ -18,11 +18,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from '@vue/runtime-core';
+import { reactive, computed } from '@vue/runtime-core';
 import { defineProps, defineEmits } from 'vue';
 import baseMenu from '@/components/base/base-menu.vue'
 import baseMenuItem from '@/components/base/base-menu-item.vue'
 
+const i18n = reactive({
+    find: chrome.i18n.getMessage('find'),
+    delete: chrome.i18n.getMessage('delete')
+});
 const props = defineProps<{
     modelValue: boolean,
     type: string,

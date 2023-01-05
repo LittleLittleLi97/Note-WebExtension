@@ -28,3 +28,9 @@ chrome.runtime.onMessage.addListener(
         return true;
     }
 )
+
+const a = chrome.i18n.getMessage('test');
+console.log(a)
+chrome.i18n.getAcceptLanguages((list)=>{
+    console.log(list)
+});

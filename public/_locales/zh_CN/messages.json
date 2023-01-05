@@ -1,0 +1,58 @@
+{
+    "default_favorites": {
+        "message": "默认收藏夹",
+        "description": "favorites name created by default"
+    },
+    "confirm": {
+        "message": "确认",
+        "description": "contextmenu item"
+    },
+    "cancel": {
+        "message": "取消",
+        "description": "contextmenu item"
+    },
+    "rename": {
+        "message": "重命名",
+        "description": "contextmenu item"
+    },
+    "delete": {
+        "message": "删除",
+        "description": "contextmenu item"
+    },
+    "find": {
+        "message": "查找",
+        "description": "contextmenu item"
+    },
+    "export": {
+        "message": "导出",
+        "description": "contextmenu item"
+    },
+    "clear_highlight": {
+        "message": "清空标注",
+        "description": "contextmenu item"
+    },
+    "create_favorites_placeholder": {
+        "message": "新的收藏夹名称...",
+        "description": "placeholder when creating a new favorite"
+    },
+    "write_notes": {
+        "message": "写笔记",
+        "description": "The floating entry name on the right side of the page"
+    },
+    "highlight": {
+        "message": "标注",
+        "description": "placeholder of delete_corresponding_query"
+    },
+    "note": {
+        "message": "笔记",
+        "description": "placeholder of delete_corresponding_query"
+    },
+    "delete_corresponding_query": {
+        "message": "是否删除对应的 ... 部分？",
+        "description": "ask when deleting notes or highlighting in a content page"
+    },
+    "create": {
+        "message": "新建...",
+        "description": "create new favorite in a content page"
+    }
+}

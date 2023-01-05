@@ -1,18 +1,21 @@
 <template>
     <base-dialog v-model:show="isShow" @cancel-event="cancelEvent" @confirm-event="confirmEvent">
         <span class="tip-text">
-            是否删除对应的{{ deleteType }}部分？
+            {{ text }}
         </span>
     </base-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import PubSub from 'pubsub-js'
 import baseDialog from '../base/base-dialog.vue';
 
+const i18n = reactive({
+    text: chrome.i18n.getMessage('delete_corresponding_query')
+});
 const isShow = ref(false);
-const deleteType = ref('');
+const text = ref('');
 
 function cancelEvent() {
     PubSub.publish('deleteEndEmit', false);
@@ -23,7 +26,7 @@ function confirmEvent() {
 
 onMounted(()=>{
     PubSub.subscribe('deleteStartEmit', (msg, type: string)=>{
-        deleteType.value = type;
+        text.value = i18n.text.replace('...', type);
         isShow.value = true;
     });
 })

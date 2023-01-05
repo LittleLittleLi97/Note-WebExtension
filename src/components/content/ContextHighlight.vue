@@ -68,7 +68,7 @@ function findCell() {
 function deleteHighlightEvent() {
     const hasCell = store.cellList[cellId];
     if (hasCell) {
-        PubSub.publish('deleteStartEmit', '笔记');
+        PubSub.publish('deleteStartEmit', chrome.i18n.getMessage('note'));
         PubSub.subscribe('deleteEndEmit', (msg, isDelete: boolean)=>{
             if (isDelete) store.deleteCell(cellId);
             _deleteHighlight(cellId);

@@ -151,7 +151,7 @@ function findHighlight() {
 }
 function deleteCell() {
     if (cellInfo.value.highlight) {
-        PubSub.publish('deleteStartEmit', '标注');
+        PubSub.publish('deleteStartEmit', chrome.i18n.getMessage('highlight'));
         PubSub.subscribe('deleteEndEmit', (msg, isDelete: boolean)=>{
             if (isDelete) PubSub.publish('deleteHighlight', cellInfo.value.id);
             store.deleteCell(cellInfo.value.id);

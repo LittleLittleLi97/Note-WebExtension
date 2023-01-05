@@ -29,7 +29,7 @@ export const getDB = async ()=>{
         if (!response) {
             db.put('collect', {
                 id: 'default',
-                name: '默认收藏夹',
+                name: chrome.i18n.getMessage('default_favorites'),
                 children: [],
                 createTime: Date.now()
             });

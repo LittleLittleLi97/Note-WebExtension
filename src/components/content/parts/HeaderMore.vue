@@ -8,18 +8,18 @@
                 <base-menu>
                     <base-menu-item
                         icon="iconfont icon-file-txt-fill"
-                        title="导出txt"
+                        :title="i18n.export + ' txt'"
                         @click="exportNote('txt')"
                     ></base-menu-item>
                     <base-menu-item
                         icon="iconfont icon-file-markdown"
-                        title="导出md"
+                        :title="i18n.export + ' md'"
                         @click="exportNote('md')"
                     ></base-menu-item>
                     <base-menu-line></base-menu-line>
                     <base-menu-item
                         icon="iconfont icon-shanchu"
-                        title="清空标注"
+                        :title="i18n.clear_highlight"
                         @click="clearAllHighlight"
                     ></base-menu-item>
                 </base-menu>
@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, computed } from 'vue';
+import { inject, ref, reactive, computed } from 'vue';
 import PubSub from 'pubsub-js'
 import baseMenu from '@/components/base/base-menu.vue';
 import baseMenuItem from '@/components/base/base-menu-item.vue';
@@ -39,6 +39,10 @@ import { showControlFuncObj } from '@/utils/interface'
 import { downloadNote } from '@/utils/utils';
 import { useContentStore } from '@/store/contentStore';
 
+const i18n = reactive({
+    export: chrome.i18n.getMessage('export'),
+    clear_highlight: chrome.i18n.getMessage('clear_highlight')
+});
 const { showNote, closeNote } = inject<showControlFuncObj>('showControl')!;
 const store = useContentStore();
 

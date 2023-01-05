@@ -1,14 +1,14 @@
 <template>
     <div class="collect-manager" v-show="isShow" @click="(isShow=!isShow)" :style="props.location">
         <base-menu>
-            <base-menu-item
+            <!-- <base-menu-item
                 icon="iconfont icon-folder-add"
                 title="添加文件夹"
                 v-show="type==='global'"
-            ></base-menu-item>
+            ></base-menu-item> -->
             <base-menu-item
                 icon="iconfont icon-zhongmingming1"
-                title="重命名"
+                :title="i18n.rename"
                 v-show="type==='folder' || type==='note'"
                 @click="emit('rename')"
                 ></base-menu-item>
@@ -16,12 +16,12 @@
             <div class="for-note" v-show="type==='note'">
                 <base-menu-item
                     icon="iconfont icon-file-txt-fill"
-                    title="导出txt"
+                    :title="i18n.export + ' txt'"
                     @click="exportNoteEvent('txt')"
                     ></base-menu-item>
                 <base-menu-item
                     icon="iconfont icon-file-markdown"
-                    title="导出md"
+                    :title="i18n.export + ' md'"
                     @click="exportNoteEvent('md')"
                     ></base-menu-item>
             </div>
@@ -30,7 +30,7 @@
                 <base-menu-line></base-menu-line>
                 <base-menu-item
                     icon="iconfont icon-shanchu"
-                    title="删除"
+                    :title="i18n.delete"
                     @click="emit('delete')"
                 ></base-menu-item>
             </div>
@@ -41,12 +41,16 @@
 
 <script setup lang="ts">
 // popup收藏夹右键管理
-import { computed } from '@vue/runtime-core';
-import { defineProps, defineEmits } from 'vue';
+import { computed, reactive, defineProps, defineEmits } from 'vue';
 import baseMenu from '@/components/base/base-menu.vue'
 import baseMenuItem from '@/components/base/base-menu-item.vue'
 import baseMenuLine from '@/components/base/base-menu-line.vue'
 
+const i18n = reactive({
+    rename: chrome.i18n.getMessage('rename'),
+    export: chrome.i18n.getMessage('export'),
+    delete: chrome.i18n.getMessage('delete'),
+});
 const props = defineProps<{
     modelValue: boolean,
     type: string,

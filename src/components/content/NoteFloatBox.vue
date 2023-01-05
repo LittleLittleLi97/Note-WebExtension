@@ -1,12 +1,15 @@
 <template>
     <div class="note-float-box">
         <i class="iconfont icon-bijinotes23"></i>
-        <span class="write-note">写笔记</span>
+        <span class="write-note">{{ i18n.write_notes }}</span>
     </div>
 </template>
 
 <script setup lang="ts">
-
+import { reactive } from 'vue';
+const i18n = reactive({
+    write_notes: chrome.i18n.getMessage('write_notes')
+})
 </script>
 
 <style scoped lang="less">
