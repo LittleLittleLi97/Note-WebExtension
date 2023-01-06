@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "MyNote",
     "description": "你不仅可以随时在网页中记笔记、加标注，还能通过扩展提供的收藏夹对笔记进行分类。Edge风格，支持Light / Dark模式，贴近你的习惯。支持markdown格式，提供笔记导出功能。快来试试吧！",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "permissions": [
         
     ],
